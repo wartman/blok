@@ -1,0 +1,11 @@
+-cp src
+-cp test
+-cp example
+
+-dce full
+-D analyzer-optimize
+
+-main Run
+
+-D js-es=6
+-js dist/test.js
