@@ -5,31 +5,44 @@ using Blok;
 class TodoInput extends Component {
 
   @prop var onSave:(value:String)->Void;
-  @prop var onEscape:()->Void = null;
+  @prop var requestClose:()->Void = null;
   @prop var initialValue:String = '';
   @prop var placeholder:String = '';
-  var pendingValue:String;
+  var ref:js.html.InputElement;
+
+  function clickOff(e:js.html.Event) {
+    if (e.target != ref) {
+      js.Browser.window.removeEventListener('click', clickOff);
+      if (requestClose != null) requestClose();
+    }
+  }
+
+  @effect
+  function setupListener() {
+    ref.focus();
+    if (requestClose != null) {
+      js.Browser.window.addEventListener('click', clickOff);
+    }
+  }
+  
+  @dispose 
+  function cleanup() {
+    js.Browser.window.removeEventListener('click', clickOff);
+  }
 
   override function render(context:Context):VNode {
-    // todo: this will be a lot cleaner if we implement
-    //       some kind of `ref`
     return Html.input({
+      ref: node -> ref = cast node,
       attrs: {
-        oninput: e -> {
-          trace(e);
-          e.preventDefault;
-          var input:js.html.InputElement = cast e.target;
-          pendingValue = input.value;
-        },
         onkeydown: e -> {
           var ev:js.html.KeyboardEvent = cast e;
           if (ev.key == 'Enter') {
-            onSave(pendingValue);
-            pendingValue = '';
-            if (onEscape != null) onEscape();
+            onSave(ref.value);
+            if (requestClose != null) requestClose();
+            ref.value = '';
           } else if (ev.key == 'Escape') {
-            pendingValue = '';
-            if (onEscape != null) onEscape();
+            if (requestClose != null) requestClose();
+            ref.value = '';
           }
         },
         value: initialValue,

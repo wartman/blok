@@ -4,19 +4,20 @@ package blok.core;
 @:allow(blok.core.Differ)
 class Component {
 
-  public var __alive:Bool = true;
-  public var __dirty:Bool = false;
-  public var __inserted:Bool = false;
-  var __context:Context;
-  var __pendingChildren:Array<Widget> = [];
-  var __rendered:Rendered;
-  var __parent:Widget;
-  var __nodes:Array<Node>;
+  @:noCompletion public var __alive:Bool = true;
+  @:noCompletion public var __dirty:Bool = false;
+  @:noCompletion public var __inserted:Bool = false;
+  @:noCompletion var __context:Context;
+  @:noCompletion var __pendingChildren:Array<Widget> = [];
+  @:noCompletion var __rendered:Rendered;
+  @:noCompletion var __parent:Widget;
+  @:noCompletion var __nodes:Array<Node>;
 
   public function render(context:Context):VNode {
     return null;
   }
 
+  @:noCompletion
   public function __getManagedNodes():Array<Node> {
     if (__nodes == null) {
       var nodes:Array<Node> = [];
@@ -38,16 +39,13 @@ class Component {
     __parent = parent;
 
     __updateProps(props);
-    __doRender();
+    __render();
   }
 
   @:noCompletion
-  public function __doRender() {
+  public function __render() {
     var engine = __context.engine;
     var differ = engine.differ;
-
-    trace(Type.getClassName(Type.getClass(this)));
-    trace(this);
     
     if (!__alive) {
       #if debug
@@ -56,13 +54,10 @@ class Component {
       return;
     }
 
-    __dirty = false;
-    __nodes = null;
-    __pendingChildren = [];
+    __preRender();
 
     switch __rendered {
       case null:
-        trace('New render');
         __rendered = differ.renderAll(
           __processRender(),
           this,
@@ -90,6 +85,14 @@ class Component {
           __rendered
         );
     }
+  }
+
+  @:noCompletion
+  inline function __preRender() {
+    __dirty = false;
+    __nodes = null;
+    __pendingChildren = [];
+    __registerEffects();
   }
 
   @:noCompletion
@@ -128,7 +131,10 @@ class Component {
     if (__dirty) return;
     __dirty = true;
     if (__parent == null) {
-      Helpers.later(() -> __doRender());
+      Helpers.later(() -> {
+        __render();
+        __context.dispatchEffects();
+      });
     } else {
       __parent.__enqueuePendingChild(this);
     }
@@ -143,7 +149,10 @@ class Component {
     if (__parent != null) {
       __parent.__enqueuePendingChild(this);
     } else {
-      Helpers.later(() -> __dequeuePendingChildren());
+      Helpers.later(() -> {
+        __dequeuePendingChildren();
+        __context.dispatchEffects();
+      });
     }
   }
 
@@ -157,12 +166,17 @@ class Component {
     for (child in children) {
       if (child.__alive) {
         if (child.__dirty) {
-          child.__doRender();
+          child.__render();
         } else {
           child.__dequeuePendingChildren();
         }
       }
     }
+  }
+
+  @:noCompletion
+  public function __registerEffects() {
+    // void
   }
 
 }

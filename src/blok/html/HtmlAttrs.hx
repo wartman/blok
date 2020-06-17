@@ -1,8 +1,6 @@
 package blok.html;
 
-import blok.core.VNode;
-import blok.core.Key;
-import blok.core.VStyleList;
+// @todo: @:html(...) and @:jsOnly currently have no effect.
 
 // From https://github.com/haxetink/tink_domspec/blob/master/src/tink/domspec/Attributes.hx
 typedef GlobalAttr = {
@@ -54,6 +52,31 @@ typedef TableCellAttr = GlobalAttr & {
   @:optional final sorted:String;
 }
 
+enum abstract InputType(String) to String {
+  var Text = 'text';
+  var Button = 'button';
+  var Checkbox = 'checkbox';
+  var Color = 'color';
+  var Date = 'date';
+  var DatetimeLocal = 'datetime-local';
+  var Email = 'email';
+  var File = 'file';
+  var Hidden = 'hidden';
+  var Image = 'image';
+  var Month = 'month';
+  var Number = 'number';
+  var Password = 'password';
+  var Radio = 'radio';
+  var Range = 'range';
+  var Reset = 'reset';
+  var Search = 'search';
+  var Tel = 'tel';
+  var Submit = 'submit';
+  var Time = 'time';
+  var Url = 'url';
+  var Week = 'week';
+}
+
 typedef InputAttr = GlobalAttr & {
   @:optional final checked:Bool;
   @:optional final disabled:Bool;
@@ -63,7 +86,7 @@ typedef InputAttr = GlobalAttr & {
   @:optional final value:String;
   @:optional final readOnly:Bool;
   @:html('value') @:optional final defaultValue:String;
-  @:optional final type:String;
+  @:optional final type:InputType;
   @:optional final name:String;
   @:optional final placeholder:String;
   @:optional final max:String;

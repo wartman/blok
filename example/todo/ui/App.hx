@@ -9,14 +9,18 @@ class App extends Component {
   override function render(context:Context):VNode {
     return TodoState.provide(context, {
       todos: []
-    }, state -> Html.div({
+    }, childContext -> Html.div({
       style: AppStyle.style({}),
       children: [
-        TodoInput.node({
+        // Note that children inside a State provider will not be updated
+        // when the state is -- you need to use a State consumer to
+        // subscribe to changes.
+        TodoState.consume(childContext, state -> TodoInput.node({
           onSave: value -> state.addTodo(value),
           placeholder: 'Add Todo'
-        }),
-        TodoList.node({})
+        })),
+        TodoList.node({}),
+        SiteFooter.node({})
       ]
     }));
   }

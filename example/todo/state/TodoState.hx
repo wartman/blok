@@ -18,6 +18,12 @@ class TodoState extends State {
   }
 
   @update
+  public function setFilter(filter:TodoFilter) {
+    if (this.filter == filter) return null;
+    return { filter: filter };
+  }
+
+  @update
   public function addTodo(content:String) {
     var id = todos.length > 0
       ? todos[ todos.length - 1 ].id + 1
@@ -32,6 +38,22 @@ class TodoState extends State {
   public function removeTodo(todo:Todo) {
     return {
       todos: todos.filter(t -> t.id != todo.id)
+    };
+  }
+
+  @update
+  public function toggleTodoComplete(todo:Todo) {
+    todo.complete = !todo.complete;
+    return { 
+      todos: todos 
+    };
+  }
+
+  @update
+  function removeCompleted() {
+    return {
+      filter: FilterAll,
+      todos: todos.filter(todo -> !todo.complete) 
     };
   }
 

@@ -8,7 +8,7 @@ class State {
   public var __dirty:Bool = false;
   public var __inserted:Bool = false;
   var __localContext:Context;
-  var __factory:(state:Dynamic)->VNode;
+  var __factory:(context:Context)->VNode;
   var __parent:Widget;
   var __handler:IsolateComponent;
   var __subscribers:Array<()->Void> = [];
@@ -45,7 +45,7 @@ class State {
 
     __register(context);
     __updateProps(props);
-    __doRender();
+    __render();
   }
 
   public function __dispose():Void {
@@ -56,15 +56,15 @@ class State {
     __subscribers = null;
   }
 
-  public function __doRender():Void {
+  public function __render():Void {
     if (__handler == null) {
       __handler = new IsolateComponent(
-        { children: [ __factory(this) ] },
+        { children: [ __factory(__localContext) ] },
         __localContext, 
         __parent
       );
     } else {
-      __handler.__doRender();
+      __handler.__render();
     }
   }
 

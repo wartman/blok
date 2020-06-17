@@ -213,14 +213,15 @@ class StateBuilder {
     var type = Context
       .getType(clsName)
       .toComplexType();
-    var factoryType = macro:(data:$type)->blok.core.VNode;
+    var providerFactory = macro:(context:blok.core.Context)->blok.core.VNode;
+    var consumerFactory = macro:(data:$type)->blok.core.VNode;
 
     builder.add((macro class {
 
       public static function provide(
         context:blok.core.Context, 
         props:$propType,
-        build:$factoryType
+        build:$providerFactory
       ):VNode {
         return VWidget({
           __create: function (props, context, parent) {
@@ -233,7 +234,7 @@ class StateBuilder {
 
       public static function consume(
         context:blok.core.Context,
-        build:$factoryType
+        build:$consumerFactory
       ):VNode {
         var state = context.get($v{id});
         if (state == null) {
@@ -247,7 +248,7 @@ class StateBuilder {
 
       var $PROPS:$propType;
 
-      public function new($INCOMING_PROPS:$propType, __context, __parent, __build:$factoryType) {
+      public function new($INCOMING_PROPS:$propType, __context, __parent, __build:$providerFactory) {
         this.__parent = __parent;
         this.__factory = cast __build;
         this.$PROPS = ${ {
@@ -255,7 +256,7 @@ class StateBuilder {
           pos: (macro null).pos
         } };
         __register(__context);
-        __doRender();
+        __render();
       }
 
       override function __getId() {

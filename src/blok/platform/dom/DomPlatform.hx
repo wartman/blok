@@ -14,7 +14,8 @@ class DomPlatform {
     el.innerHTML = '';
     var context = createContext();
     var differ = context.engine.differ;
-    return differ.render(cast el, [ factory(context) ], null, context);
+    differ.render(cast el, [ factory(context) ], null, context);
+    context.dispatchEffects();
   }
 
 }

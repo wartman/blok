@@ -22,6 +22,7 @@ class ComponentBuilder {
     var initializers:Array<ObjectField> = [];
     var initHooks:Array<Expr> = [];
     var disposeHooks:Array<Expr> = [];
+    var effectHooks:Array<Expr> = [];
 
     function addProp(name:String, type:ComplexType, isOptional:Bool) {
       props.push({
@@ -172,6 +173,24 @@ class ComponentBuilder {
       }
     });
 
+    builder.addFieldBuilder({
+      name: 'effect',
+      similarNames: [ ':effect' ],
+      multiple: false,
+      options: [],
+      hook: After,
+      build: function (options:{}, builder, field) switch field.kind {
+        case FFun(func):
+          if (func.args.length > 0) {
+            Context.error('@effect methods cannot have any arguments', field.pos);
+          }
+          var name = field.name;
+          effectHooks.push(macro @:pos(field.pos) this.$name());
+        default:
+          Context.error('@effect must be used on a method', field.pos);
+      }
+    });
+
     builder.run();
     
     function extractTypeParams(tp:haxe.macro.Type.TypeParameter) {
@@ -188,6 +207,10 @@ class ComponentBuilder {
     var createParams =  cls.params.length > 0
       ? [ for (p in cls.params) { name: p.name, constraints: extractTypeParams(p) } ]
       : [];
+    var effects = effectHooks.length > 0 
+      ? macro __context.addEffect(() -> $b{effectHooks})
+      : macro null;
+
 
     builder.add([
       
@@ -244,7 +267,7 @@ class ComponentBuilder {
           pos: (macro null).pos
         } };
         $b{initHooks}
-        __doRender();
+        __render();
       }
 
       @:noCompletion
@@ -257,9 +280,9 @@ class ComponentBuilder {
         return true;
       }
 
-      // override function __effect() {
-      //   $b{prepareHooks(effectHooks)}
-      // }
+      override function __registerEffects() {
+        ${effects};
+      }
 
       @:noCompletion
       override function __dispose() {

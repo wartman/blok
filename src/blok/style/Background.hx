@@ -5,7 +5,7 @@ import blok.core.Style;
 
 class Background extends Style {
 
-  @prop var color:Color;
+  @prop() var color:Color;
   // @todo: images and attachment and stuff
 
   override function render():Array<VStyle> {

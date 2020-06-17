@@ -17,7 +17,7 @@ class TextComponent extends Component {
     return realNode;
   }
 
-  override function __doRender() {
+  override function __render() {
     if (realNode == null) __createNode();
     if (prevContent != content) {
       prevContent = content;

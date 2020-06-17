@@ -7,7 +7,7 @@ typedef Widget = {
   function __getManagedNodes():Array<Node>;
   function __update(props:Dynamic, context:Context, parent:Widget):Void;
   function __dispose():Void;
-  function __doRender():Void;
+  function __render():Void;
   function __enqueuePendingChild(child:Widget):Void;
   function __dequeuePendingChildren():Void;
 }

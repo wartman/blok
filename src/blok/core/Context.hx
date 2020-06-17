@@ -6,6 +6,7 @@ class Context {
   public final styleEngine:StyleEngine;
   final data:Map<String, Dynamic> = [];
   final parent:Context;
+  var effectQueue:Array<()->Void> = [];
 
   public function new(engine, styleEngine, ?parent:Context) {
     this.engine = engine;
@@ -28,6 +29,28 @@ class Context {
 
   public function set<T>(name:String, value:T) {
     data.set(name, value);
+  }
+
+  public function addEffect(effect:()->Void) {
+    if (parent != null) {
+      parent.addEffect(effect);
+      return;
+    }
+    effectQueue.unshift(effect);
+  }
+
+  public function dispatchEffects() {
+    if (parent != null) {
+      parent.dispatchEffects();
+      return;
+    }
+    var toDispatch = effectQueue.copy();
+    effectQueue = [];
+    for (e in toDispatch) e();
+  }
+
+  public function clearEffects() {
+    effectQueue = [];
   }
   
 }

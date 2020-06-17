@@ -103,6 +103,9 @@ class VStyleDeclTools {
     return name
       .replace('.', '_')
       .replace(' ', '_')
+      .replace('#', '_')
+      .replace('(', '_')
+      .replace(')', '_')
       .replace('%', 'pct');
     // etc
   }

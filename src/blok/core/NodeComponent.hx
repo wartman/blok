@@ -1,12 +1,13 @@
 package blok.core;
 
-class NodeComponent<Attrs:{}> extends Component {
+final class NodeComponent<Attrs:{}> extends Component {
 
   @prop var tag:String;
   @prop var children:Array<VNode> = null;
   @prop var attrs:Attrs = null;
   @prop var key:Key = null;
   @prop var style:VStyleList = null;
+  @prop var ref:(node:Node)->Void = null;
   var prevAttrs:Attrs = null;
   var realNode:Node;
 
@@ -53,20 +54,15 @@ class NodeComponent<Attrs:{}> extends Component {
     prevAttrs = attrs;
   }
 
-  override function __doRender() {
+  override function __render() {
     var engine = __context.engine;
     var differ = engine.differ;
     var previousCount = 0;
 
-    __dirty = false;
-    __pendingChildren = [];
-
     if (realNode == null) __createNode();
     __updateNodeAttrs();
+    __preRender();
 
-    trace(tag);
-    trace(this);
-    
     switch __rendered {
       case null:
         __rendered = differ.renderAll(
@@ -92,6 +88,8 @@ class NodeComponent<Attrs:{}> extends Component {
       engine.traverseChildren(realNode),
       __rendered
     );
+
+    if (ref != null) ref(realNode);
   }
 
   override function render(context:Context):VNode {
