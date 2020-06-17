@@ -1,7 +1,7 @@
 package blok.core;
 
-@:autoBuild(blok.core.ComponentBuilder.build())
 @:allow(blok.core.Differ)
+@:autoBuild(blok.core.ComponentBuilder.build())
 class Component {
 
   @:noCompletion public var __alive:Bool = true;
@@ -12,6 +12,10 @@ class Component {
   @:noCompletion var __rendered:Rendered;
   @:noCompletion var __parent:Widget;
   @:noCompletion var __nodes:Array<Node>;
+
+  public inline function getCurrentContext() {
+    return __context;
+  }
 
   public function render(context:Context):VNode {
     return null;

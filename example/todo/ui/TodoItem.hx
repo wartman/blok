@@ -1,5 +1,6 @@
 package todo.ui;
 
+import todo.style.Card;
 import blok.style.*;
 import todo.state.TodoState;
 import todo.state.Todo;
@@ -19,14 +20,12 @@ class TodoItem extends Component {
   override function render(context:Context):VNode {
     return TodoState.consume(context, state -> 
       Html.li({
-        key: todo,
+        key: todo.id,
         style: [
-          Box.style({ 
-            padding: Spacing.all(Px(20)),
+          Box.style({
             margin: Spacing.sides(Px(20), Px(0)) 
           }),
-          Background.style({ color: Color.hex('ccc') }),
-          Border.style({ radius: Px(5) })
+          Card.style({})
         ],
         attrs: {
           ondblclick: e -> toggleEditing()

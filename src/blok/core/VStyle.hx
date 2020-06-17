@@ -58,7 +58,7 @@ class VStyleDeclTools {
           out.push('${selector} { ${value} }');
 
         case VGlobal(styles):
-          out.push(renderProps('@media all', styles));  
+          out.push(renderProps('', styles));  
         
         case VProperty(name, value):
           def.push('${name}: ${renderValue(value)};');

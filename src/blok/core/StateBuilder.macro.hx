@@ -236,14 +236,21 @@ class StateBuilder {
         context:blok.core.Context,
         build:$consumerFactory
       ):VNode {
-        var state = context.get($v{id});
-        if (state == null) {
-          throw 'The required state ' + $v{cls.pack.concat([cls.name]).join('.')} + ' was not provided.';
-        }
+        var state = forContext(context);
         return blok.core.StateConsumer.node({
           state: state,
           build: build
         });
+      }
+
+      public static function forContext(context:blok.core.Context):$type {
+        var state = context.get($v{id});
+        #if debug
+          if (state == null) {
+            throw 'The required state ' + $v{cls.pack.concat([cls.name]).join('.')} + ' was not provided.';
+          }
+        #end
+        return state;
       }
 
       var $PROPS:$propType;
