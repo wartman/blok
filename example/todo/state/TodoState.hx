@@ -17,4 +17,22 @@ class TodoState extends State {
     }
   }
 
+  @update
+  public function addTodo(content:String) {
+    var id = todos.length > 0
+      ? todos[ todos.length - 1 ].id + 1
+      : 0;
+    var todo = new Todo(content, id);
+    return {
+      todos: todos.concat([ todo ])
+    };
+  }
+
+  @update
+  public function removeTodo(todo:Todo) {
+    return {
+      todos: todos.filter(t -> t.id != todo.id)
+    };
+  }
+
 }

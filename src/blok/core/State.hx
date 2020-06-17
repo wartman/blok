@@ -49,16 +49,14 @@ class State {
   }
 
   public function __dispose():Void {
+    __alive = false;
     __handler.__dispose();
     __handler = null;
     __localContext = null;
-    __alive = false;
     __subscribers = null;
   }
 
   public function __doRender():Void {
-    __dirty = false;
-
     if (__handler == null) {
       __handler = new IsolateComponent(
         { children: [ __factory(this) ] },
@@ -66,9 +64,7 @@ class State {
         __parent
       );
     } else {
-      __handler.__update({
-        children: __factory(this)
-      }, __localContext, __parent);
+      __handler.__doRender();
     }
   }
 
@@ -84,7 +80,6 @@ class State {
 
   public function __requestUpdate() {
     if (__handler == null) return;
-    __dirty = true;
     __handler.__requestUpdate();
   }
 

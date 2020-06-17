@@ -101,6 +101,58 @@ class StateBuilder {
     });
 
     builder.addFieldBuilder({
+      name: 'computed',
+      similarNames: [ ':computed' ],
+      multiple: false,
+      hook: Normal,
+      options: [],
+      build: function (options:{}, builder, f) switch f.kind {
+        case FVar(t, e):
+          var name = f.name;
+          var computeName = '__compute_${name}';
+          var backingName = '__computedValue_${name}';
+          var getName = 'get_${name}';
+
+          if (t == null) {
+            Context.error('Types cannot be inferred for @computed vars', f.pos);
+          }
+  
+          if (e == null) {
+            Context.error('An expression is required for @computed', f.pos);
+          }
+
+          f.kind = FProp('get', 'never', t, null);
+
+          if (!f.access.contains(APublic)) {
+            f.access.remove(APrivate);
+            f.access.push(APublic);
+          }
+
+          builder.add((macro class {
+  
+            var $backingName:$t = null;
+  
+            function $computeName() {
+              return ${e};
+            }
+  
+            function $getName() {
+              if (this.$backingName == null) {
+                this.$backingName = this.$computeName();
+              }
+              return this.$backingName;
+            }
+  
+          }).fields);
+
+          updates.push(macro @:pos(f.pos) this.$backingName = null);
+          
+        default:
+          Context.error('@computed can only be used on vars', f.pos);
+      }
+    });
+
+    builder.addFieldBuilder({
       name: 'update',
       similarNames: [ ':update' ],
       multiple: false,
@@ -132,6 +184,7 @@ class StateBuilder {
               var incoming = closure();
               if (incoming != null) {
                 __updateProps(incoming);
+                trace($i{PROPS});
                 __dispatch();
               }
             }
@@ -171,7 +224,9 @@ class StateBuilder {
       ):VNode {
         return VWidget({
           __create: function (props, context, parent) {
-            return new $clsTp(props, context, parent, build);
+            var state = new $clsTp(props, context, parent, build);
+            state.__inserted = true;
+            return state;
           }
         }, props);
       }
@@ -181,7 +236,9 @@ class StateBuilder {
         build:$factoryType
       ):VNode {
         var state = context.get($v{id});
-        // todo: throw if no state
+        if (state == null) {
+          throw 'The required state ' + $v{cls.pack.concat([cls.name]).join('.')} + ' was not provided.';
+        }
         return blok.core.StateConsumer.node({
           state: state,
           build: build

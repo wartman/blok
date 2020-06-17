@@ -8,7 +8,7 @@ final class StateConsumer<T:State> extends Component {
 
   @init
   function subscribe() {
-    unsub = state.subscribe(this.__requestUpdate);
+    unsub = state.subscribe(__requestUpdate);
   }
 
   @dispose

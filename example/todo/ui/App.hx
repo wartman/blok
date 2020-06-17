@@ -10,8 +10,14 @@ class App extends Component {
     return TodoState.provide(context, {
       todos: []
     }, state -> Html.div({
-      style: AppStyle.style({})
-      // etc
+      style: AppStyle.style({}),
+      children: [
+        TodoInput.node({
+          onSave: value -> state.addTodo(value),
+          placeholder: 'Add Todo'
+        }),
+        TodoList.node({})
+      ]
     }));
   }
 

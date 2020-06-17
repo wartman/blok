@@ -56,12 +56,16 @@ class NodeComponent<Attrs:{}> extends Component {
   override function __doRender() {
     var engine = __context.engine;
     var differ = engine.differ;
+    var previousCount = 0;
 
     __dirty = false;
     __pendingChildren = [];
 
     if (realNode == null) __createNode();
     __updateNodeAttrs();
+
+    trace(tag);
+    trace(this);
     
     switch __rendered {
       case null:
@@ -70,18 +74,7 @@ class NodeComponent<Attrs:{}> extends Component {
           this,
           __context
         );
-
-        differ.setChildren(
-          0,
-          engine.traverseChildren(realNode),
-          __rendered
-        );
       case before:
-        var previousCount = 0;
-        for (child in before.children) {
-          previousCount += child.__getManagedNodes().length;
-        }
-        
         __rendered = differ.updateAll(
           before,
           __processRender(),
@@ -89,12 +82,16 @@ class NodeComponent<Attrs:{}> extends Component {
           __context
         );
 
-        differ.setChildren(
-          previousCount,
-          engine.traverseChildren(realNode),
-          before
-        );
+        for (child in before.children) {
+          previousCount += child.__getManagedNodes().length;
+        }
     }
+
+    differ.setChildren(
+      previousCount,
+      engine.traverseChildren(realNode),
+      __rendered
+    );
   }
 
   override function render(context:Context):VNode {

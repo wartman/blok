@@ -18,11 +18,10 @@ class Component {
   }
 
   public function __getManagedNodes():Array<Node> {
-    if (__rendered == null) return [];
     if (__nodes == null) {
       var nodes:Array<Node> = [];
-      for (widget in __rendered.children) {
-        nodes = nodes.concat(widget.__getManagedNodes());
+      for (child in __rendered.children) {
+        nodes = nodes.concat(child.__getManagedNodes());
       }
       __nodes = nodes;
     }
@@ -46,13 +45,24 @@ class Component {
   public function __doRender() {
     var engine = __context.engine;
     var differ = engine.differ;
+
+    trace(Type.getClassName(Type.getClass(this)));
+    trace(this);
     
+    if (!__alive) {
+      #if debug
+        throw 'Attempted to render a component that was dismounted';
+      #end
+      return;
+    }
+
     __dirty = false;
     __nodes = null;
     __pendingChildren = [];
 
     switch __rendered {
       case null:
+        trace('New render');
         __rendered = differ.renderAll(
           __processRender(),
           this,
@@ -62,17 +72,17 @@ class Component {
         var previousCount = 0;
         var first:Node = null;
 
-        for (node in __getManagedNodes()) {
-          if (first == null) first = node;
-          previousCount++;
-        };
-
         __rendered = differ.updateAll(
           before,
           __processRender(),
           this,
           __context
         );
+
+        for (child in before.children) for (node in child.__getManagedNodes()) {
+          if (first == null) first = node;
+          previousCount++;
+        };
 
         if (first != null) differ.setChildren(
           previousCount,
@@ -108,24 +118,26 @@ class Component {
     __context = null;
     __parent = null;
     __pendingChildren = [];
+    if (__rendered != null) {
+      for (r in __rendered.types) r.each(c -> c.__dispose());
+    }
   }
 
   @:noCompletion
   function __requestUpdate() {
     if (__dirty) return;
-
+    __dirty = true;
     if (__parent == null) {
-      // todo: effect queue
       Helpers.later(() -> __doRender());
     } else {
-      __dirty = true;
       __parent.__enqueuePendingChild(this);
     }
   }
 
   @:noCompletion
   public function __enqueuePendingChild(child:Widget) {
-     if (__pendingChildren.indexOf(child) < 0) {
+    if (__dirty) return;
+    if (__pendingChildren.indexOf(child) < 0) {
       __pendingChildren.push(child);
     }
     if (__parent != null) {

@@ -3,9 +3,11 @@
 -cp example
 
 -dce full
+
 -D analyzer-optimize
-
--main Run
-
+-D debug
 -D js-es=6
+
+-main Todo
+
 -js dist/test.js
