@@ -33,4 +33,8 @@ abstract Color(Value) to Value {
     this = wrapped;
   }
 
+  public function withKey(key:String):Color {
+    return cast KeyedValue(key, this);
+  }
+
 }

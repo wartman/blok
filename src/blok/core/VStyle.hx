@@ -39,7 +39,7 @@ class VStyleDeclTools {
         type.__render(attrs, suffix);
 
       case VGlobal(props):
-        renderProps('@media all', props);
+        renderProps(null, props);
 
       case VClass(_, props):
         renderProps(style.getSelector(), props);
@@ -50,27 +50,39 @@ class VStyleDeclTools {
     var out = [];
     var def:Array<String> = [];
 
+    function applySelector(suffix:String) {
+      return selector != null
+        ? selector + suffix
+        : suffix;
+    }
+
     function process(styles:Array<VStyle>) {
       for (s in styles) if (s != null) switch s {
         case VNone | null:
 
         case VRaw(value):
-          out.push('${selector} { ${value} }');
+          if (selector != null)
+            out.push('${selector} { ${value} }');
+          else
+            out.push(value);
 
         case VGlobal(styles):
-          out.push(renderProps('', styles));  
+          out.push(renderProps(null, styles));  
         
-        case VProperty(name, value):
-          def.push('${name}: ${renderValue(value)};');
+        case VProperty(name, value, important):
+          if (important == true)
+            def.push('${name}: ${renderValue(value)} !important;');
+          else
+            def.push('${name}: ${renderValue(value)};');
 
         case VChild(name, styles):
-          out.push(renderProps('${selector} ${name}', styles));
+          out.push(renderProps(applySelector(' ${name}'), styles));
 
         case VChildren(styles):
-          out.push(renderProps(selector, styles));
+          process(styles);
         
         case VPsuedo(type, styles):
-          out.push(renderProps('${selector}${type}', styles));
+          out.push(renderProps(applySelector(type), styles));
 
         case VMedia(mediaSelector, styles):
           out.push('@media ${mediaSelector} { ${renderProps(selector, styles)}  }');
@@ -80,6 +92,13 @@ class VStyleDeclTools {
     process(styles);
 
     if (def.length > 0) {
+      if (selector == null) {
+       #if debug
+          throw 'Properties must be inside a selector';
+        #else
+          return out.join(' ');
+        #end
+      }
       out.unshift('${selector} { ${def.join(' ')} }');
     }
 
@@ -88,6 +107,8 @@ class VStyleDeclTools {
 
   static function renderValue(value:Value):String {
     return switch value {
+      case KeyedValue(_, value):
+        renderValue(value);
       case SingleValue(v): 
         v;
       case CompoundValue(values): 
@@ -114,7 +135,7 @@ class VStyleDeclTools {
 
 enum VStyle {
   VNone;
-  VProperty(name:String, value:Value);
+  VProperty(name:String, value:Value, ?important:Bool);
   VChild(name:String, styles:Array<VStyle>);
   VChildren(styles:Array<VStyle>);
   VPsuedo(type:PsuedoClass, styles:Array<VStyle>);
@@ -125,6 +146,7 @@ enum VStyle {
 
 @:using(blok.core.VStyle.ValueTools)
 enum Value {
+  KeyedValue(key:String, value:Value);
   SingleValue(value:ValueDef);
   CompoundValue(values:Array<Value>);
   ListValue(values:Array<Value>);
@@ -135,6 +157,7 @@ class ValueTools {
 
   public static function forClassName(value:Value):String {
     return switch value {
+      case KeyedValue(key, _): key;
       case SingleValue(value): value;
       case CompoundValue(values) | ListValue(values): return [
         for (value in values) value.forClassName()
@@ -169,11 +192,14 @@ enum abstract PsuedoClass(String) to String {
   var Focus = ':focus';
   var Hover = ':hover';
   var Active = ':active';
+  var FirstChild = ':first-child';
+  var LastChild = ':last-child';
 }
 
 @:using(blok.core.VStyle.UnitTools)
 enum Unit {
   None;
+  Auto;
   Num(value:Int);
   Px(value:Int);
   Pct(value:Int);
@@ -194,7 +220,8 @@ class UnitTools {
   public static function toString(unit:Unit) {
     if (unit == null) return null;
     return switch unit {
-      case None: 'auto';
+      case None: '0';
+      case Auto: 'auto';
       case Num(value): Std.string(value);
       case Px(value): '${value}px';
       case Pct(value): '${value}%';

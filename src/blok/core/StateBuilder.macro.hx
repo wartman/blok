@@ -184,7 +184,6 @@ class StateBuilder {
               var incoming = closure();
               if (incoming != null) {
                 __updateProps(incoming);
-                trace($i{PROPS});
                 __dispatch();
               }
             }

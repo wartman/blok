@@ -14,6 +14,23 @@ class BaseStyle {
           padding: 0;
           margin: 0;
         }
+
+        html {
+          box-sizing: border-box;
+        }
+
+        *, *:before, *:after {
+          box-sizing: inherit;
+        }
+
+        ul, ol, li {
+          margin: 0;
+          padding: 0;
+        }
+
+        ul, ol {
+          list-style: none;
+        }
       ')
     ]);
   }

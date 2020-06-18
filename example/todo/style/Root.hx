@@ -1,7 +1,6 @@
 package todo.style;
 
-import blok.style.Color;
-
+import blok.style.Font;
 using Blok;
 
 class Root extends Style {
@@ -14,14 +13,15 @@ class Root extends Style {
             margin: 0;
             padding: 0;
           }
-
-          body {
-            font-size: 13px;
-          }
         '),
         VChild('body', [
           VProperty('background-color', Appearance.darkColor)
-        ])
+        ]),
+        Font.exportAsChild('body', {
+          family: 'sans-serif',
+          size: Px(13),
+          color: Appearance.darkColor
+        })
       ])
     ];
   }

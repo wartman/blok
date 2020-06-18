@@ -100,6 +100,11 @@ class Component {
   }
 
   @:noCompletion
+  public function __registerEffects() {
+    // void
+  }
+
+  @:noCompletion
   inline function __processRender() {
     return switch render(__context) {
       case null | VFragment([], _): [ __context.engine.placeholder(this) ];
@@ -176,11 +181,6 @@ class Component {
         }
       }
     }
-  }
-
-  @:noCompletion
-  public function __registerEffects() {
-    // void
   }
 
 }

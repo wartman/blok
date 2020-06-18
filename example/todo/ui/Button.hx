@@ -15,7 +15,7 @@ class Button extends Component {
       style: [
         Box.style({ 
           height: Px(30), 
-          padding: new Spacing({ right: Px(20), left: Px(20) }) 
+          padding: EdgeInsets.symmetric(None, Px(20)) 
         }),
         Border.style({ radius: Px(15) }),
         Background.style({ color: Color.name('red') })

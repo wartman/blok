@@ -23,7 +23,7 @@ class TodoItem extends Component {
         key: todo.id,
         style: [
           Box.style({
-            margin: Spacing.sides(Px(20), Px(0)) 
+            spacing: EdgeInsets.symmetric(Px(20), Px(0))
           }),
           Card.style({})
         ],

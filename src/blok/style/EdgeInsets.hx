@@ -3,39 +3,39 @@ package blok.style;
 import blok.core.VStyle.Unit;
 import blok.core.VStyle.Value;
 
-abstract Spacing(Value) to Value {
+abstract EdgeInsets(Value) to Value {
 
   public inline static function top(top:Unit) {
-    return new Spacing({ top: top });
+    return new EdgeInsets({ top: top });
   }
 
   public inline static function bottom(bottom:Unit) {
-    return new Spacing({ bottom: bottom });
+    return new EdgeInsets({ bottom: bottom });
   }
 
   public inline static function left(left:Unit) {
-    return new Spacing({ left: left });
+    return new EdgeInsets({ left: left });
   }
 
   public inline static function right(right:Unit) {
-    return new Spacing({ right: right });
+    return new EdgeInsets({ right: right });
   }
 
-  public inline static function sides(topBottom:Unit, leftRight:Unit) {
-    return new Spacing({
-      top: topBottom,
-      bottom: topBottom,
-      left: leftRight,
-      right: leftRight
+  public inline static function symmetric(vertical:Unit, horizontal:Unit) {
+    return new EdgeInsets({
+      top: vertical,
+      bottom: vertical,
+      left: horizontal,
+      right: horizontal
     });
   }
 
-  public inline static function all(unit:Unit) {
-    return new Spacing({
-      top: unit,
-      right: unit,
-      bottom: unit,
-      left: unit
+  public inline static function all(size:Unit) {
+    return new EdgeInsets({
+      top: size,
+      right: size,
+      bottom: size,
+      left: size
     });
   }
 
