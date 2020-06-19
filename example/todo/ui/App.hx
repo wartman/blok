@@ -18,9 +18,9 @@ class App extends Component {
           style: Card.style({}),
           children: [
             // Note that children inside a State provider will not be updated
-            // when the state is -- you need to use a State consumer to
+            // when the state is -- you need to use a State subscriber to
             // subscribe to changes.
-            TodoState.consume(childContext, state -> TodoInput.node({
+            TodoState.subscribe(childContext, state -> TodoInput.node({
               onSave: value -> state.addTodo(value),
               placeholder: 'Add Todo'
             }))

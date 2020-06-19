@@ -13,7 +13,7 @@ class State {
   var __handler:IsolateComponent;
   var __subscribers:Array<()->Void> = [];
 
-  public function subscribe(listener:()->Void) {
+  public function __subscribe(listener:()->Void) {
     __subscribers.push(listener);
     return () -> __subscribers.remove(listener);
   }

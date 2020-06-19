@@ -8,7 +8,7 @@ using Blok;
 class SiteFooter extends Component {
   
   override function render(context:Context):VNode {
-    return TodoState.consume(context, state -> Html.footer({
+    return TodoState.subscribe(context, state -> Html.footer({
       style: Card.style({}),
       children: if (state.todos.length > 0) [
         Html.text('${state.remainingTodos} of ${state.todos.length} remaining'),

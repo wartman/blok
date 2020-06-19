@@ -213,7 +213,7 @@ class StateBuilder {
       .getType(clsName)
       .toComplexType();
     var providerFactory = macro:(context:blok.core.Context)->blok.core.VNode;
-    var consumerFactory = macro:(data:$type)->blok.core.VNode;
+    var subscriberFactory = macro:(data:$type)->blok.core.VNode;
 
     builder.add((macro class {
 
@@ -231,12 +231,12 @@ class StateBuilder {
         }, props);
       }
 
-      public static function consume(
+      public static function subscribe(
         context:blok.core.Context,
-        build:$consumerFactory
+        build:$subscriberFactory
       ):VNode {
         var state = forContext(context);
-        return blok.core.StateConsumer.node({
+        return blok.core.StateSubscriber.node({
           state: state,
           build: build
         });

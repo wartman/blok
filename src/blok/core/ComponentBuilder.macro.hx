@@ -125,8 +125,8 @@ class ComponentBuilder {
               inline function closure():$updatePropsRet ${e};
               var incoming = closure();
               if (incoming != null) {
-                __updateProps(incoming);
                 if (__shouldUpdate(incoming)) {
+                  __updateProps(incoming);
                   __requestUpdate();
                 }
               }
@@ -236,7 +236,7 @@ class ComponentBuilder {
       
       {
         name: 'node',
-        access: [ AStatic, APublic ],
+        access: [ AStatic, APublic, AInline ],
         pos: (macro null).pos,
         kind: FFun({
           ret: macro:blok.core.VNode,

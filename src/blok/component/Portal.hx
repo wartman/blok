@@ -13,14 +13,16 @@ class Portal extends Component {
 
   @init
   function registerPortal() {
-    var state = PortalState.forContext(getCurrentContext());
-    state.addPortal(key, child);
+    PortalState
+      .forContext(getCurrentContext())
+      .addPortal(key, child);
   }
 
   @dispose
   function removePortal() {
-    var state = PortalState.forContext(getCurrentContext());
-    state.removePortal(key);
+    PortalState
+      .forContext(getCurrentContext())
+      .removePortal(key);
   }
 
   override function render(context:Context):VNode {

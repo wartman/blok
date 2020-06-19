@@ -11,7 +11,7 @@ class PortalManager extends Component {
 
   override function render(context:Context):VNode {
     return PortalState.provide(context, {}, childContext -> Html.fragment([
-      PortalState.consume(childContext, state -> 
+      PortalState.subscribe(childContext, state -> 
         Html.fragment(state.portals.map(portal -> portal.vnode))
       ),
       Html.fragment(children, Type.getClassName(PortalManager))

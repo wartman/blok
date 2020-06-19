@@ -1,6 +1,6 @@
 package blok.core;
 
-final class StateConsumer<T:State> extends Component {
+final class StateSubscriber<T:State> extends Component {
   
   @prop var state:T;
   @prop var build:(state:T)->VNode;
@@ -8,7 +8,7 @@ final class StateConsumer<T:State> extends Component {
 
   @init
   function subscribe() {
-    unsub = state.subscribe(__requestUpdate);
+    unsub = state.__subscribe(__requestUpdate);
   }
 
   @dispose

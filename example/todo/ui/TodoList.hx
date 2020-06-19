@@ -8,7 +8,7 @@ using Blok;
 class TodoList extends Component {
 
   override function render(context:Context):VNode {
-    return TodoState.consume(context, state -> Html.ul({
+    return TodoState.subscribe(context, state -> Html.ul({
       style: Box.style({
         padding: EdgeInsets.symmetric(Px(20), None)
       }),
