@@ -3,12 +3,10 @@ package blok.style;
 import blok.core.Style;
 import blok.core.VStyle;
 
-// @todo: Instead of `margin`, add a `spacing` prop that will not
-//        apply to the first or last child.
 class Box extends Style {
   
   @prop var padding:EdgeInsets = null;
-  @prop var margin:EdgeInsets = null;
+  // @prop var margin:EdgeInsets = null;
   @prop var spacing:EdgeInsets = null;
   @prop var height:Unit = null;
   @prop var width:Unit = null;
@@ -19,7 +17,7 @@ class Box extends Style {
     ];
     
     if (padding != null) props.push(VProperty('padding', padding));
-    if (margin != null) props.push(VProperty('margin', margin));
+    // if (margin != null) props.push(VProperty('margin', margin));
     if (height != null) props.push(VProperty('height', SingleValue(height)));
     if (width != null) props.push(VProperty('width', SingleValue(width)));
     

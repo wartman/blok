@@ -1,13 +1,13 @@
 package blok.core;
 
-class KeyRegistry implements Registry<Key, Widget> {
+class KeyRegistry implements Registry<Key, Wire> {
   
-  var strings:Map<String, Widget>;
-  var objects:Map<{}, Widget>;
+  var strings:Map<String, Wire>;
+  var objects:Map<{}, Wire>;
 
   public function new() {}
 
-  public function put(?key:Key, value:Widget):Void {
+  public function put(?key:Key, value:Wire):Void {
     if (key == null) {
       throw 'Key cannot be null';
     } if (key.isString()) {
@@ -19,9 +19,9 @@ class KeyRegistry implements Registry<Key, Widget> {
     }
   }
 
-  public function pull(?key:Key):Widget {
+  public function pull(?key:Key):Wire {
     if (key == null) return null;
-    var map:Map<Dynamic, Widget> = if (key.isString()) strings else objects;
+    var map:Map<Dynamic, Wire> = if (key.isString()) strings else objects;
     if (map == null) return null;
     var out = map.get(key);
     map.remove(key);
@@ -29,12 +29,12 @@ class KeyRegistry implements Registry<Key, Widget> {
   }
 
   public function exists(key:Key):Bool {
-    var map:Map<Dynamic, Widget> = if (key.isString()) strings else objects;
+    var map:Map<Dynamic, Wire> = if (key.isString()) strings else objects;
     if (map == null) return false;
     return map.exists(key);
   }
 
-  public function each(cb:(value:Widget)->Void) {
+  public function each(cb:(value:Wire)->Void) {
     if (strings != null) for (v in strings) cb(v);
     if (objects != null) for (v in objects) cb(v);
   }

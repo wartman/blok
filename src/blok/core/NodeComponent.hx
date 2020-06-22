@@ -12,24 +12,22 @@ final class NodeComponent<Attrs:{}> extends Component {
   var realNode:Node;
 
   override function __getManagedNodes():Array<Node> {
-    if (realNode == null) __createNode();
+    if (realNode == null) __createNode(__context);
     return [ realNode ];
   }
 
-  function __createNode():Node {
+  function __createNode(context:Context):Node {
     if (realNode != null) {
       return realNode;
     }
 
-    var engine = __context.engine;
+    var engine = context.engine;
     realNode = engine.createNode(tag);
     return realNode;
   }
 
-  function __updateNodeAttrs() {
-    var engine = __context.engine;
-    var styleEngine = __context.styleEngine;
-
+  function __updateStyle(context:Context) {
+    var styleEngine = context.styleEngine;
     if (style != null) {
       for (s in style) styleEngine.define(s.getName(), s.render);
 
@@ -45,7 +43,10 @@ final class NodeComponent<Attrs:{}> extends Component {
           style.toString() + ' ' + existing
       );
     }
+  }
 
+  function __updateNodeAttrs(context:Context) {
+    var engine = context.engine;
     engine.differ.diffObject(
       if (prevAttrs == null) cast {} else prevAttrs, 
       attrs, 
@@ -54,26 +55,27 @@ final class NodeComponent<Attrs:{}> extends Component {
     prevAttrs = attrs;
   }
 
-  override function __render() {
-    var engine = __context.engine;
+  override function __render(context:Context) {
+    var engine = context.engine;
     var differ = engine.differ;
     var previousCount = 0;
 
-    if (realNode == null) __createNode();
-    __updateNodeAttrs();
+    if (realNode == null) __createNode(context);
+    __updateStyle(context);
+    __updateNodeAttrs(context);
     __preRender();
 
     switch __rendered {
       case null:
         __rendered = differ.renderAll(
-          __processRender(),
+          __processRender(context),
           this,
-          __context
+          context
         );
       case before:
         __rendered = differ.updateAll(
           before,
-          __processRender(),
+          __processRender(context),
           this,
           __context
         );

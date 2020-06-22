@@ -16,7 +16,7 @@ using Blok;
 
 class ExampleStyle extends Style {
 
-  @prop var height:Unit;
+  @:prop var height:Unit;
 
   override function render():Array<VStyle> {
     return [
@@ -34,15 +34,15 @@ class ExampleStyle extends Style {
 
 class ExampleComponent extends Component {
 
-  @prop var title:String;
-  @prop var height:Int;
+  @:prop var title:String;
+  @:prop var height:Int;
 
-  @update
+  @:update
   public function makeTaller(by:Int) {
     return { height: height + by };
   }
 
-  @update
+  @:update
   public function makeShorter(by:Int) {
     if (height - by <= 150) return null;
     return { height: height - by };

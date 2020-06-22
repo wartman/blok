@@ -17,7 +17,6 @@ typedef BaseProps<Attrs:{}> = {
 
 typedef ContainerProps<Attrs:{}> = BaseProps<Attrs> & {
   @:optional final children:Array<VNode>;
-  @:optional final dangerouslySetInnerHtml:String;
 }
 
 typedef DefaultProps = ContainerProps<GlobalAttr & HtmlEvents>;

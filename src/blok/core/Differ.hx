@@ -37,7 +37,7 @@ class Differ {
   public function render(
     node:Node, 
     nodes:Array<VNode>,
-    parent:Widget,
+    parent:Wire,
     context:Context
   ) {
     var previousCount = 0;
@@ -57,7 +57,7 @@ class Differ {
 
   public function renderAll(
     nodes:Array<VNode>, 
-    parent:Widget,
+    parent:Wire,
     context:Context
   ) {
     var differ = createDiffer((_, _) -> None);
@@ -67,7 +67,7 @@ class Differ {
   public function updateAll(
     before:Rendered,
     nodes:Array<VNode>,
-    parent:Widget,
+    parent:Wire,
     context:Context
   ) {
     var differ = createDiffer((type, key) -> {
@@ -107,10 +107,10 @@ class Differ {
     }
   }
 
-  function createDiffer(previous:(type:WidgetType<Dynamic>, key:Key)->Option<Widget>) {
+  function createDiffer(previous:(type:WireType<Dynamic>, key:Key)->Option<Wire>) {
     return function differ(
       nodes:Array<VNode>,
-      parent:Widget,
+      parent:Wire,
       context:Context
     ):Rendered {
       var result:Rendered = {
@@ -121,7 +121,7 @@ class Differ {
       function process(nodes:Array<VNode>, context:Context) {
         if (nodes != null) for (n in nodes) if (n != null) {
 
-          inline function add(?key:Key, type:WidgetType<Dynamic>, c:Widget) {
+          inline function add(?key:Key, type:WireType<Dynamic>, c:Wire) {
             if (!result.types.exists(type)) {
               result.types.set(type, new TypeRegistry());
             }
@@ -130,7 +130,7 @@ class Differ {
           }
 
           switch n {
-            case VWidget(type, attrs, key): switch previous(type, key) {
+            case VWire(type, attrs, key): switch previous(type, key) {
               case None:
                 var widget = type.__create(attrs, context, parent);
                 add(key, type, widget);

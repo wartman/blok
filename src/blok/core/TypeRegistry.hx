@@ -1,13 +1,13 @@
 package blok.core;
 
-class TypeRegistry implements Registry<Key, Widget> {
+class TypeRegistry implements Registry<Key, Wire> {
 
   var keyed:KeyRegistry;
-  var unkeyed:Array<Widget>;
+  var unkeyed:Array<Wire>;
 
   public function new() {}
 
-  public function put(?key:Key, value:Widget):Void {
+  public function put(?key:Key, value:Wire):Void {
     if (key == null) {
       if (unkeyed == null) unkeyed = [];
       unkeyed.push(value);
@@ -17,7 +17,7 @@ class TypeRegistry implements Registry<Key, Widget> {
     }
   }
 
-  public function pull(?key:Key):Widget {
+  public function pull(?key:Key):Wire {
     if (key == null) {
       return if (unkeyed != null) unkeyed.shift() else null;
     } else {
@@ -29,7 +29,7 @@ class TypeRegistry implements Registry<Key, Widget> {
     return if (keyed == null) false else keyed.exists(key);
   }
 
-  public inline function each(cb:(comp:Widget)->Void) {
+  public inline function each(cb:(comp:Wire)->Void) {
     if (keyed != null) keyed.each(cb);
     if (unkeyed != null) for (k in unkeyed) cb(k);
   }

@@ -222,7 +222,7 @@ class StateBuilder {
         props:$propType,
         build:$providerFactory
       ):VNode {
-        return VWidget({
+        return VWire({
           __create: function (props, context, parent) {
             var state = new $clsTp(props, context, parent, build);
             state.__inserted = true;
@@ -261,8 +261,7 @@ class StateBuilder {
           expr: EObjectDecl(initializers),
           pos: (macro null).pos
         } };
-        __register(__context);
-        __render();
+        __render(__register(__context));
       }
 
       override function __getId() {

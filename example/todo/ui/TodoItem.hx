@@ -1,7 +1,8 @@
 package todo.ui;
 
-import todo.style.Card;
 import blok.style.*;
+import todo.style.Config;
+import todo.style.Card;
 import todo.state.TodoState;
 import todo.state.Todo;
 
@@ -30,7 +31,7 @@ class TodoItem extends Component {
       key: todo.id,
       style: [
         Box.style({
-          spacing: EdgeInsets.symmetric(Px(20), Px(0))
+          spacing: EdgeInsets.symmetric(Config.mediumGap, Px(0))
         }),
         Card.style({})
       ],

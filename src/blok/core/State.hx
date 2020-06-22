@@ -9,7 +9,7 @@ class State {
   public var __inserted:Bool = false;
   var __localContext:Context;
   var __factory:(context:Context)->VNode;
-  var __parent:Widget;
+  var __parent:Wire;
   var __handler:IsolateComponent;
   var __subscribers:Array<()->Void> = [];
 
@@ -38,14 +38,14 @@ class State {
   function __register(context:Context) {
     __localContext = context.getChild();
     __localContext.set(__getId(), this);
+    return __localContext;
   }
 
-  public function __update(props:Dynamic, context:Context, parent:Widget):Void {
+  public function __update(props:Dynamic, context:Context, parent:Wire):Void {
     __parent = parent;
 
-    __register(context);
     __updateProps(props);
-    __render();
+    __render(context);
   }
 
   public function __dispose():Void {
@@ -56,19 +56,19 @@ class State {
     __subscribers = null;
   }
 
-  public function __render():Void {
+  public function __render(context:Context):Void {
     if (__handler == null) {
       __handler = new IsolateComponent(
-        { children: [ __factory(__localContext) ] },
+        { children: [ __factory(__register(context)) ] },
         __localContext, 
         __parent
       );
     } else {
-      __handler.__render();
+      __handler.__render(__register(context));
     }
   }
 
-  public function __enqueuePendingChild(child:Widget):Void {
+  public function __enqueuePendingChild(child:Wire):Void {
     if (__handler == null) return;
     __handler.__enqueuePendingChild(child);
   }

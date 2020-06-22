@@ -223,14 +223,14 @@ class ComponentBuilder {
           args: [
             { name: 'props', type: macro:$propType },
             { name: 'context', type: macro:blok.core.Context },
-            { name: 'parent', type: macro:blok.core.Widget }
+            { name: 'parent', type: macro:blok.core.Wire }
           ],
           expr: macro @:pos(cls.pos) {
             var comp = new $clsTp(props, context, parent);
             comp.__inserted = true;
             return comp;
           },
-          ret: macro:blok.core.Widget
+          ret: macro:blok.core.Wire
         })
       },
       
@@ -245,7 +245,7 @@ class ComponentBuilder {
             { name: 'props', type: macro:$propType },
             { name: 'key', type: macro:Null<blok.core.Key>, opt: true }
           ],
-          expr: macro @:pos(cls.pos) return blok.core.VNode.VWidget(
+          expr: macro @:pos(cls.pos) return blok.core.VNode.VWire(
             $p{ cls.pack.concat([ cls.name ]) },
             props,
             key
@@ -267,7 +267,7 @@ class ComponentBuilder {
           pos: (macro null).pos
         } };
         $b{initHooks}
-        __render();
+        __render(this.__context);
       }
 
       @:noCompletion

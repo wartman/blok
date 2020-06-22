@@ -1,13 +1,13 @@
 package blok.core;
 
-typedef Widget = {
+typedef Wire = {
   var __alive:Bool;
   var __dirty:Bool;
   var __inserted:Bool;
   function __getManagedNodes():Array<Node>;
-  function __update(props:Dynamic, context:Context, parent:Widget):Void;
+  function __update(props:Dynamic, context:Context, parent:Wire):Void;
+  function __render(context:Context):Void;
   function __dispose():Void;
-  function __render():Void;
-  function __enqueuePendingChild(child:Widget):Void;
+  function __enqueuePendingChild(child:Wire):Void;
   function __dequeuePendingChildren():Void;
 }

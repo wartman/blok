@@ -6,23 +6,23 @@ import blok.core.VStyle.Value;
 abstract EdgeInsets(Value) to Value {
 
   public inline static function top(top:Unit) {
-    return new EdgeInsets({ top: top });
+    return define({ top: top });
   }
 
   public inline static function bottom(bottom:Unit) {
-    return new EdgeInsets({ bottom: bottom });
+    return define({ bottom: bottom });
   }
 
   public inline static function left(left:Unit) {
-    return new EdgeInsets({ left: left });
+    return define({ left: left });
   }
 
   public inline static function right(right:Unit) {
-    return new EdgeInsets({ right: right });
+    return define({ right: right });
   }
 
   public inline static function symmetric(vertical:Unit, horizontal:Unit) {
-    return new EdgeInsets({
+    return define({
       top: vertical,
       bottom: vertical,
       left: horizontal,
@@ -31,7 +31,7 @@ abstract EdgeInsets(Value) to Value {
   }
 
   public inline static function all(size:Unit) {
-    return new EdgeInsets({
+    return define({
       top: size,
       right: size,
       bottom: size,
@@ -39,18 +39,22 @@ abstract EdgeInsets(Value) to Value {
     });
   }
 
-  public inline function new(props:{
+  public inline static function define(props:{
     ?top:Unit,
     ?right:Unit,
     ?bottom:Unit,
     ?left:Unit
   }) {
-    this = CompoundValue([
+    return new EdgeInsets(CompoundValue([
       SingleValue(props.top != null ? props.top : 0),
       SingleValue(props.right != null ? props.right : 0),
       SingleValue(props.bottom != null ? props.bottom : 0),
       SingleValue(props.left != null ? props.left : 0),
-    ]);
+    ]));
+  }
+
+  inline public function new(value:Value) {
+    this = value;
   }
 
 }

@@ -1,5 +1,7 @@
 package blok.core;
 
+// @todo: change the way we pass Context around? Should it only
+//        be set once, on Component creation?
 @:allow(blok.core.Differ)
 @:autoBuild(blok.core.ComponentBuilder.build())
 class Component {
@@ -8,9 +10,9 @@ class Component {
   @:noCompletion public var __dirty:Bool = false;
   @:noCompletion public var __inserted:Bool = false;
   @:noCompletion var __context:Context;
-  @:noCompletion var __pendingChildren:Array<Widget> = [];
+  @:noCompletion var __pendingChildren:Array<Wire> = [];
   @:noCompletion var __rendered:Rendered;
-  @:noCompletion var __parent:Widget;
+  @:noCompletion var __parent:Wire;
   @:noCompletion var __nodes:Array<Node>;
 
   public inline function getCurrentContext() {
@@ -34,7 +36,7 @@ class Component {
   }
 
   @:noCompletion
-  public function __update(props:Dynamic, context:Context, parent:Widget) {
+  public function __update(props:Dynamic, context:Context, parent:Wire) {
     if (!__shouldUpdate(props)) {
       return;
     }
@@ -43,12 +45,12 @@ class Component {
     __parent = parent;
 
     __updateProps(props);
-    __render();
+    __render(__context);
   }
 
   @:noCompletion
-  public function __render() {
-    var engine = __context.engine;
+  public function __render(context:Context) {
+    var engine = context.engine;
     var differ = engine.differ;
     
     if (!__alive) {
@@ -63,9 +65,9 @@ class Component {
     switch __rendered {
       case null:
         __rendered = differ.renderAll(
-          __processRender(),
+          __processRender(context),
           this,
-          __context
+          context
         );
       case before:
         var previousCount = 0;
@@ -73,9 +75,9 @@ class Component {
 
         __rendered = differ.updateAll(
           before,
-          __processRender(),
+          __processRender(context),
           this,
-          __context
+          context
         );
 
         for (child in before.children) for (node in child.__getManagedNodes()) {
@@ -105,9 +107,9 @@ class Component {
   }
 
   @:noCompletion
-  inline function __processRender() {
-    return switch render(__context) {
-      case null | VFragment([], _): [ __context.engine.placeholder(this) ];
+  inline function __processRender(context:Context) {
+    return switch render(context) {
+      case null | VFragment([], _): [ context.engine.placeholder(this) ];
       case VFragment(children, _): children;
       case node: [ node ];
     }
@@ -141,7 +143,7 @@ class Component {
     __dirty = true;
     if (__parent == null) {
       Helpers.later(() -> {
-        __render();
+        __render(__context);
         __context.dispatchEffects();
       });
     } else {
@@ -150,7 +152,7 @@ class Component {
   }
 
   @:noCompletion
-  public function __enqueuePendingChild(child:Widget) {
+  public function __enqueuePendingChild(child:Wire) {
     if (__dirty) return;
     if (__pendingChildren.indexOf(child) < 0) {
       __pendingChildren.push(child);
@@ -175,7 +177,7 @@ class Component {
     for (child in children) {
       if (child.__alive) {
         if (child.__dirty) {
-          child.__render();
+          child.__render(__context);
         } else {
           child.__dequeuePendingChildren();
         }

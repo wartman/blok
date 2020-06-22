@@ -111,34 +111,6 @@ class StyleBuilder {
 
       {
         name: 'export',
-        doc: 'Export this blok.core.Style\'s rules. This allows you to compose Styles together.
-
-```
-  using Blok;
-
-  class MyStyle extends Style {
-
-    @prop var height:Unit;
-
-    override function render():VStyle {
-      return [
-        VProperty("height", height)
-      ];
-    }
-
-  }
-
-  class OtherStyle extends Style {
-
-    override function render():VStyle {
-      return [
-        MyStyle.export({ height: Px(20) })
-      ];
-    }
-
-  }
-```
-        ',
         access: [ AStatic, APublic ],
         pos: cls.pos,
         kind: FFun({
@@ -158,7 +130,6 @@ class StyleBuilder {
       
       {
         name: 'exportAsChild',
-        doc: 'Export this style\'s rules for a child selector.',
         access: [ AStatic, APublic ],
         pos: cls.pos,
         kind: FFun({

@@ -6,7 +6,7 @@ using Blok;
 
 class Card extends Style {
 
-  @prop var background:Color = Appearance.lightColor;
+  @prop var background:Color = Config.lightColor;
 
   override function render():Array<VStyle> {
     return [
