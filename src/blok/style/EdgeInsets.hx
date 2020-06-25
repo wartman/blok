@@ -3,6 +3,7 @@ package blok.style;
 import blok.core.VStyle.Unit;
 import blok.core.VStyle.Value;
 
+@:forward
 abstract EdgeInsets(Value) to Value {
 
   public inline static function top(top:Unit) {
@@ -45,11 +46,11 @@ abstract EdgeInsets(Value) to Value {
     ?bottom:Unit,
     ?left:Unit
   }) {
-    return new EdgeInsets(CompoundValue([
-      SingleValue(props.top != null ? props.top : 0),
-      SingleValue(props.right != null ? props.right : 0),
-      SingleValue(props.bottom != null ? props.bottom : 0),
-      SingleValue(props.left != null ? props.left : 0),
+    return new EdgeInsets(Value.compound([
+      props.top != null ? props.top : 0,
+      props.right != null ? props.right : 0,
+      props.bottom != null ? props.bottom : 0,
+      props.left != null ? props.left : 0,
     ]));
   }
 

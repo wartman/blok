@@ -3,7 +3,7 @@ package blok.style;
 import blok.core.VStyle;
 import blok.core.Style;
 
-enum abstract BoxPositionType(ValueDef) to ValueDef {
+enum abstract BoxPositionType(String) to String {
   var Absolute = 'absolute';
   var Fixed = 'fixed';
 }
@@ -21,10 +21,10 @@ class BoxPosition extends Style {
       VProperty('position', SingleValue(type))
     ];
 
-    if (top != null) style.push(VProperty('top', SingleValue(top)));
-    if (bottom != null) style.push(VProperty('bottom', SingleValue(bottom)));
-    if (left != null) style.push(VProperty('left', SingleValue(left)));
-    if (right != null) style.push(VProperty('right', SingleValue(right)));
+    if (top != null) style.push(VProperty('top', top));
+    if (bottom != null) style.push(VProperty('bottom', bottom));
+    if (left != null) style.push(VProperty('left', left));
+    if (right != null) style.push(VProperty('right', right));
 
     return style;
   }

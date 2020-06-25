@@ -15,14 +15,14 @@ class Font extends Style {
   override function render():Array<VStyle> {
     var props:Array<VStyle> = [];
 
-    if (family != null) props.push(VProperty('font-family', SingleValue(family)));
-    if (size != null) props.push(VProperty('font-size', SingleValue(size)));
+    if (family != null) props.push(VProperty('font-family', family));
+    if (size != null) props.push(VProperty('font-size', size));
     if (spacing != null) {
       // @todo: this will require some real Math at some point.
       //        something like, very basically: `size + spacing`
-      props.push(VProperty('line-height', SingleValue(spacing)));
+      props.push(VProperty('line-height', spacing));
     }
-    if (weight != null) props.push(VProperty('font-weight', SingleValue(weight)));
+    if (weight != null) props.push(VProperty('font-weight', weight));
     if (color != null) props.push(VProperty('color', color));
 
     return props;

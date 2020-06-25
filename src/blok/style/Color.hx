@@ -2,31 +2,23 @@ package blok.style;
 
 import blok.core.VStyle.Value;
 
+@:forward(forClassName, toString)
 abstract Color(Value) to Value {
 
   public static function rgb(r:Float, g:Float, b:Float):Color {
-    return new Color(CallValue('rgb', ListValue([
-      SingleValue(r),
-      SingleValue(g),
-      SingleValue(b)
-    ])));
+    return new Color(Value.call('rgb', Value.list([ r, g, b ])));
   }
   
   public static function rgba(r:Float, g:Float, b:Float, a:Float):Color {
-    return new Color(CallValue('rgba', ListValue([
-      SingleValue(r),
-      SingleValue(g),
-      SingleValue(b),
-      SingleValue(a)
-    ])));
+    return new Color(Value.call('rgba', Value.list([ r, g, b, a ])));
   }
 
-  public static function hex(value:String) {
-    return new Color(SingleValue('#${value}'));
+  @:from public static function hex(value:Int) {
+    return new Color('#${StringTools.hex(value)}');
   }
 
-  public static function name(name:String) {
-    return new Color(SingleValue(name));
+  @:from public static function name(name:String) {
+    return new Color(name);
   }
 
   public inline function new(wrapped:Value) {
@@ -34,7 +26,7 @@ abstract Color(Value) to Value {
   }
 
   public function withKey(key:String):Color {
-    return cast KeyedValue(key, this);
+    return cast Value.keyed(key, this);
   }
 
 }

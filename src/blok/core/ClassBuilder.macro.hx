@@ -56,6 +56,14 @@ class ClassBuilder {
     fieldBuilders.push(cast builder);
   }
 
+  public function add(fields:Array<Field>) {
+    this.fields = this.fields.concat(fields);
+  }
+
+  public function export() {
+    return fields;
+  }
+
   public function run() {
     checkMeta();
 
@@ -73,11 +81,16 @@ class ClassBuilder {
   }
 
   function parseClassMeta() {
+    if (cls.meta == null) return;
+    
+    var toRemove:Array<String> = [];
+
     for (builder in classBuilders) {
-      if (cls.meta != null && cls.meta.has(builder.name)) {
+      if (cls.meta.has(builder.name)) {
         function handle(meta:MetadataEntry) {
           var options = parseOptions(meta.params, builder.options, meta.pos);
           builder.build(options, this, fields.copy());
+          toRemove.push(builder.name);
         }
         
         switch cls.meta.extract(builder.name) {
@@ -89,22 +102,26 @@ class ClassBuilder {
               Context.error('Only one @${builder.name} is allowed', many[1].pos);
             }
         }
-
-        cls.meta.remove(builder.name);
       } else if (builder.required) {
         Context.error('The class meta @${builder.name} is required', cls.pos);
       }
     }
+
+    if (toRemove.length > 0) for (name in toRemove) cls.meta.remove(name);
   }
 
   function parseFieldMeta(field:Field, fieldBuilders:Array<FieldMetaBuilder<Dynamic>>) {
+    if (field.meta == null) return;
+
+    var toRemove:Array<MetadataEntry> = [];
+
     for (builder in fieldBuilders) {
       var match = (m:MetadataEntry) -> m.name == builder.name; 
-      if (field.meta != null && field.meta.exists(match)) {
+      if (field.meta.exists(match)) {
         function handle(meta:MetadataEntry) {
           var options = parseOptions(meta.params, builder.options, meta.pos);
-          field.meta.remove(meta);
           builder.build(options, this, field);
+          toRemove.push(meta);
         }
 
         switch field.meta.filter(match) {
@@ -116,17 +133,20 @@ class ClassBuilder {
               Context.error('Only one @${builder.name} is allowed', many[1].pos);
             }
         }
-
       }
     }
+
+    if (toRemove.length > 0) for (entry in toRemove) field.meta.remove(entry);
   }
 
   function parseOptions(
-    params:Array<Expr>,
+    params:Null<Array<Expr>>,
     def:Array<BuilderOption>,
     pos:Position
   ):{} {
     var options:{} = {};
+
+    if (params == null) return options;
 
     function addOption(name:String, value:Expr, pos:Position) {
       var info = def.find(o -> o.name == name);
@@ -179,14 +199,6 @@ class ClassBuilder {
         }
       }
     }
-  }
-
-  public function add(fields:Array<Field>) {
-    this.fields = this.fields.concat(fields);
-  }
-
-  public function export() {
-    return fields;
   }
 
   function parseConst(expr:Expr):Dynamic {

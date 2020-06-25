@@ -280,6 +280,7 @@ class ComponentBuilder {
         return true;
       }
 
+      @:noCompletion
       override function __registerEffects() {
         ${effects};
       }

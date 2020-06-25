@@ -18,7 +18,7 @@ class Root extends Style {
         VChild('body', [
           VProperty('background-color', Config.darkColor)
         ]),
-        Font.exportAsChild('body', {
+        Font.select('body', {
           family: 'sans-serif',
           size: Px(13),
           color: Config.darkColor

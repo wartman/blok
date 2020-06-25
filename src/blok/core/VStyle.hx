@@ -71,9 +71,9 @@ class VStyleDeclTools {
         
         case VProperty(name, value, important):
           if (important == true)
-            def.push('${name}: ${renderValue(value)} !important;');
+            def.push('${name}: ${value} !important;');
           else
-            def.push('${name}: ${renderValue(value)};');
+            def.push('${name}: ${value};');
 
         case VChild(name, styles):
           out.push(renderProps(applySelector(' ${name}'), styles));
@@ -105,21 +105,6 @@ class VStyleDeclTools {
     return out.join(' ');
   }
 
-  static function renderValue(value:Value):String {
-    return switch value {
-      case KeyedValue(_, value):
-        renderValue(value);
-      case SingleValue(v): 
-        v;
-      case CompoundValue(values): 
-        values.map(renderValue).join(' ');
-      case ListValue(values): 
-        values.map(renderValue).join(',');
-      case CallValue(name, value):
-        return '${name}(${renderValue(value)})';
-    }
-  }
-
   static function escapeClassName(name:String) {
     return name
       .replace('.', '_')
@@ -144,48 +129,88 @@ enum VStyle {
   VGlobal(styles:Array<VStyle>);
 }
 
-@:using(blok.core.VStyle.ValueTools)
-enum Value {
-  KeyedValue(key:String, value:Value);
-  SingleValue(value:ValueDef);
-  CompoundValue(values:Array<Value>);
-  ListValue(values:Array<Value>);
-  CallValue(name:String, value:Value);
-}
+abstract Value(ValueDef) to ValueDef from ValueDef {
 
-class ValueTools {
+  public inline static function compound(values:Array<Value>) {
+    return new Value(CompoundValue(values));
+  }
 
-  public static function forClassName(value:Value):String {
-    return switch value {
-      case KeyedValue(key, _): key;
-      case SingleValue(value): value;
-      case CompoundValue(values) | ListValue(values): return [
-        for (value in values) value.forClassName()
-      ].join('-');
-      case CallValue(_, value): value.forClassName();
+  public inline static function list(values:Array<Value>) {
+    return new Value(ListValue(values));
+  }
+
+  public inline static function call(name:String, value:Value) {
+    return new Value(CallValue(name, value));
+  }
+
+  public inline static function keyed(key:String, value:Value) {
+    return new Value(KeyedValue(key, value));
+  }
+  
+  @:from public inline static function ofString(value:String) {
+    return new Value(SingleValue(value));
+  }
+
+  @:from public inline static function ofInt(value:Int) {
+    return new Value(SingleValue(Std.string(value)));
+  }
+
+  @:from public inline static function ofFloat(value:Float) {
+    return new Value(SingleValue(Std.string(value)));
+  }
+
+  @:from public inline static function ofUnit(unit:Unit) {
+    return new Value(SingleValue(unit.toString()));
+  }
+
+  public inline function new(value:ValueDef) {
+    this = value;
+  }
+
+  public inline function unwrap():ValueDef {
+    return this;
+  }
+
+  public inline function withKey(key:String) {
+    return Value.keyed(key, this);
+  }
+
+  public function forClassName():String {
+    return switch unwrap() {
+      case KeyedValue(key, _): 
+        key;
+      case SingleValue(value): 
+        value;
+      case CompoundValue(values) | ListValue(values): 
+        values.map(v -> v.forClassName()).join('-');
+      case CallValue(_, value): 
+        value.forClassName();
+    }
+  }
+
+  @:to public function toString():String {
+    return switch unwrap() {
+      case KeyedValue(_, value):
+        value.toString();
+      case SingleValue(value): 
+        value;
+      case CompoundValue(values): 
+        values.map(v -> v.toString()).join(' ');
+      case ListValue(values): 
+        values.map(v -> v.toString()).join(',');
+      case CallValue(name, value):
+        return '${name}(${value.toString()})';
     }
   }
 
 }
 
-abstract ValueDef(String) from String to String {
-  
-  @:from public inline static function ofUnit(unit:Unit):ValueDef {
-    return unit.toString();
-  }
-
-  @:from public inline static function ofUnitArray(units:Array<Unit>):ValueDef {
-    return units.map(u -> u.toString()).join(' ');
-  }
-
-  @:from public inline static function ofInt(int:Int):ValueDef {
-    return Std.string(int);
-  }
-
-  @:from public inline static function ofFloat(f:Float):ValueDef {
-    return Std.string(f);
-  }
-
+enum ValueDef {
+  KeyedValue(key:String, value:Value);
+  SingleValue(value:String);
+  CompoundValue(values:Array<Value>);
+  ListValue(values:Array<Value>);
+  CallValue(name:String, value:Value);
 }
 
 enum abstract PsuedoClass(String) to String {

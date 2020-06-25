@@ -33,8 +33,8 @@ class StyleBuilder {
         macro $i{PROPS}.$name != null 
           ? ${ Context.unify(type.toType(), Context.getType('blok.core.VStyle.Unit')) 
               ? macro $i{PROPS}.$name.toString()
-              : Context.unify(type.toType(), Context.getType('blok.core.VStyle.Value'))
-                ? macro blok.core.VStyle.ValueTools.forClassName($i{PROPS}.$name)
+              : Context.unify(type.toType(), Context.getType('blok.core.VStyle.ValueDef'))
+                ? macro $i{PROPS}.$name.forClassName()
                 : macro Std.string($i{PROPS}.$name)
             }
           : '_'
@@ -129,7 +129,7 @@ class StyleBuilder {
       },
       
       {
-        name: 'exportAsChild',
+        name: 'select',
         access: [ AStatic, APublic ],
         pos: cls.pos,
         kind: FFun({

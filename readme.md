@@ -20,7 +20,7 @@ class ExampleStyle extends Style {
 
   override function render():Array<VStyle> {
     return [
-      VProperty('color', blok.style.Color.hex('ccc')),
+      Css.color(0xCCC),
       block.style.Background.export({
         color: blok.style.Color.rgb(0, 0, 0, 0)
       }),

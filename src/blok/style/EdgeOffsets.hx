@@ -2,7 +2,7 @@ package blok.style;
 
 import blok.core.VStyle;
 
-enum abstract RelativePosition(String) to String to ValueDef {
+enum abstract RelativePosition(String) to String {
   var Top = 'top';
   var Left = 'left';
   var Bottom = 'bottom';
@@ -10,30 +10,28 @@ enum abstract RelativePosition(String) to String to ValueDef {
   var Center = 'center';
 }
 
+@:forward
 abstract EdgeOffsets(Value) to Value {
   
   public inline static function top() {
-    return new EdgeOffsets(SingleValue(RelativePosition.Top));
+    return new EdgeOffsets(RelativePosition.Top);
   }
 
   public inline static function right() {
-    return new EdgeOffsets(SingleValue(RelativePosition.Right));
+    return new EdgeOffsets(RelativePosition.Right);
   }
 
   public inline static function bottom() {
-    return new EdgeOffsets(SingleValue(RelativePosition.Bottom));
+    return new EdgeOffsets(RelativePosition.Bottom);
   }
   
   public inline static function left() {
-    return new EdgeOffsets(SingleValue(RelativePosition.Left));
+    return new EdgeOffsets(RelativePosition.Left);
   }
 
   // @todo: allow RelativePosition as a value here:
   public inline static function symmetric(vertical:Unit, horizontal:Unit) {
-    return new EdgeOffsets(CompoundValue([
-      SingleValue(vertical),
-      SingleValue(horizontal)
-    ]));
+    return new EdgeOffsets(Value.compound([ vertical, horizontal ]));
   }
 
   // @todo: allow RelativePosition as a value here:
@@ -43,11 +41,11 @@ abstract EdgeOffsets(Value) to Value {
     ?bottom:Unit,
     ?left:Unit
   }) {
-    return new EdgeOffsets(CompoundValue([
-      SingleValue(props.top != null ? props.top : 0),
-      SingleValue(props.right != null ? props.right : 0),
-      SingleValue(props.bottom != null ? props.bottom : 0),
-      SingleValue(props.left != null ? props.left : 0),
+    return new EdgeOffsets(Value.compound([
+      props.top != null ? props.top : 0,
+      props.right != null ? props.right : 0,
+      props.bottom != null ? props.bottom : 0,
+      props.left != null ? props.left : 0,
     ]));
   }
 

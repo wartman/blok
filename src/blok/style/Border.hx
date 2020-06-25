@@ -25,10 +25,10 @@ class Border extends Style {
 
   override function render():Array<VStyle> {
     var props:Array<VStyle> = [];
-    if (radius != null) props.push(VProperty('border-radius', SingleValue(radius)));
-    if (width != null) props.push(VProperty('border-width', SingleValue(width)));
+    if (radius != null) props.push(VProperty('border-radius', radius));
+    if (width != null) props.push(VProperty('border-width', width));
     if (color != null) props.push(VProperty('border-color', color));
-    if (type != null) props.push(VProperty('border-style', SingleValue(Std.string(type))));
+    if (type != null) props.push(VProperty('border-style', type));
     return props;
   }
 

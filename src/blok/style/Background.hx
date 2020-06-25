@@ -3,23 +3,24 @@ package blok.style;
 import blok.core.VStyle;
 import blok.core.Style;
 
+@:forward
 abstract BackgroundSize(Value) to Value {
   
   public static function auto() {
-    return new BackgroundSize(SingleValue('auto'));
+    return new BackgroundSize('auto');
   }
 
   public static function cover() {
-    return new BackgroundSize(SingleValue('cover'));
+    return new BackgroundSize('cover');
   }
 
   public static function contain() {
-    return new BackgroundSize(SingleValue('contain'));
+    return new BackgroundSize('contain');
   }
 
   public static function custom(width:Unit, height:Unit, ?key:String) {
-    var value = CompoundValue([ SingleValue(width), SingleValue(height) ]);
-    return new BackgroundSize(key != null ? KeyedValue(key, value) : value);
+    var value = Value.compound([ width, height ]);
+    return new BackgroundSize(key != null ? Value.keyed(key, value) : value);
   }
 
   public static function multiple(sizes:Array<BackgroundSize>, key:String) {
