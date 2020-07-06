@@ -1,7 +1,5 @@
 package blok.core;
 
-// @todo: change the way we pass Context around? Should it only
-//        be set once, on Component creation?
 @:allow(blok.core.Differ)
 @:autoBuild(blok.core.ComponentBuilder.build())
 class Component {

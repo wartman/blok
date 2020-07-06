@@ -33,11 +33,21 @@ abstract BackgroundSize(Value) to Value {
 
 }
 
+enum abstract BackgroundAttachment(String) to String {
+  var Scroll = 'scroll';
+  var Fixed = 'fixed';
+  var Local = 'local';
+  var Inherit = 'inherit';
+  var Initial = 'initial';
+  var Unset = 'unset';
+}
+
 class Background extends Style {
 
   @prop var color:Color = null;
   @prop var image:Image = null;
   @prop var size:BackgroundSize = null;
+  @prop var attachment:BackgroundAttachment = null;
   @prop var position:EdgeOffsets = null;
 
   override function render():Array<VStyle> {
@@ -47,6 +57,7 @@ class Background extends Style {
     if (image != null) style.push(VProperty('background-image', image));
     if (size != null) style.push(VProperty('background-size', size));
     if (position != null) style.push(VProperty('background-position', position));
+    if (attachment != null) style.push(VProperty('background-attachment', attachment));
 
     return style;
   }

@@ -1,7 +1,6 @@
 package blok.core;
 
 import blok.core.Rendered;
-import Blok.Component;
 
 typedef Node = {
   public var __rendered:Rendered;

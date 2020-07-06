@@ -9,14 +9,10 @@ class Root extends Style {
   override function render():Array<VStyle> {
     return [
       VGlobal([
-        VRaw('
-          html, body {
-            margin: 0;
-            padding: 0;
-          }
-        '),
-        VChild('body', [
-          VProperty('background-color', Config.darkColor)
+        Css.select('body', [
+          Css.backgroundColor(Config.darkColor),
+          Css.margin(EdgeInsets.all(Px(0))),
+          Css.padding(EdgeInsets.all(Px(0)))
         ]),
         Font.select('body', {
           family: 'sans-serif',

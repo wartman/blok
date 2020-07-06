@@ -14,8 +14,15 @@ class TodoItem extends Component {
   @prop var isEditing:Bool = false;
 
   @update
-  function toggleEditing() {
-    return { isEditing: !isEditing };
+  function startEditing() {
+    if (isEditing) return null;
+    return { isEditing: true };
+  }
+
+  @update
+  function stopEditing() {
+    if (!isEditing) return null;
+    return { isEditing: false };
   }
   
   override function render(context:Context):VNode {
@@ -36,13 +43,13 @@ class TodoItem extends Component {
         Card.style({})
       ],
       attrs: {
-        ondblclick: _ -> toggleEditing()
+        ondblclick: _ -> startEditing()
       },
       children: [
         if (isEditing) {
           TodoInput.node({
             onSave: value -> todo.content = value,
-            requestClose: toggleEditing,
+            requestClose: stopEditing,
             initialValue: todo.content
           });
         } else {

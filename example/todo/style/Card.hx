@@ -6,18 +6,18 @@ using Blok;
 
 class Card extends Style {
 
-  @prop var background:Color = Config.lightColor;
+  @prop var color:Color = Config.lightColor;
 
   override function render():Array<VStyle> {
     return [
+      Css.color(color),
       Box.export({
         padding: EdgeInsets.symmetric(Px(10), Px(20))
       }),
-      Border.export({ 
-        radius: Px(15)
-      }),
-      Background.export({
-        color: background
+      Border.export({
+        width: Px(2),
+        type: Solid,
+        color: color
       })
     ];
   }

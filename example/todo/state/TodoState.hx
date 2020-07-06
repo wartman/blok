@@ -29,6 +29,12 @@ class TodoState extends State {
       ? todos[ todos.length - 1 ].id + 1
       : 0;
     var todo = new Todo(content, id);
+    
+    switch filter {
+      case FilterCompleted: todo.complete = true;
+      default: 
+    }
+
     return {
       todos: todos.concat([ todo ])
     };

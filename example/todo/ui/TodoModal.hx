@@ -1,5 +1,6 @@
 package todo.ui;
 
+import blok.style.Background;
 import todo.style.Overlay;
 import blok.component.Portal;
 import todo.style.Config;
@@ -24,9 +25,14 @@ class TodoModal extends Component {
         },
         children: [
           Html.div({
-            style: Card.style({
-              background: Config.lightColor
-            }),
+            style: [
+              Card.style({
+                color: Config.lightColor
+              }, 'modal'),
+              Background.style({
+                color: Config.darkColor
+              }, 'modal')
+            ],
             attrs: {
               onclick: e -> e.stopPropagation()
             },

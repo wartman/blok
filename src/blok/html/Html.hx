@@ -463,11 +463,49 @@ class Html {
   //   var details:#if haxe4 DetailsAttr #else GlobalAttr<Style>#end;
   //   var summary:GlobalAttr<Style>;
 
-  // VOID TAGS:
-  //   var br:GlobalAttr<Style>;
-  //   var embed:EmbedAttr;
-  //   var hr:GlobalAttr<Style>;
-  //   var img:ImageAttr;
+  inline public static function br(props:BaseProps<GlobalAttr & HtmlEvents>) {
+    return NodeComponent.node({
+      tag: 'br',
+      ref: props.ref,
+      attrs: props.attrs,
+      children: null,
+      style: props.style,
+      key: props.key
+    });
+  }
+
+  inline public static function hr(props:BaseProps<GlobalAttr & HtmlEvents>) {
+    return NodeComponent.node({
+      tag: 'hr',
+      ref: props.ref,
+      attrs: props.attrs,
+      children: null,
+      style: props.style,
+      key: props.key
+    });
+  }
+
+  inline public static function embed(props:BaseProps<EmbedAttr & HtmlEvents>) {
+    return NodeComponent.node({
+      tag: 'embed',
+      ref: props.ref,
+      attrs: props.attrs,
+      children: null,
+      style: props.style,
+      key: props.key
+    });
+  }
+
+  inline public static function img(props:BaseProps<ImageAttr & HtmlEvents>) {
+    return NodeComponent.node({
+      tag: 'img',
+      ref: props.ref,
+      attrs: props.attrs,
+      children: null,
+      style: props.style,
+      key: props.key
+    });
+  }
   
   inline public static function input(props:BaseProps<InputAttr & HtmlEvents>):VNode {
     return NodeComponent.node({
