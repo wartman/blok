@@ -1,6 +1,8 @@
 Styles
 ======
 
-Now that we have a basic framework in place, it's time to think about building out the `blok.style` library. You should be able to do everything you can with standard CSS using it, just with a very different API.
+The current approach is basically just copying css. I think that's a bad plan -- I'd like to use this lib somewhere like Heaps, where we won't have access to a css engine (well we might with domkit, but you get the idea).
 
-However I don't want to just remake CSS with all its weirdness -- we should instead try to make `blok` the `elm-ui` of haxe. By which I mean we should steal its ideas and implement them with our Style system. This might also require some custom Components to make the styles work right -- we could perhaps have a `blok.ui` package and get rid of `blok.style` and `blok.component`
+Instead, styles should just be data that get passed to a `blok.core.StyleEngine`. The engine will then do different things depending on platform, but on the browser it will create a CSS string and mount it (if the rule does not already exist) and then modify the `class` property on the Component. Or something like that.
+
+On Heaps, the engine will take the rules and apply them directly to the underlying `h2d.Object` (which might involve building shapes).

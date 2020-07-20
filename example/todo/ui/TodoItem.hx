@@ -7,6 +7,7 @@ import todo.state.TodoState;
 import todo.state.Todo;
 
 using Blok;
+using BlokDom;
 
 class TodoItem extends Component {
 

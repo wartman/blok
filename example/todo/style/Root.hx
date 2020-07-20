@@ -3,6 +3,7 @@ package todo.style;
 import blok.style.*;
 
 using Blok;
+using BlokDom;
 
 class Root extends Style {
 

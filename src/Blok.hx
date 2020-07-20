@@ -6,5 +6,3 @@ typedef Style = blok.core.Style;
 typedef VNode = blok.core.VNode;
 typedef VStyle = blok.core.VStyle;
 typedef VStyleList = blok.core.VStyleList;
-
-typedef Html = blok.html.Html;

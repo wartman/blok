@@ -1,6 +1,9 @@
-package blok.style;
+package blok.platform.dom;
 
 import blok.core.VStyle;
+import blok.style.EdgeInsets;
+import blok.style.Color;
+import blok.style.Image;
 import blok.style.Background.BackgroundAttachment;
 
 /**

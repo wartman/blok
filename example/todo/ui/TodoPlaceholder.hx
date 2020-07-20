@@ -5,6 +5,7 @@ import todo.style.Config;
 import todo.style.Card;
 
 using Blok;
+using BlokDom;
 
 class TodoPlaceholder extends Component {
 

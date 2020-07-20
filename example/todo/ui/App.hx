@@ -6,6 +6,7 @@ import todo.style.Root;
 import todo.state.TodoState;
 
 using Blok;
+using BlokDom;
 
 class App extends Component {
 

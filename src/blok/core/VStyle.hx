@@ -2,13 +2,10 @@ package blok.core;
 
 using StringTools;
 
-// @todo: cleanup and extract the rendering stuff from here?
-
 @:using(blok.core.VStyle.VStyleDeclTools)
 enum VStyleDecl {
   VCustomStyle<Attrs:{}>(type:StyleType<Attrs>, attrs:Attrs, ?customSuffix:String);
   VGlobal(props:Array<VStyle>);
-  // Todo: allow this or force everything to use VCustomStyle?
   VClass(name:String, styles:Array<VStyle>);
 }
 
@@ -31,78 +28,6 @@ class VStyleDeclTools {
     var name = getName(style);
     if (name == null) return null;
     return '.' + name;
-  }
-
-  public static function render(style:VStyleDecl):String {
-    return switch style {
-      case VCustomStyle(type, attrs, suffix):
-        type.__render(attrs, suffix);
-
-      case VGlobal(props):
-        renderProps(null, props);
-
-      case VClass(_, props):
-        renderProps(style.getSelector(), props);
-    }
-  }
-
-  static function renderProps(selector:String, styles:Array<VStyle>):String {
-    var out = [];
-    var def:Array<String> = [];
-
-    function applySelector(suffix:String) {
-      return selector != null
-        ? selector + suffix
-        : suffix;
-    }
-
-    function process(styles:Array<VStyle>) {
-      for (s in styles) if (s != null) switch s {
-        case VNone | null:
-
-        case VRaw(value):
-          if (selector != null)
-            out.push('${selector} { ${value} }');
-          else
-            out.push(value);
-
-        case VGlobal(styles):
-          out.push(renderProps(null, styles));  
-        
-        case VProperty(name, value, important):
-          if (important == true)
-            def.push('${name}: ${value} !important;');
-          else
-            def.push('${name}: ${value};');
-
-        case VChild(name, styles):
-          out.push(renderProps(applySelector(' ${name}'), styles));
-
-        case VChildren(styles):
-          process(styles);
-        
-        case VPsuedo(type, styles):
-          out.push(renderProps(applySelector(type), styles));
-
-        case VMedia(mediaSelector, styles):
-          out.push('@media ${mediaSelector} { ${renderProps(selector, styles)}  }');
-      }
-    }
-
-    process(styles);
-
-    if (def.length > 0) {
-      if (selector == null) {
-       #if debug
-          throw 'Properties must be inside a selector';
-        #else
-          return out.join(' ');
-        #end
-      }
-      out.unshift('${selector} { ${def.join(' ')} }');
-    }
-
-    return out.join(' ');
   }
 
   static function escapeClassName(name:String) {

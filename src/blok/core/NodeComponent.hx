@@ -29,7 +29,7 @@ final class NodeComponent<Attrs:{}> extends Component {
   function __updateStyle(context:Context) {
     var styleEngine = context.styleEngine;
     if (style != null) {
-      for (s in style) styleEngine.define(s.getName(), s.render);
+      for (s in style) styleEngine.define(s.getName(), () -> s);
 
       if (attrs == null) __props.attrs = cast {};
 

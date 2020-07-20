@@ -1,4 +1,4 @@
-package blok.html;
+package blok.platform.dom;
 
 import blok.core.TextComponent;
 import blok.core.NodeComponent;
@@ -6,7 +6,7 @@ import blok.core.Key;
 import blok.core.VNode;
 import blok.core.Node;
 import blok.core.VStyleList;
-import blok.html.HtmlAttrs;
+import blok.platform.dom.HtmlAttrs;
 
 typedef BaseProps<Attrs:{}> = {
   @:optional final style:VStyleList;

@@ -1,5 +1,6 @@
-import blok.platform.dom.DomPlatform;
 import todo.ui.App;
+
+using BlokDom;
 
 class Todo {
 

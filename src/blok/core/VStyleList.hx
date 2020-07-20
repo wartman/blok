@@ -31,8 +31,4 @@ abstract VStyleList(Array<VStyleDecl>) from Array<VStyleDecl> to Array<VStyleDec
       .join(' ');
   }
 
-  public inline function renderAll() {
-    return [ for (s in this) s.render() ].join(' '); 
-  }
-
 }

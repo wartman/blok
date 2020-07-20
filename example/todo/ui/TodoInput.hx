@@ -1,6 +1,7 @@
 package todo.ui;
 
 using Blok;
+using BlokDom;
 
 class TodoInput extends Component {
 

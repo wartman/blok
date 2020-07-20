@@ -1,4 +1,4 @@
-package blok.html;
+package blok.platform.dom;
 
 import blok.core.Node;
 

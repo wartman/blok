@@ -158,10 +158,10 @@ class StyleBuilder {
         return ${name};
       }
 
-      public static function __render($PROPS:$propType, $SUFFIX:Null<String>):String {
+      public static function __render($PROPS:$propType, $SUFFIX:Null<String>) {
         var style = new $clsTp($i{PROPS});
         var def:blok.core.VStyle.VStyleDecl = VClass(${name}, style.render());
-        return def.render();
+        return def;
       }
 
       public function new($INCOMING_PROPS:$propType) {

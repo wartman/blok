@@ -85,7 +85,7 @@ class DomEngine implements Engine {
   }
 
   public function placeholder(target:Component) {
-    return blok.html.Html.text('');
+    return blok.platform.dom.Html.text('');
   }
 
 }
