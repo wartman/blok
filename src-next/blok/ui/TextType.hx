@@ -6,13 +6,13 @@ import js.html.Text;
 
 class TextType {
 
-	public static function updateTextNode(node:Node, content:String):Void {
-		switch Std.downcast(node, Text) {
-			case null:
-			case text:
-				text.textContent = content;
-		}
-	}
+  public static function updateTextNode(node:Node, content:String):Void {
+    switch Std.downcast(node, Text) {
+      case null:
+      case text:
+        text.textContent = content;
+    }
+  }
 
   public static function create(props:{ content:String }, context:Context):Node {
     return Browser.document.createTextNode(props.content);

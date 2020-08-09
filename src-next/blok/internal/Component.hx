@@ -3,92 +3,92 @@ package blok.internal;
 using blok.internal.RenderedTools;
 
 class Component<Node> {
-	public var __alive:Bool = true;
-	public var __dirty:Bool = false;
-	public var __inserted:Bool = false;
+  public var __alive:Bool = true;
+  public var __dirty:Bool = false;
+  public var __inserted:Bool = false;
 
-	var __nodes:Array<Dynamic> = [];
-	var __rendered:Rendered<Node>;
-	var __context:Context<Node>;
-	var __pendingChildren:Array<Component<Node>> = [];
-	var __parent:Null<Component<Node>>;
+  var __nodes:Array<Dynamic> = [];
+  var __rendered:Rendered<Node>;
+  var __context:Context<Node>;
+  var __pendingChildren:Array<Component<Node>> = [];
+  var __parent:Null<Component<Node>>;
 
-	public inline function getCurrentContext() {
-		return __context;
-	}
+  public inline function getCurrentContext() {
+    return __context;
+  }
 
-	public function render(context:Context<Node>):VNode<Node> {
-		return null;
-	}
+  public function render(context:Context<Node>):VNode<Node> {
+    return null;
+  }
 
-	public function __update(props:Dynamic, context:Context<Node>, parent:Component<Node>) {
-		if (!__shouldUpdate(props)) {
-			return;
-		}
+  public function __update(props:Dynamic, context:Context<Node>, parent:Component<Node>) {
+    if (!__shouldUpdate(props)) {
+      return;
+    }
 
-		__context = context;
-		__parent = parent;
+    __context = context;
+    __parent = parent;
 
-		__updateProps(props);
-		__render(__context);
-	}
+    __updateProps(props);
+    __render(__context);
+  }
 
-	public function __render(context:Context<Node>) {
-		var engine = context.engine;
-		var differ = engine.differ;
+  public function __render(context:Context<Node>) {
+    var engine = context.engine;
+    var differ = engine.differ;
 
-		__preRender();
+    __preRender();
 
-		switch __rendered {
-			case null:
-				__rendered = differ.renderAll(__processRender(context), this, context);
-			case before:
-				var previousCount = 0;
-				var first:Node = null;
+    switch __rendered {
+      case null:
+        __rendered = differ.renderAll(__processRender(context), this, context);
+      case before:
+        var previousCount = 0;
+        var first:Node = null;
 
-				__rendered = differ.updateAll(before, __processRender(context), this, context);
+        __rendered = differ.updateAll(before, __processRender(context), this, context);
 
-				for (node in before.getNodes()) {
+        for (node in before.getNodes()) {
           if (first == null) first = node;
           previousCount++;
         }
 
-				if (first != null) {
-					differ.setChildren(previousCount, engine.traverseSiblings(first), __rendered);
+        if (first != null) {
+          differ.setChildren(previousCount, engine.traverseSiblings(first), __rendered);
         }
     }
   }
 
-	inline function __processRender(context:Context<Node>):Array<VNode<Node>> {
-		return switch render(context) {
-			case null | VFragment([], _): [context.engine.createPlaceholder(this)];
-			case VFragment(children, _): children;
-			case node: [node];
-		}
-	}
-
-	inline function __preRender() {
-    if (!__alive) {
-			#if debug
-			throw 'Attempted to render a component that was dismounted';
-			#end
-		}
-		__dirty = false;
-		__nodes = null;
-		__pendingChildren = [];
-		__registerEffects();
+  inline function __processRender(context:Context<Node>):Array<VNode<Node>> {
+    return switch render(context) {
+      case null | VFragment([], _): [context.engine.createPlaceholder(this)];
+      case VFragment(children, _): children;
+      case node: [node];
+    }
   }
 
-	public function __dispose() {
+  inline function __preRender() {
+    if (!__alive) {
+      #if debug
+      throw 'Attempted to render a component that was dismounted';
+      #end
+    }
+    __dirty = false;
+    __nodes = null;
+    __pendingChildren = [];
+    __registerEffects();
+  }
+
+  public function __dispose() {
     __alive = false;
     __context = null;
     __parent = null;
     __pendingChildren = [];
     if (__rendered != null) {
       for (r in __rendered.types) r.each(r -> switch r { 
-				case RComponent(c): c.__dispose();
-				default:
-			});
+        case RComponent(c): c.__dispose();
+        default:
+      });
     }
   }
   
@@ -101,8 +101,8 @@ class Component<Node> {
     return true;
   }
 
-	function __registerEffects() {
-		// void
+  function __registerEffects() {
+    // void
   }
   
   function __requestUpdate() {

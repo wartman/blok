@@ -7,11 +7,11 @@ import haxe.macro.Context;
 using haxe.macro.Tools;
 
 class ComponentBuilder {
-	static final PROPS = '__props';
-	static final INCOMING_PROPS = '__incomingProps';
-	static final OPTIONAL_META = {name: ':optional', pos: (macro null).pos};
+  static final PROPS = '__props';
+  static final INCOMING_PROPS = '__incomingProps';
+  static final OPTIONAL_META = {name: ':optional', pos: (macro null).pos};
 
-	public static function build(nodeTypeName:String) {
+  public static function build(nodeTypeName:String) {
     var fields = Context.getBuildFields();
     var cls = Context.getLocalClass().get();
     var clsTp:TypePath = { pack: cls.pack, name: cls.name };

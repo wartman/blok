@@ -3,17 +3,17 @@ package blok.internal;
 import haxe.ds.Map;
 
 class Context<Node> {
-	public final engine:Engine<Node>;
+  public final engine:Engine<Node>;
 
-	final data:Map<String, Dynamic> = [];
-	final parent:Context<Node>;
+  final data:Map<String, Dynamic> = [];
+  final parent:Context<Node>;
 
-	public function new(engine, ?parent) {
-		this.engine = engine;
-		this.parent = parent;
-	}
+  public function new(engine, ?parent) {
+    this.engine = engine;
+    this.parent = parent;
+  }
 
-	public function get<T>(name:String, ?def:T):T {
+  public function get<T>(name:String, ?def:T):T {
     if (parent == null) {
       return data.exists(name) ? data.get(name) : def; 
     }
@@ -22,13 +22,13 @@ class Context<Node> {
       case [ null, res ]: res;
       case [ res, _ ]: res;
     }
-	}
+  }
 
-	public function set<T>(name:String, value:T) {
-		data.set(name, value);
-	}
+  public function set<T>(name:String, value:T) {
+    data.set(name, value);
+  }
 
-	public function getChild() {
-		return new Context(engine, this);
-	}
+  public function getChild() {
+    return new Context(engine, this);
+  }
 }

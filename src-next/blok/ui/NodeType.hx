@@ -18,36 +18,36 @@ class NodeType<Props:{}> {
   }
 
   public static function updateNodeAttribute(node:Node, name:String, oldValue:Dynamic, newValue:Dynamic):Void {
-		var el:Element = cast node;
-		var isSvg = el.namespaceURI == SVG_NS;
-		switch name {
-			case 'className':
-				updateNodeAttribute(node, 'class', oldValue, newValue);
-			case 'xmlns' if (isSvg): // skip
-			case 'value' | 'selected' | 'checked' if (!isSvg):
-				js.Syntax.code('{0}[{1}] = {2}', el, name, newValue);
-			case _ if (!isSvg && js.Syntax.code('{0} in {1}', name, el)):
-				js.Syntax.code('{0}[{1}] = {2}', el, name, newValue);
-			default:
-				if (name.charAt(0) == 'o' && name.charAt(1) == 'n') {
-					var name = name.toLowerCase();
-					if (newValue == null) {
-						Reflect.setField(el, name, null);
-					} else {
-						Reflect.setField(el, name, newValue);
-					}
-					// var ev = key.substr(2).toLowerCase();
-					// el.removeEventListener(ev, oldValue);
-					// if (newValue != null) el.addEventListener(ev, newValue);
-				} else if (newValue == null || (Std.is(newValue, Bool) && newValue == false)) {
-					el.removeAttribute(name);
-				} else if (Std.is(newValue, Bool) && newValue == true) {
-					el.setAttribute(name, name);
-				} else {
-					el.setAttribute(name, newValue);
-				}
-		}
-	}
+    var el:Element = cast node;
+    var isSvg = el.namespaceURI == SVG_NS;
+    switch name {
+      case 'className':
+        updateNodeAttribute(node, 'class', oldValue, newValue);
+      case 'xmlns' if (isSvg): // skip
+      case 'value' | 'selected' | 'checked' if (!isSvg):
+        js.Syntax.code('{0}[{1}] = {2}', el, name, newValue);
+      case _ if (!isSvg && js.Syntax.code('{0} in {1}', name, el)):
+        js.Syntax.code('{0}[{1}] = {2}', el, name, newValue);
+      default:
+        if (name.charAt(0) == 'o' && name.charAt(1) == 'n') {
+          var name = name.toLowerCase();
+          if (newValue == null) {
+            Reflect.setField(el, name, null);
+          } else {
+            Reflect.setField(el, name, newValue);
+          }
+          // var ev = key.substr(2).toLowerCase();
+          // el.removeEventListener(ev, oldValue);
+          // if (newValue != null) el.addEventListener(ev, newValue);
+        } else if (newValue == null || (Std.is(newValue, Bool) && newValue == false)) {
+          el.removeAttribute(name);
+        } else if (Std.is(newValue, Bool) && newValue == true) {
+          el.setAttribute(name, name);
+        } else {
+          el.setAttribute(name, newValue);
+        }
+    }
+  }
 
   final tag:String;
 
