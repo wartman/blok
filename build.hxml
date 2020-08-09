@@ -1,7 +1,6 @@
--cp src
--cp src-next
+-cp packages/core
+-cp packages/dom
 -cp test
--cp example
 
 -dce full
 

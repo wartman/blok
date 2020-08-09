@@ -1,13 +1,12 @@
 import js.Browser;
-import blok.internal.Context;
-import blok.internal.VNode;
-import blok.ui.Component;
-import blok.ui.Platform;
-import blok.ui.Html;
-import blok.ui.State;
+import blok.Context;
+import blok.VNode;
+import blok.Component;
+import blok.Platform;
+import blok.Html;
+import blok.State;
 
 class Run {
-  
   static function main() {
     Platform.mount(
       Browser.document.getElementById('root'),
@@ -30,25 +29,21 @@ class Run {
       }))
     );
   }
-
 }
 
 class FooState extends State {
-
   @prop var foo:String;
 
   @update
   public function setFoo(foo:String) {
     return { foo: foo };
   }
-
 }
 
 class TestComp extends Component {
-
   @prop var foo:String;
 
-  override function render(context:Context<js.html.Node>):VNode<js.html.Node> {
+  override function render(context:Context):VNode {
     var state = FooState.forContext(context);
     return Html.div({
       attrs: { className: 'foo' },
@@ -61,5 +56,4 @@ class TestComp extends Component {
       ]
     });
   }
-
 }
