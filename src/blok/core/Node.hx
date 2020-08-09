@@ -3,7 +3,7 @@ package blok.core;
 import blok.core.Rendered;
 
 typedef Node = {
-  public var __rendered:Rendered;
+  public var __rendered:Null<Rendered>;
   public var parentNode:Node;
   public var nextSibling:Node;
   public var firstChild:Node;

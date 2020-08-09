@@ -11,4 +11,6 @@ interface Engine {
   public function traverseSiblings(first:Node):Cursor;
   public function traverseChildren(parent:Node):Cursor;
   public function placeholder(target:Component):VNode;
+	public function registerStyle(style:VStyleList):Void;
+	public function applyStyle(node:Node, style:VStyleList):Void;
  }

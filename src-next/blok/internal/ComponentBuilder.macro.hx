@@ -1,21 +1,21 @@
-package blok.core;
+package blok.internal;
 
+import blok.internal.ClassBuilder.ClassBuilderHook;
 import haxe.macro.Expr;
 import haxe.macro.Context;
 
 using haxe.macro.Tools;
 
 class ComponentBuilder {
+	static final PROPS = '__props';
+	static final INCOMING_PROPS = '__incomingProps';
+	static final OPTIONAL_META = {name: ':optional', pos: (macro null).pos};
 
-  static final PROPS = '__props';
-  static final INCOMING_PROPS = '__incomingProps';
-  static final OPTIONAL_META =  { name: ':optional', pos: (macro null).pos };
-  
-  public static function build() {
+	public static function build(nodeTypeName:String) {
     var fields = Context.getBuildFields();
     var cls = Context.getLocalClass().get();
     var clsTp:TypePath = { pack: cls.pack, name: cls.name };
-    var builder = new ClassBuilder(fields, cls);
+    var builder = new ClassBuilder(cls, fields);
     var props:Array<Field> = [];
     var updateProps:Array<Field> = [];
     var updates:Array<Expr> = [];
@@ -41,15 +41,11 @@ class ComponentBuilder {
       });
     }
 
-    builder.addFieldBuilder({
+    builder.addFieldHandler({
       name: 'prop',
-      similarNames: [
-        'property', ':prop'
-      ],
-      multiple: false,
       hook: Normal,
       options: [],
-      build: function (options:{}, builder, f) switch f.kind {
+      build: function(_, builder, f) switch f.kind {
         case FVar(t, e):
           if (t == null) {
             Context.error('Types cannot be inferred for @prop vars', f.pos);
@@ -75,14 +71,6 @@ class ComponentBuilder {
             expr: init
           });
 
-          // var styleRegister = macro null;
-          // if (Context.unify(t.toType(), Context.getType('blok.core.VStyleList'))) {
-          //   styleRegister = macro {
-          //     __context.engine.registerStyle(this.$name);
-          //     __context.engine.applyStyle(this.$name);
-          //   }
-          // }
-
           updates.push(macro {
             if (Reflect.hasField($i{INCOMING_PROPS}, $v{name})) {
               switch [
@@ -102,17 +90,13 @@ class ComponentBuilder {
       }
     });
 
-    builder.addFieldBuilder({
+    builder.addFieldHandler({
       name: 'update',
-      similarNames: [ ':update' ],
-      multiple: false,
       hook: After,
       options: [
         { name: 'silent', optional: true }
       ],
-      build: function (options:{
-        ?silent:Bool
-      }, builder, field) switch field.kind {
+      build: function(options:{ ?silent:Bool }, builder, field) switch field.kind {
         case FFun(func):
           if (func.ret != null) {
             Context.error('@update functions should not define their return type manually', field.pos);
@@ -145,13 +129,11 @@ class ComponentBuilder {
       }
     });
 
-    builder.addFieldBuilder({
+    builder.addFieldHandler({
       name: 'init',
-      similarNames: [ ':init' ],
-      multiple: false,
-      options: [],
       hook: After,
-      build: function (options:{}, builder, field) switch field.kind {
+      options: [],
+      build: function(_, builder, field) switch field.kind {
         case FFun(func):
           if (func.args.length > 0) {
             Context.error('@init methods cannot have any arguments', field.pos);
@@ -163,13 +145,11 @@ class ComponentBuilder {
       }
     });
 
-    builder.addFieldBuilder({
+    builder.addFieldHandler({
       name: 'dispose',
-      similarNames: [ ':dispose' ],
-      multiple: false,
-      options: [],
       hook: After,
-      build: function (options:{}, builder, field) switch field.kind {
+      options: [],
+      build: function (_, builder, field) switch field.kind {
         case FFun(func):
           if (func.args.length > 0) {
             Context.error('@dispose methods cannot have any arguments', field.pos);
@@ -181,13 +161,11 @@ class ComponentBuilder {
       }
     });
 
-    builder.addFieldBuilder({
+    builder.addFieldHandler({
       name: 'effect',
-      similarNames: [ ':effect' ],
-      multiple: false,
-      options: [],
       hook: After,
-      build: function (options:{}, builder, field) switch field.kind {
+      options: [],
+      build: function (_, builder, field) switch field.kind {
         case FFun(func):
           if (func.args.length > 0) {
             Context.error('@effect methods cannot have any arguments', field.pos);
@@ -199,28 +177,16 @@ class ComponentBuilder {
       }
     });
 
-    builder.run();
-    
-    function extractTypeParams(tp:haxe.macro.Type.TypeParameter) {
-      return switch tp.t {
-        case TInst(kind, _): switch kind.get().kind {
-          case KTypeParameter(constraints): constraints.map(t -> t.toComplexType());
-          default: [];
-        }
-        default: [];
-      }
-    }
-
     var propType = TAnonymous(props);
-    var createParams =  cls.params.length > 0
-      ? [ for (p in cls.params) { name: p.name, constraints: extractTypeParams(p) } ]
+    var nodeType = Context.getType(nodeTypeName).toComplexType();
+    var createParams = cls.params.length > 0
+      ? [ for (p in cls.params) { name: p.name, constraints: BuilderHelpers.extractTypeParams(p) } ]
       : [];
     var effects = effectHooks.length > 0 
       ? macro __context.addEffect(() -> $b{effectHooks})
       : macro null;
 
-
-    builder.add([
+    builder.addFields(() -> [
       
       {
         name: '__create',
@@ -230,15 +196,15 @@ class ComponentBuilder {
           params: createParams,
           args: [
             { name: 'props', type: macro:$propType },
-            { name: 'context', type: macro:blok.core.Context },
-            { name: 'parent', type: macro:blok.core.Wire }
+            { name: 'context', type: macro:blok.internal.Context<$nodeType> },
+            { name: 'parent', type: macro:blok.internal.Component<$nodeType> }
           ],
           expr: macro @:pos(cls.pos) {
             var comp = new $clsTp(props, context, parent);
             comp.__inserted = true;
             return comp;
           },
-          ret: macro:blok.core.Wire
+          ret: macro:blok.internal.Component<$nodeType>
         })
       },
       
@@ -247,23 +213,23 @@ class ComponentBuilder {
         access: [ AStatic, APublic, AInline ],
         pos: (macro null).pos,
         kind: FFun({
-          ret: macro:blok.core.VNode,
           params: createParams,
           args: [
             { name: 'props', type: macro:$propType },
-            { name: 'key', type: macro:Null<blok.core.Key>, opt: true }
+            { name: 'key', type: macro:Null<blok.internal.Key>, opt: true }
           ],
-          expr: macro @:pos(cls.pos) return blok.core.VNode.VWire(
+          expr: macro @:pos(cls.pos) return blok.internal.VNode.VComponent(
             $p{ cls.pack.concat([ cls.name ]) },
             props,
             key
-          )
+          ),
+          ret: macro:blok.internal.VNode<$nodeType>
         })
       }
 
     ]);
 
-    builder.add((macro class {
+    builder.addFields(() -> (macro class {
 
       var $PROPS:$propType;
 
@@ -303,5 +269,4 @@ class ComponentBuilder {
 
     return builder.export();
   }
-
 }

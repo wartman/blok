@@ -26,25 +26,6 @@ final class NodeComponent<Attrs:{}> extends Component {
     return realNode;
   }
 
-  function __updateStyle(context:Context) {
-    var styleEngine = context.styleEngine;
-    if (style != null) {
-      for (s in style) styleEngine.define(s.getName(), () -> s);
-
-      if (attrs == null) __props.attrs = cast {};
-
-      var existing:String = Reflect.field(attrs, 'className');
-      Reflect.setField(
-        attrs,
-        'className',
-        if (existing == null) 
-          style.toString()
-        else
-          style.toString() + ' ' + existing
-      );
-    }
-  }
-
   function __updateNodeAttrs(context:Context) {
     var engine = context.engine;
     engine.differ.diffObject(
@@ -61,7 +42,6 @@ final class NodeComponent<Attrs:{}> extends Component {
     var previousCount = 0;
 
     if (realNode == null) __createNode(context);
-    __updateStyle(context);
     __updateNodeAttrs(context);
     __preRender();
 
@@ -92,6 +72,12 @@ final class NodeComponent<Attrs:{}> extends Component {
     );
 
     if (ref != null) ref(realNode);
+
+    // @todo: Integrate this better
+    if (style != null) {
+      engine.registerStyle(style);
+      engine.applyStyle(realNode, style);
+    }
   }
 
   override function render(context:Context):VNode {

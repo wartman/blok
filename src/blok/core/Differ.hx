@@ -94,7 +94,7 @@ class Differ {
     var insertedCount = 0;
     var currentCount = 0;
 
-    for (widget in next.children) for (node in widget.__getManagedNodes()) {
+    for (wire in next.children) for (node in wire.__getManagedNodes()) {
       currentCount++;
       if (node == cursor.current()) cursor.step();
       else if (cursor.insert(node)) insertedCount++;
@@ -132,11 +132,11 @@ class Differ {
           switch n {
             case VWire(type, attrs, key): switch previous(type, key) {
               case None:
-                var widget = type.__create(attrs, context, parent);
-                add(key, type, widget);
-              case Some(widget):
-                widget.__update(attrs, context, parent);
-                add(key, type, widget);
+                var wire = type.__create(attrs, context, parent);
+                add(key, type, wire);
+              case Some(wire):
+                wire.__update(attrs, context, parent);
+                add(key, type, wire);
               default:
                 throw 'assert';
             }

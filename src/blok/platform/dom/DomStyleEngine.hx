@@ -3,12 +3,11 @@ package blok.platform.dom;
 import js.Browser;
 import js.html.CSSStyleSheet;
 import blok.core.VStyle;
-import blok.core.StyleEngine;
 import blok.style.BaseStyle;
 
 using StringTools;
 
-class DomStyleEngine implements StyleEngine {
+class DomStyleEngine {
 
   final sheet:CSSStyleSheet;
   final defined:Map<String, Bool> = [];

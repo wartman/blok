@@ -1,4 +1,5 @@
 -cp src
+-cp src-next
 -cp test
 -cp example
 
@@ -8,6 +9,8 @@
 -D debug
 -D js-es=6
 
--main Todo
+-main Run
+
+-lib heaps
 
 -js dist/test.js

@@ -9,3 +9,20 @@ Here's some thinking on the Refactor:
 - In addition, the `blok.css` and `blok.html` packages should be merged into `blok.platform.dom`. The `NodeComponent` class should also be moved there.
 - In general we should rethink file organization. Things feel a bit all over the place at the moment.
 - Also we should try simplifying the code as much as possible. This library is bigger than it needs to be. 
+
+Core classes:
+- blok
+  - Wire
+  - WireType
+  - VWire
+  - Component
+  - Style
+  - VStyle
+  - Engine (note: will handle styles AND layout)
+  - Context
+  - Differ
+  - Cursor
+  - Key
+  - KeyRegistry
+  - WireRegistry
+  - Registry
