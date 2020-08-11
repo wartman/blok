@@ -20,7 +20,7 @@ class StyleBuilder {
     var initializers:Array<ObjectField> = [];
     var builder = new ClassBuilder(cls, fields);
 
-    function addProp(name:String, type:ComplexType, isOptional:Bool) {
+    function addProp(name:String, type:ComplexType, isOptional:Bool, skip = false) {
       props.push({
         name: name,
         kind: FVar(type, null),
@@ -28,7 +28,7 @@ class StyleBuilder {
         meta: isOptional ? [ { name: ':optional', pos: (macro null).pos } ] : [],
         pos: (macro null).pos
       });
-      nameBuilder.push(
+      if (skip != true) nameBuilder.push(
         macro $i{PROPS}.$name != null 
           ? ${ Context.unify(type.toType(), Context.getType('blok.internal.VStyle.Unit')) 
               ? macro $i{PROPS}.$name.toString()
@@ -43,8 +43,10 @@ class StyleBuilder {
     builder.addFieldMetaHandler({
       name: 'prop',
       hook: Normal,
-      options: [],
-      build: function (_, builder, f) switch f.kind {
+      options: [
+        { name: 'dontUseInName', optional: true }
+      ],
+      build: function (options:{ ?dontUseInName:Bool }, builder, f) switch f.kind {
         case FVar(t, e):
           if (t == null) {
             Context.error('Types cannot be inferred for @prop vars', f.pos);
@@ -58,7 +60,7 @@ class StyleBuilder {
             ? macro $i{INCOMING_PROPS}.$name
             : macro $i{INCOMING_PROPS}.$name == null ? ${e} : $i{INCOMING_PROPS}.$name;
           
-          addProp(name, t, e != null);
+          addProp(name, t, e != null, options.dontUseInName);
           initializers.push({
             field: name,
             expr: init
@@ -72,17 +74,6 @@ class StyleBuilder {
         default:
           Context.error('@prop can only be used on vars', f.pos);
       }
-    });
-
-    builder.addClassMetaHandler({
-      name: 'style',
-      hook: After,
-      options: [
-        { name: 'name', optional: false }
-      ],
-      build: function (options:{ name:String }, _, _) {
-        nameBuilder = [ macro $i{options.name} ];
-      } 
     });
 
     builder.addFields(() -> {

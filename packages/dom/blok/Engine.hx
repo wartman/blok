@@ -81,6 +81,7 @@ class Engine implements blok.internal.Engine<Node> {
 
   function addCss(name:String, props:Array<VStyleExpr>) {
     var css = generateCss(name, props);
+    trace(css);
     sheet.insertRule(
       '@media all { ${css} }',
       switch indices[name] {
@@ -96,19 +97,8 @@ class Engine implements blok.internal.Engine<Node> {
     
     inline function applySelector(suffix:String) {
       return selector != null
-        ? selector + ' ' + prepareSelector(suffix)
-        : prepareSelector(suffix);
-    }
-
-    function handleChild(style:VStyle)  switch style {
-      case VStyleDef(type, props, suffix):
-        var style = type.__create(props);
-        out.push(generateCss(
-          applySelector(style.getName(suffix)),
-          style.render()
-        ));
-      case VStyleList(styles): 
-        for (s in styles) handleChild(s);
+        ? selector + ' ' + suffix
+        : suffix;
     }
 
     function process(exprs:Array<VStyleExpr>) for (expr in exprs) if (expr != null) switch expr {
@@ -125,14 +115,23 @@ class Engine implements blok.internal.Engine<Node> {
         } else {
           def.push('${name}: ${value};');
         }
-      case EChild(style):
-        handleChild(style);
       case EChildren(exprs):
         process(exprs);
       case EWrapped(wrapper, expr): out.push(switch wrapper {
-        case WGlobal: generateCss(null, [ expr ]);
-        case WCustom(value): generateCss(value, [ expr ]);
-        case WModifier(modifier): generateCss('${selector}${modifier}', [ expr ]);
+        case WGlobal: 
+          generateCss(null, [ expr ]);
+        case WCustom(value): 
+          generateCss(applySelector(value), [ expr ]);
+        case WParent(value):
+          '${value} { ${generateCss(selector, [ expr ])} }';
+        case WModifier(modifier):
+          if (selector == null) {
+          #if debug
+            throw 'Cannot use a modifier without a selector';
+          #end
+          } else {
+            generateCss('${selector}${modifier}', [ expr ]);
+          }
       });
     }
 
@@ -164,6 +163,6 @@ class Engine implements blok.internal.Engine<Node> {
   }
 
   function prepareSelector(name:String) {
-    return '.${escapeClassName(name)}';
+    return '.${escapeClassName(name.trim())}';
   }
 }
