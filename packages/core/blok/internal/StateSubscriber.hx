@@ -7,7 +7,9 @@ final class StateSubscriber<T:State<Node>, Node> extends Component<Node> {
     state:T,
     build:(state:T)->VNode<Node>
   }, context:Context<Node>, parent:Component<Node>):Component<Node> {
-    return new StateSubscriber(props.state, props.build, context, parent);
+    var sub = new StateSubscriber(props.state, props.build, context, parent);
+    sub.__inserted = true;
+    return sub;
   }
 
   var build:(state:T)->VNode<Node>;

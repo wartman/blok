@@ -18,32 +18,44 @@ typedef ClassBuilderOption = {
   ?handleValue:(expr:Expr)->Expr
 } 
 
-typedef FieldHandler<Options> = {
-  public var name:String;
-  public var hook:ClassBuilderHook;
-  public var options:Array<ClassBuilderOption>;
+typedef FieldMetaHandler<Options:{}> = {
+  public final name:String;
+  public final hook:ClassBuilderHook;
+  public final options:Array<ClassBuilderOption>;
   public function build(options:Options, builder:ClassBuilder, f:Field):Void;
 }
 
-typedef AddFieldHandler = {
-  public var hook:ClassBuilderHook;
+typedef FieldFactory = {
+  public final hook:ClassBuilderHook;
   public function build():Array<Field>;
+}
+
+typedef ClassMetaHandler<Options:{}> = {
+  public final name:String;
+  public final hook:ClassBuilderHook;
+  public final options:Array<ClassBuilderOption>;
+  public function build(options:Options, builder:ClassBuilder, fields:Array<Field>):Void;
 } 
 
 class ClassBuilder {
   var fields:Array<Field>;
   var ran:Bool = false;
   final cls:ClassType;
-  final fieldHandlers:Array<FieldHandler<Dynamic>> = [];
-  final fieldsToAdd:Array<AddFieldHandler> = [];
+  final fieldHandlers:Array<FieldMetaHandler<Dynamic>> = [];
+  final classHandlers:Array<ClassMetaHandler<Dynamic>> = [];
+  final fieldsToAdd:Array<FieldFactory> = [];
 
   public function new(cls, fields) {
     this.cls = cls;
     this.fields = fields;
   }
 
-  public function addFieldHandler<Options>(handler:FieldHandler<Options>) {
+  public function addFieldMetaHandler<Options:{}>(handler:FieldMetaHandler<Options>) {
     fieldHandlers.push(handler);
+  }
+
+  public function addClassMetaHandler<Options:{}>(handler:ClassMetaHandler<Options>) {
+    classHandlers.push(handler);
   }
 
   public function addFields(build:() -> Array<Field>, hook:ClassBuilderHook = After) {
@@ -68,7 +80,9 @@ class ClassBuilder {
 
     function parseFieldMetaHook(hook:ClassBuilderHook) {
       var copy = fields.copy();
+      var cb = classHandlers.filter(h -> h.hook == hook);
       var fb = fieldHandlers.filter(h -> h.hook == hook);
+      if (cb.length > 0) parseClassMeta(cb);
       if (fb.length > 0) for (f in copy) parseFieldMeta(f, fb);
       var toAdd = fieldsToAdd.filter(f -> f.hook == hook);
       if (toAdd.length > 0) for (handler in toAdd) add(handler.build());
@@ -79,7 +93,7 @@ class ClassBuilder {
     parseFieldMetaHook(After);
   }
 
-  function parseFieldMeta(field:Field, fieldBuilders:Array<FieldHandler<Dynamic>>) {
+  function parseFieldMeta(field:Field, fieldHandlers:Array<FieldMetaHandler<Dynamic>>) {
     if (field.meta == null) return;
 
     var toRemove:Array<MetadataEntry> = [];
@@ -95,17 +109,35 @@ class ClassBuilder {
 
         switch field.meta.filter(match) {
           case [ m ]: handle(m);
-          case many: 
-            // if (handler.multiple) {
-            //   for (m in many) handle(m);
-            // } else {
-              Context.error('Only one @${handler.name} is allowed', many[1].pos);
-            // }
+          case many:
+            Context.error('Only one @${handler.name} is allowed', many[1].pos);
         }
       }
     }
 
     if (toRemove.length > 0) for (entry in toRemove) field.meta.remove(entry);
+  }
+
+  function parseClassMeta(classHandlers:Array<ClassMetaHandler<Dynamic>>) {
+    if (cls.meta == null) return;
+    
+    var toRemove:Array<String> = [];
+
+    for (handler in classHandlers) {
+      if (cls.meta.has(handler.name)) {
+        function handle(meta:MetadataEntry) {
+          var options = parseOptions(meta.params, handler.options, meta.pos);
+          handler.build(options, this, fields.copy());
+          toRemove.push(handler.name);
+        }
+        switch cls.meta.extract(handler.name) {
+          case [ m ]: handle(m);
+          case many: Context.error('Only one @${handler.name} is allowed', many[1].pos);
+        }
+      }
+    }
+
+    if (toRemove.length > 0) for (name in toRemove) cls.meta.remove(name);
   }
 
   function parseOptions(

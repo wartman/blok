@@ -39,7 +39,7 @@ class StateBuilder {
       });
     }
 
-    builder.addFieldHandler({
+    builder.addFieldMetaHandler({
       name: 'prop',
       hook: Normal,
       options: [],
@@ -93,7 +93,7 @@ class StateBuilder {
       }
     });
 
-    builder.addFieldHandler({
+    builder.addFieldMetaHandler({
       name: 'computed',
       hook: Normal,
       options: [],
@@ -143,7 +143,7 @@ class StateBuilder {
       }
     });
 
-    builder.addFieldHandler({
+    builder.addFieldMetaHandler({
       name: 'update',
       hook: After,
       options: [
@@ -156,7 +156,9 @@ class StateBuilder {
           }
           var updatePropsRet = TAnonymous(updateProps);
           var e = func.expr;
+
           func.ret = macro:Void;
+          
           if (options.silent == true) {
             func.expr = macro {
               inline function closure():$updatePropsRet ${e};
@@ -180,76 +182,77 @@ class StateBuilder {
       }
     });
 
-    var propType = TAnonymous(props);
-    var createParams = cls.params.length > 0
-      ? [ for (p in cls.params) { name: p.name, constraints: BuilderHelpers.extractTypeParams(p) } ]
-      : [];
-    var type = Context
-      .getType(clsName)
-      .toComplexType();
-    var nodeType = Context.getType(nodeTypeName).toComplexType();
-    var providerFactory = macro:(context:blok.internal.Context<$nodeType>)->blok.internal.VNode<$nodeType>;
-    var subscriberFactory = macro:(data:$type)->blok.internal.VNode<$nodeType>;
+    builder.addFields(() -> {
+      var propType = TAnonymous(props);
+      var createParams = cls.params.length > 0
+        ? [ for (p in cls.params) { name: p.name, constraints: BuilderHelpers.extractTypeParams(p) } ]
+        : [];
+      var type = Context
+        .getType(clsName)
+        .toComplexType();
+      var nodeType = Context.getType(nodeTypeName).toComplexType();
+      var providerFactory = macro:(context:blok.internal.Context<$nodeType>)->blok.internal.VNode<$nodeType>;
+      var subscriberFactory = macro:(data:$type)->blok.internal.VNode<$nodeType>;
+  
+      return (macro class {
+        public static function provide(
+          context:blok.internal.Context<$nodeType>, 
+          props:$propType,
+          build:$providerFactory
+        ):blok.internal.VNode<$nodeType> {
+          return VComponent({
+            __create: function (props, context, parent) {
+              var state = new $clsTp(props, context, parent, build);
+              state.__inserted = true;
+              return state;
+            }
+          }, props);
+        }
 
-    builder.addFields(() -> (macro class {
+        public static function subscribe(
+          context:blok.internal.Context<$nodeType>,
+          build:$subscriberFactory
+        ):blok.internal.VNode<$nodeType> {
+          var state = forContext(context);
+          return VComponent(blok.internal.StateSubscriber, {
+            state: state,
+            build: build
+          });
+        }
 
-      public static function provide(
-        context:blok.internal.Context<$nodeType>, 
-        props:$propType,
-        build:$providerFactory
-      ):blok.internal.VNode<$nodeType> {
-        return VComponent({
-          __create: function (props, context, parent) {
-            var state = new $clsTp(props, context, parent, build);
-            state.__inserted = true;
-            return state;
-          }
-        }, props);
-      }
+        public static function forContext(context:blok.internal.Context<$nodeType>):$type {
+          var state = context.get($v{id});
+          #if debug
+            if (state == null) {
+              throw 'The required state ' + $v{cls.pack.concat([cls.name]).join('.')} + ' was not provided.';
+            }
+          #end
+          return state;
+        }
 
-      public static function subscribe(
-        context:blok.internal.Context<$nodeType>,
-        build:$subscriberFactory
-      ):blok.internal.VNode<$nodeType> {
-        var state = forContext(context);
-        return VComponent(blok.internal.StateSubscriber, {
-          state: state,
-          build: build
-        });
-      }
+        var $PROPS:$propType;
 
-      public static function forContext(context:blok.internal.Context<$nodeType>):$type {
-        var state = context.get($v{id});
-        #if debug
-          if (state == null) {
-            throw 'The required state ' + $v{cls.pack.concat([cls.name]).join('.')} + ' was not provided.';
-          }
-        #end
-        return state;
-      }
+        public function new($INCOMING_PROPS:$propType, __context, __parent, __build:$providerFactory) {
+          this.__parent = __parent;
+          this.__factory = cast __build;
+          this.$PROPS = ${ {
+            expr: EObjectDecl(initializers),
+            pos: (macro null).pos
+          } };
+          __render(__register(__context));
+        }
 
-      var $PROPS:$propType;
+        override function __getId() {
+          return $v{id};
+        }
 
-      public function new($INCOMING_PROPS:$propType, __context, __parent, __build:$providerFactory) {
-        this.__parent = __parent;
-        this.__factory = cast __build;
-        this.$PROPS = ${ {
-          expr: EObjectDecl(initializers),
-          pos: (macro null).pos
-        } };
-        __render(__register(__context));
-      }
+        @:noCompletion
+        override function __updateProps($INCOMING_PROPS:Dynamic) {
+          $b{updates};
+        }
 
-      override function __getId() {
-        return $v{id};
-      }
-
-      @:noCompletion
-      override function __updateProps($INCOMING_PROPS:Dynamic) {
-        $b{updates};
-      }
-
-    }).fields);
+      }).fields;
+    });
 
     return builder.export();
   }

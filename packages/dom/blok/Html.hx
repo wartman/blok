@@ -18,7 +18,6 @@ typedef HtmlChildrenProps<Attrs:{}> = HtmlBaseProps<Attrs> & {
 
 @:build(blok.HtmlBuilder.build())
 class Html {
-  
   public static inline function fragment(children:Children) {
     return VFragment(children);
   }
@@ -26,5 +25,4 @@ class Html {
   public static inline function text(content:String, ?key:Key) {
     return VNative(TextType, { content: content }, null, null, key, []);
   }
-
 }

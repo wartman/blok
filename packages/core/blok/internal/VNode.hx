@@ -9,6 +9,10 @@ enum VNode<Node> {
     ?key:Null<Key>, 
     ?children:Array<VNode<Node>>
   );
-  VComponent<Props:{}>(type:ComponentType<Props, Node>, props:Props, ?key:Null<Key>);
+  VComponent<Props:{}>(
+    type:ComponentType<Props, Node>,
+    props:Props, 
+    ?key:Null<Key>
+  );
   VFragment(children:Array<VNode<Node>>, ?key:Null<Key>);
 }

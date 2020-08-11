@@ -41,7 +41,7 @@ class ComponentBuilder {
       });
     }
 
-    builder.addFieldHandler({
+    builder.addFieldMetaHandler({
       name: 'prop',
       hook: Normal,
       options: [],
@@ -90,7 +90,7 @@ class ComponentBuilder {
       }
     });
 
-    builder.addFieldHandler({
+    builder.addFieldMetaHandler({
       name: 'update',
       hook: After,
       options: [
@@ -129,7 +129,7 @@ class ComponentBuilder {
       }
     });
 
-    builder.addFieldHandler({
+    builder.addFieldMetaHandler({
       name: 'init',
       hook: After,
       options: [],
@@ -145,7 +145,7 @@ class ComponentBuilder {
       }
     });
 
-    builder.addFieldHandler({
+    builder.addFieldMetaHandler({
       name: 'dispose',
       hook: After,
       options: [],
@@ -161,7 +161,7 @@ class ComponentBuilder {
       }
     });
 
-    builder.addFieldHandler({
+    builder.addFieldMetaHandler({
       name: 'effect',
       hook: After,
       options: [],
@@ -177,95 +177,94 @@ class ComponentBuilder {
       }
     });
 
-    var propType = TAnonymous(props);
-    var nodeType = nodeTypeName == 'Dynamic' ? macro:Dynamic : Context.getType(nodeTypeName).toComplexType();
-    var createParams = cls.params.length > 0
-      ? [ for (p in cls.params) { name: p.name, constraints: BuilderHelpers.extractTypeParams(p) } ]
-      : [];
-    var effects = effectHooks.length > 0 
-      ? macro __context.addEffect(() -> $b{effectHooks})
-      : macro null;
-
-    builder.addFields(() -> [
+    builder.addFields(() -> {
+      var propType = TAnonymous(props);
+      var nodeType = nodeTypeName == 'Dynamic' ? macro:Dynamic : Context.getType(nodeTypeName).toComplexType();
+      var createParams = cls.params.length > 0
+        ? [ for (p in cls.params) { name: p.name, constraints: BuilderHelpers.extractTypeParams(p) } ]
+        : [];
+      var effects = effectHooks.length > 0 
+        ? macro __context.addEffect(() -> $b{effectHooks})
+        : macro null; 
       
-      {
-        name: '__create',
-        pos: (macro null).pos,
-        access: [ APublic, AStatic ],
-        kind: FFun({
-          params: createParams,
-          args: [
-            { name: 'props', type: macro:$propType },
-            { name: 'context', type: macro:blok.internal.Context<$nodeType> },
-            { name: 'parent', type: macro:blok.internal.Component<$nodeType> }
-          ],
-          expr: macro @:pos(cls.pos) {
-            var comp = new $clsTp(props, context, parent);
-            comp.__inserted = true;
-            return comp;
-          },
-          ret: macro:blok.internal.Component<$nodeType>
-        })
-      },
-      
-      {
-        name: 'node',
-        access: [ AStatic, APublic, AInline ],
-        pos: (macro null).pos,
-        kind: FFun({
-          params: createParams,
-          args: [
-            { name: 'props', type: macro:$propType },
-            { name: 'key', type: macro:Null<blok.internal.Key>, opt: true }
-          ],
-          expr: macro @:pos(cls.pos) return blok.internal.VNode.VComponent(
-            $p{ cls.pack.concat([ cls.name ]) },
-            props,
-            key
-          ),
-          ret: macro:blok.internal.VNode<$nodeType>
-        })
-      }
+      return [
+        
+        {
+          name: '__create',
+          pos: (macro null).pos,
+          access: [ APublic, AStatic ],
+          kind: FFun({
+            params: createParams,
+            args: [
+              { name: 'props', type: macro:$propType },
+              { name: 'context', type: macro:blok.internal.Context<$nodeType> },
+              { name: 'parent', type: macro:blok.internal.Component<$nodeType> }
+            ],
+            expr: macro @:pos(cls.pos) {
+              var comp = new $clsTp(props, context, parent);
+              comp.__inserted = true;
+              return comp;
+            },
+            ret: macro:blok.internal.Component<$nodeType>
+          })
+        },
+        
+        {
+          name: 'node',
+          access: [ AStatic, APublic, AInline ],
+          pos: (macro null).pos,
+          kind: FFun({
+            params: createParams,
+            args: [
+              { name: 'props', type: macro:$propType },
+              { name: 'key', type: macro:Null<blok.internal.Key>, opt: true }
+            ],
+            expr: macro @:pos(cls.pos) return blok.internal.VNode.VComponent(
+              $p{ cls.pack.concat([ cls.name ]) },
+              props,
+              key
+            ),
+            ret: macro:blok.internal.VNode<$nodeType>
+          })
+        }
 
-    ]);
+      ].concat((macro class {
+        var $PROPS:$propType;
 
-    builder.addFields(() -> (macro class {
+        public function new($INCOMING_PROPS:$propType, __context, __parent) {
+          this.__context = __context;
+          this.__parent = __parent;
+          this.$PROPS = ${ {
+            expr: EObjectDecl(initializers),
+            pos: (macro null).pos
+          } };
+          $b{initHooks}
+          __render(this.__context);
+        }
 
-      var $PROPS:$propType;
+        @:noCompletion
+        override function __updateProps($INCOMING_PROPS:Dynamic) {
+          $b{updates};
+        }
 
-      public function new($INCOMING_PROPS:$propType, __context, __parent) {
-        this.__context = __context;
-        this.__parent = __parent;
-        this.$PROPS = ${ {
-          expr: EObjectDecl(initializers),
-          pos: (macro null).pos
-        } };
-        $b{initHooks}
-        __render(this.__context);
-      }
+        @:noCompletion
+        override function __shouldUpdate($INCOMING_PROPS:Dynamic) {
+          return true;
+        }
 
-      @:noCompletion
-      override function __updateProps($INCOMING_PROPS:Dynamic) {
-        $b{updates};
-      }
+        @:noCompletion
+        override function __registerEffects() {
+          ${effects};
+        }
 
-      @:noCompletion
-      override function __shouldUpdate($INCOMING_PROPS:Dynamic) {
-        return true;
-      }
+        @:noCompletion
+        override function __dispose() {
+          $b{disposeHooks};
+          super.__dispose();
+        }
 
-      @:noCompletion
-      override function __registerEffects() {
-        ${effects};
-      }
-
-      @:noCompletion
-      override function __dispose() {
-        $b{disposeHooks};
-        super.__dispose();
-      }
-
-    }).fields);
+      }).fields);
+    });
 
     return builder.export();
   }

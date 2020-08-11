@@ -1,8 +1,8 @@
 package blok.internal;
 
 @:forward(contains, iterator)
-abstract StyleList(Array<Style>) from Array<Style> to Array<Style> {
-  @:from public static function ofStyle(style:Style):StyleList {
+abstract StyleList(Array<VStyle>) from Array<VStyle> to Array<VStyle> {
+  @:from public inline static function ofStyleType(style:VStyle):StyleList {
     return [style];
   }
 
@@ -10,13 +10,29 @@ abstract StyleList(Array<Style>) from Array<Style> to Array<Style> {
     this = styles;
   }
 
-  public inline function add(style:Style) {
+  public inline function add(style:VStyle) {
     if (style != null && !this.contains(style))
       this.push(style);
     return this;
   }
 
-  public inline function toString() {
-    return [for (s in this) s.getName()].filter(n -> n != null).join(' ');
+  @:to public function toVStyle():VStyle {
+    return if (this.length == 1) 
+      this[0];
+    else
+      VStyleList(this);
+  }
+
+  @:to public function getName():String {
+    return getNames().join(' ');
+  }
+
+  public function getNames() {
+    return this.map(style -> switch style {
+      case VStyleDef(type, props, suffix): 
+        type.__generateName(props, suffix);
+      case VStyleList(styles): 
+        new StyleList(styles).getName();
+    });
   }
 }

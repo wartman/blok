@@ -3,7 +3,6 @@ package blok;
 import js.html.Node;
 
 class Cursor implements blok.internal.Cursor<Node> {
-  
   final parent:Node;
   var currentNode:Node;
 
@@ -38,5 +37,4 @@ class Cursor implements blok.internal.Cursor<Node> {
   public function current() {
     return currentNode;
   }
-
 }

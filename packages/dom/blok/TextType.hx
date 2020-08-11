@@ -5,7 +5,6 @@ import js.html.Node;
 import js.html.Text;
 
 class TextType {
-
   public static function updateTextNode(node:Node, content:String):Void {
     switch Std.downcast(node, Text) {
       case null:
@@ -24,5 +23,4 @@ class TextType {
     }
     return node;
   }
-
 }
