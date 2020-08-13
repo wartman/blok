@@ -14,4 +14,14 @@ class RenderedTools {
       }
     return nodes;
   }
+
+  public static function dispose<Node>(rendered:Rendered<Node>, context:Context<Node>) {
+    for (r in rendered.types) r.each(item -> switch item {
+      case RComponent(component):
+        component.__dispose();
+      case RNative(node, _):
+        var sub = context.engine.getRendered(node);
+        if (sub != null) dispose(sub, context);
+    });
+  }
 }

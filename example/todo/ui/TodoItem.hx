@@ -7,10 +7,8 @@ import todo.state.TodoState;
 import todo.state.Todo;
 
 using Blok;
-using BlokDom;
 
 class TodoItem extends Component {
-
   @prop var todo:Todo;
   @prop var isEditing:Bool = false;
 
@@ -79,5 +77,4 @@ class TodoItem extends Component {
       ]
     });
   }
-
 }

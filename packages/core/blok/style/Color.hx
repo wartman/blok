@@ -4,7 +4,6 @@ import blok.internal.VStyle;
 
 @:forward(forIdentifier, toString)
 abstract Color(Value) to Value {
-
   public static function rgb(r:Float, g:Float, b:Float):Color {
     return new Color(Value.call('rgb', Value.list([ r, g, b ])));
   }
@@ -28,5 +27,4 @@ abstract Color(Value) to Value {
   public function withKey(key:String):Color {
     return cast Value.keyed(key, this);
   }
-
 }

@@ -21,16 +21,20 @@ class Component<Node> {
     return null;
   }
 
+  public function __registerContext(context:Context<Node>) {
+    this.__context = context;
+  }
+
   public function __update(props:Dynamic, context:Context<Node>, parent:Component<Node>) {
     if (!__shouldUpdate(props)) {
       return;
     }
 
-    __context = context;
+    __registerContext(context);
     __parent = parent;
 
     __updateProps(props);
-    __render(__context);
+    __render(this.__context);
   }
 
   public function __render(context:Context<Node>) {
@@ -80,16 +84,12 @@ class Component<Node> {
   }
 
   public function __dispose() {
+    if (__rendered != null) __rendered.dispose(__context);
     __alive = false;
-    __context = null;
     __parent = null;
     __pendingChildren = [];
-    if (__rendered != null) {
-      for (r in __rendered.types) r.each(r -> switch r { 
-        case RComponent(c): c.__dispose();
-        default:
-      });
-    }
+    __context = null;
+    __rendered = null;
   }
   
   function __updateProps(_:Dynamic) {
@@ -109,10 +109,7 @@ class Component<Node> {
     if (__dirty) return;
     __dirty = true;
     if (__parent == null) {
-      Delay.add(() -> {
-        __render(__context);
-        // __context.dispatchEffects();
-      });
+      Delay.add(() -> __context.scope(__render));
     } else {
       __parent.__enqueuePendingChild(this);
     }
@@ -126,17 +123,15 @@ class Component<Node> {
     if (__parent != null) {
       __parent.__enqueuePendingChild(this);
     } else {
-      Delay.add(() -> {
-        __dequeuePendingChildren();
-        // __context.dispatchEffects();
-      });
+      Delay.add(() -> __context.scope(__dequeuePendingChildren));
     }
   }
 
-  public function __dequeuePendingChildren() {
+  public function __dequeuePendingChildren(parentContext:Context<Node>) {
     if (__pendingChildren.length == 0) return;
     var children = __pendingChildren.copy();
 
+    __registerContext(parentContext); // not sure if this is needed?
     __pendingChildren = [];
 
     for (child in children) {
@@ -144,7 +139,7 @@ class Component<Node> {
         if (child.__dirty) {
           child.__render(__context);
         } else {
-          child.__dequeuePendingChildren();
+          child.__dequeuePendingChildren(__context);
         }
       }
     }

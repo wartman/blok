@@ -81,7 +81,6 @@ class Engine implements blok.internal.Engine<Node> {
 
   function addCss(name:String, props:Array<VStyleExpr>) {
     var css = generateCss(name, props);
-    trace(css);
     sheet.insertRule(
       '@media all { ${css} }',
       switch indices[name] {
@@ -117,14 +116,14 @@ class Engine implements blok.internal.Engine<Node> {
         }
       case EChildren(exprs):
         process(exprs);
-      case EWrapped(wrapper, expr): out.push(switch wrapper {
-        case WGlobal: 
+      case EScope(scope, expr): out.push(switch scope {
+        case SGlobal: 
           generateCss(null, [ expr ]);
-        case WCustom(value): 
+        case SChild(value): 
           generateCss(applySelector(value), [ expr ]);
-        case WParent(value):
+        case SWrapper(value):
           '${value} { ${generateCss(selector, [ expr ])} }';
-        case WModifier(modifier):
+        case SModifier(modifier):
           if (selector == null) {
           #if debug
             throw 'Cannot use a modifier without a selector';

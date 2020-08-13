@@ -5,7 +5,6 @@ import blok.internal.VStyle.Value;
 
 @:forward
 abstract EdgeInsets(Value) to Value {
-
   public inline static function top(top:Unit) {
     return define({ top: top });
   }
@@ -57,5 +56,4 @@ abstract EdgeInsets(Value) to Value {
   inline public function new(value:Value) {
     this = value;
   }
-
 }

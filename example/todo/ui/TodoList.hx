@@ -4,10 +4,8 @@ import blok.style.*;
 import todo.state.TodoState;
 
 using Blok;
-using BlokDom;
 
 class TodoList extends Component {
-
   override function render(context:Context):VNode {
     return TodoState.subscribe(context, state -> Html.ul({
       style: Box.style({
@@ -20,5 +18,4 @@ class TodoList extends Component {
       ]
     }));
   }
-
 }

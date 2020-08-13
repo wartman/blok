@@ -232,7 +232,7 @@ class ComponentBuilder {
         var $PROPS:$propType;
 
         public function new($INCOMING_PROPS:$propType, __context, __parent) {
-          this.__context = __context;
+          __registerContext(__context);
           this.__parent = __parent;
           this.$PROPS = ${ {
             expr: EObjectDecl(initializers),

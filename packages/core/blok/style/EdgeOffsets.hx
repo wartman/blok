@@ -12,7 +12,6 @@ enum abstract RelativePosition(String) to String {
 
 @:forward
 abstract EdgeOffsets(Value) to Value {
-  
   public inline static function top() {
     return new EdgeOffsets(RelativePosition.Top);
   }
@@ -52,5 +51,4 @@ abstract EdgeOffsets(Value) to Value {
   inline public function new(value:Value) {
     this = value;
   }
-
 }

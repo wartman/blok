@@ -4,8 +4,24 @@ import blok.internal.VStyle;
 
 @:autoBuild(blok.internal.StyleBuilder.build())
 class Style {
-  public static inline function wrap(wrapper:VStyleWrapper, expr:VStyleExpr) {
-    return EWrapped(wrapper, expr);
+  public static inline function scope(scope:VStyleExprScope, expr:VStyleExpr) {
+    return EScope(scope, expr);
+  }
+
+  public static inline function globalScope(expr:VStyleExpr) {
+    return scope(SGlobal, expr);
+  }
+
+  public static inline function wrappedScope(name:String, expr:VStyleExpr) {
+    return scope(SWrapper(name), expr);
+  }
+  
+  public static inline function childScope(name:String, expr:VStyleExpr) {
+    return scope(SChild(name), expr);
+  }
+  
+  public static inline function modifierScope(modifier:String, expr:VStyleExpr) {
+    return scope(SModifier(modifier), expr);
   }
 
   public inline static function raw(value:String):VStyleExpr {

@@ -8,7 +8,6 @@ using Lambda;
 typedef PortalEntry = { key:String, vnode:VNode }; 
 
 class PortalState extends State {
-
   @prop var portals:Array<PortalEntry> = [];
 
   @update
@@ -22,5 +21,4 @@ class PortalState extends State {
     if (!portals.exists(entry -> entry.key == key)) return null;
     return { portals: portals.filter(entry -> entry.key != key) }
   }
-
 }

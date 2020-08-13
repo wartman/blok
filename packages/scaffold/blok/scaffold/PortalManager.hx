@@ -5,7 +5,6 @@ import blok.Context;
 import blok.Component;
 
 class PortalManager extends Component {
-
   @prop var children:Array<VNode>;
 
   override function render(context:Context):VNode {
@@ -16,5 +15,4 @@ class PortalManager extends Component {
       VFragment(children, Type.getClassName(PortalManager))
     ]));
   }
-
 }

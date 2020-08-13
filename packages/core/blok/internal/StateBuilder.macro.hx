@@ -239,7 +239,8 @@ class StateBuilder {
             expr: EObjectDecl(initializers),
             pos: (macro null).pos
           } };
-          __render(__register(__context));
+          __registerContext(__context);
+          __render(this.__context);
         }
 
         override function __getId() {

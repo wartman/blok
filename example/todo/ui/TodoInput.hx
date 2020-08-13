@@ -1,10 +1,8 @@
 package todo.ui;
 
 using Blok;
-using BlokDom;
 
 class TodoInput extends Component {
-
   @prop var onSave:(value:String)->Void;
   @prop var requestClose:()->Void = null;
   @prop var initialValue:String = '';
@@ -26,7 +24,7 @@ class TodoInput extends Component {
     }
   }
   
-  @dispose 
+  @dispose
   function cleanup() {
     js.Browser.window.removeEventListener('click', clickOff);
   }
@@ -51,5 +49,4 @@ class TodoInput extends Component {
       }
     });
   }
-
 }

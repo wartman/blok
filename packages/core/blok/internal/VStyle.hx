@@ -11,29 +11,15 @@ enum VStyleExpr {
   ENone;
   EProperty(name:String, value:Value, ?important:Bool);
   EChildren(exprs:Array<VStyleExpr>);
-  EWrapped(wrapper:VStyleWrapper, expr:VStyleExpr);
   ERaw(style:String);
+  EScope(scope:VStyleExprScope, expr:VStyleExpr);
 }
 
-enum VStyleWrapper {
-  /**
-    Escape the parent name.
-  **/
-  WGlobal;
-  /**
-    Wrap properties in a custom name (relative to the parent)
-  **/
-  WCustom(value:String);
-  /**
-    When the parent value exists, use the wrapped properties. This
-    might be used for media queries, for example.
-  **/
-  WParent(value:String);
-  /**
-    When the parent name has this modifier, use the wrapped properties.
-    Think ':last-child` and the like.
-  **/
-  WModifier(modifier:String);
+enum VStyleExprScope {
+  SGlobal;
+  SWrapper(scopeName:String);
+  SChild(name:String);
+  SModifier(name:String);
 }
 
 enum ValueDef {

@@ -78,11 +78,7 @@ class Differ<Node> {
       }
     });
     var result = differ(nodes, parent, context);
-
-    for (r in before.types) r.each(r -> switch r { 
-      case RComponent(c): c.__dispose();
-      default:
-    });
+    before.dispose(context);
 
     return result;
   }
@@ -135,7 +131,7 @@ class Differ<Node> {
                 var node = type.create(props, context);
                 render(node, children, parent, context);
                 if (styles != null) context.engine.applyStyles(node, styles);
-                if (ref != null) Delay.add(() -> ref(node));
+                if (ref != null) context.addEffect(() -> ref(node));
                 add(key, type, RNative(node, props));
               case Some(r): switch r {
                 case RNative(node, lastProps):

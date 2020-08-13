@@ -4,10 +4,8 @@ import todo.style.Card;
 import todo.state.TodoState;
 
 using Blok;
-using BlokDom;
 
 class SiteFooter extends Component {
-  
   override function render(context:Context):VNode {
     return TodoState.subscribe(context, state -> Html.footer({
       style: Card.style({}),
@@ -39,5 +37,4 @@ class SiteFooter extends Component {
       ]
     }));
   }
-
 }

@@ -4,11 +4,10 @@ class State<Node> extends Component<Node> {
   var __subscribers:Array<() -> Void> = [];
   var __factory:(context:Context<Node>) -> VNode<Node>;
 
-  function __register(context:Context<Node>) {
-    if (__context == context) return __context;
+  override function __registerContext(context:Context<Node>) {
+    if (context == __context) return;
     __context = context.getChild();
     __context.set(__getId(), this);
-    return __context;
   }
   
   function __dispatch() {
@@ -26,10 +25,6 @@ class State<Node> extends Component<Node> {
 
   override function render(context:Context<Node>):VNode<Node> {
     return __factory(context);
-  }
-
-  override function __update(props:Dynamic, context:Context<Node>, parent:Component<Node>) {
-    super.__update(props, __register(context), parent);
   }
 
   override function __dispose() {

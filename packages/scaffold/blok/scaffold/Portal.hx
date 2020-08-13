@@ -5,7 +5,6 @@ import blok.VNode;
 import blok.Component;
 
 class Portal extends Component {
-  
   static var id:Int = 0;
 
   @prop var child:VNode;
@@ -28,5 +27,4 @@ class Portal extends Component {
   override function render(context:Context):VNode {
     return null;
   }
-
 }

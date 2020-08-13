@@ -1,13 +1,12 @@
 package todo.ui;
 
-import blok.style.Background;
+// import blok.style.Background;
 import todo.style.Overlay;
-import blok.component.Portal;
+import blok.scaffold.Portal;
 import todo.style.Config;
 import todo.style.Card;
 
 using Blok;
-using BlokDom;
 
 class TodoModal extends Component {
   
@@ -30,9 +29,9 @@ class TodoModal extends Component {
               Card.style({
                 color: Config.lightColor
               }, 'modal'),
-              Background.style({
-                color: Config.darkColor
-              }, 'modal')
+              // Background.style({
+              //   color: Config.darkColor
+              // }, 'modal')
             ],
             attrs: {
               onclick: e -> e.stopPropagation()

@@ -12,11 +12,10 @@ class Box extends Style {
 
   override function render():Array<VStyleExpr> {
     var props:Array<VStyleExpr> = [
-      Style.property('display', ValueSingle('block'))
+      Style.property('display', 'block')
     ];
     
     if (padding != null) props.push(Style.property('padding', padding));
-    // if (margin != null) props.push(Style.property('margin', margin));
     if (height != null) props.push(Style.property('height', height));
     if (width != null) props.push(Style.property('width', width));
     
@@ -25,14 +24,14 @@ class Box extends Style {
       // horizontal spacing, depending on context.
       props = props.concat([
         Style.property('margin', spacing),
-        // VPsuedo(FirstChild, [
-        //   Style.property('margin-left', Unit.None),
-        //   Style.property('margin-top', Unit.None)
-        // ]),
-        // VPsuedo(LastChild, [
-        //   Style.property('margin-right', Unit.None),
-        //   Style.property('margin-bottom', Unit.None)
-        // ])
+        Style.modifierScope(':first-child', Style.properties([
+          Style.property('margin-left', Unit.None),
+          Style.property('margin-top', Unit.None)
+        ])),
+        Style.modifierScope(':last-child', Style.properties([
+          Style.property('margin-right', Unit.None),
+          Style.property('margin-bottom', Unit.None)
+        ]))
       ]);
     }
 

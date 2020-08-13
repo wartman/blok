@@ -1,12 +1,11 @@
 package todo.ui;
 
-import blok.component.PortalManager;
 import todo.style.Card;
 import todo.style.Root;
 import todo.state.TodoState;
+import blok.scaffold.PortalManager;
 
 using Blok;
-using BlokDom;
 
 class App extends Component {
 

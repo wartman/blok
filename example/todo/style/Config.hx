@@ -1,7 +1,8 @@
 package todo.style;
 
 import blok.style.Color;
-import blok.core.VStyle;
+
+using Blok;
 
 class Config {
 

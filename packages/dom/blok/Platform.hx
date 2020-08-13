@@ -13,8 +13,7 @@ class Platform {
   public static function mount(el:Element, factory:(context:Context)->VNode<Node>) {
     el.innerHTML = '';
     var context = createContext();
-    context.engine.differ.render(el, [ factory(context) ], null, context);
-    // effects?
+    context.render(el, factory);
   }
 
 }

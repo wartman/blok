@@ -1,7 +1,8 @@
 -cp packages/core
 -cp packages/dom
 -cp packages/scaffold
--cp test
+-cp example
+# -cp test
 
 -dce full
 
@@ -9,7 +10,7 @@
 -D debug
 -D js-es=6
 
--main Run
+-main Todo
 
 -lib heaps
 

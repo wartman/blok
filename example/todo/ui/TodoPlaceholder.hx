@@ -5,10 +5,8 @@ import todo.style.Config;
 import todo.style.Card;
 
 using Blok;
-using BlokDom;
 
 class TodoPlaceholder extends Component {
-
   @prop var showModal:Bool = false;
 
   @update
@@ -45,5 +43,4 @@ class TodoPlaceholder extends Component {
       ]
     });
   }
-
 }
