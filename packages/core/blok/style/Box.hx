@@ -24,11 +24,11 @@ class Box extends Style {
       // horizontal spacing, depending on context.
       props = props.concat([
         Style.property('margin', spacing),
-        Style.modifierScope(':first-child', Style.properties([
+        Style.modifier(':first-child', Style.properties([
           Style.property('margin-left', Unit.None),
           Style.property('margin-top', Unit.None)
         ])),
-        Style.modifierScope(':last-child', Style.properties([
+        Style.modifier(':last-child', Style.properties([
           Style.property('margin-right', Unit.None),
           Style.property('margin-bottom', Unit.None)
         ]))

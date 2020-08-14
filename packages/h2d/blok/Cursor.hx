@@ -3,7 +3,6 @@ package blok;
 import h2d.Object;
 
 class Cursor implements blok.internal.Cursor<Object> {
-
   final parent:Object;
   var pos:Int;
 
@@ -38,5 +37,4 @@ class Cursor implements blok.internal.Cursor<Object> {
   public function current():Object {
     return parent.getChildAt(pos);
   }
-
 }

@@ -6,7 +6,7 @@ import blok.internal.VStyle;
 class BaseStyle extends Style {
   override function render():Array<VStyleExpr> {
     return [
-      Style.globalScope(Style.raw('
+      Style.global(Style.raw('
         body, html {
           padding: 0;
           margin: 0;

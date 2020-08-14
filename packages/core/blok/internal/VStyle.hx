@@ -71,8 +71,8 @@ abstract Value(ValueDef) to ValueDef from ValueDef {
     return this;
   }
 
-  public inline function withKey(key:String) {
-    return Value.keyed(key, this);
+  public inline function withKey(?key:String) {
+    return if (key == null) this else  Value.keyed(key, this);
   }
 
   public function forIdentifier():String {
@@ -124,7 +124,6 @@ enum Unit {
 }
 
 class UnitTools {
-  
   public static function toString(unit:Unit) {
     if (unit == null) return null;
     return switch unit {
@@ -145,5 +144,4 @@ class UnitTools {
       case Fr(value): '${value}fr';
     }
   }
-
 }

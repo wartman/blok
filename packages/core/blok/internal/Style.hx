@@ -8,19 +8,19 @@ class Style {
     return EScope(scope, expr);
   }
 
-  public static inline function globalScope(expr:VStyleExpr) {
+  public static inline function global(expr:VStyleExpr) {
     return scope(SGlobal, expr);
   }
 
-  public static inline function wrappedScope(name:String, expr:VStyleExpr) {
+  public static inline function wrap(name:String, expr:VStyleExpr) {
     return scope(SWrapper(name), expr);
   }
   
-  public static inline function childScope(name:String, expr:VStyleExpr) {
+  public static inline function child(name:String, expr:VStyleExpr) {
     return scope(SChild(name), expr);
   }
   
-  public static inline function modifierScope(modifier:String, expr:VStyleExpr) {
+  public static inline function modifier(modifier:String, expr:VStyleExpr) {
     return scope(SModifier(modifier), expr);
   }
 
