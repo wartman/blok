@@ -3,7 +3,6 @@ package todo.state;
 using Blok;
 
 class TodoState extends State {
-
   @prop var todos:Array<Todo>;
   @prop var filter:TodoFilter = TodoFilter.FilterAll;
   @computed var remainingTodos:Int = todos.filter(t -> !t.complete).length;
@@ -62,5 +61,4 @@ class TodoState extends State {
       todos: todos.filter(todo -> !todo.complete) 
     };
   }
-
 }

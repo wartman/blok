@@ -5,12 +5,16 @@ import haxe.ds.Option;
 
 using blok.internal.RenderedTools;
 
-class Differ<Node> {
-  static final EMPTY = {};
+typedef DifferHandler<Node> = (
+  nodes:Array<VNode<Node>>,
+  parent:Component<Node>,
+  context:Context<Node>
+) -> Rendered<Node>; 
 
-  public function new() {}
+class Differ {
+  static final EMPTY = {};
   
-  public function diffObject(
+  public static function diffObject<Node>(
     oldProps:DynamicAccess<Dynamic>,
     newProps:DynamicAccess<Dynamic>,
     apply:(key:String, oldValue:Dynamic, newValue:Dynamic)->Void
@@ -35,7 +39,7 @@ class Differ<Node> {
     }
   }
 
-  public function render(
+  public static function render<Node>(
     node:Node, 
     nodes:Array<VNode<Node>>,
     parent:Component<Node>,
@@ -50,11 +54,12 @@ class Differ<Node> {
         previousCount = before.getNodes().length;
         updateAll(before, nodes, parent, context);
     }
+
     engine.setRendered(node, rendered);
     setChildren(previousCount, engine.traverseChildren(node), rendered);
   }
 
-  public function renderAll(
+  public static function renderAll<Node>(
     nodes:Array<VNode<Node>>,
     parent:Component<Node>,
     context:Context<Node>
@@ -63,7 +68,7 @@ class Differ<Node> {
     return differ(nodes, parent, context);
   }
 
-  public function updateAll(
+  public static function updateAll<Node>(
     before:Rendered<Node>,
     nodes:Array<VNode<Node>>,
     parent:Component<Node>,
@@ -78,12 +83,13 @@ class Differ<Node> {
       }
     });
     var result = differ(nodes, parent, context);
+
     before.dispose(context);
 
     return result;
   }
 
-  public function setChildren(
+  public static function setChildren<Node>(
     previousCount:Int,
     cursor:Cursor<Node>,
     next:Rendered<Node>
@@ -104,7 +110,7 @@ class Differ<Node> {
     }
   }
 
-  function createDiffer(previous:(type:Dynamic, key:Key)->Option<RNode<Node>>) {
+  static function createDiffer<Node>(previous:(type:Dynamic, key:Key)->Option<RNode<Node>>):DifferHandler<Node> {
     return function differ(
       nodes:Array<VNode<Node>>,
       parent:Component<Node>,

@@ -20,7 +20,7 @@ class Context<Node> {
     context uses. Usually where you'll bootstrap an app.
   **/
   public function render(node:Node, factory:(context:Context<Node>)->VNode<Node>) {
-    scope(ctx -> engine.differ.render(
+    scope(ctx -> Differ.render(
       node,
       [ factory(ctx) ],
       null,

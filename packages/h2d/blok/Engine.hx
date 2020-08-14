@@ -11,12 +11,9 @@ import blok.internal.StyleList;
 import blok.internal.VNode;
 
 class Engine implements blok.internal.Engine<Object> {
-  public final differ:Differ<Object>;
   final renderedRegistry:Map<Object, Rendered<Object>> = [];
   
-  public function new() {
-    this.differ = new Differ();
-  }
+  public function new() {}
   
 	public function createPlaceholder(target:Component<Object>):VNode<Object> {
     return VNative(ObjectType.empty(), {});

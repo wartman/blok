@@ -16,13 +16,11 @@ using StringTools;
 class Engine implements blok.internal.Engine<Node> {
   static inline final RENDERED_PROP = '__blok_rendered';
 
-  public final differ:Differ<Node>;
   final sheet:CSSStyleSheet;
   final defined:Map<String, Bool> = [];
   final indices:Map<String, Int> = [];
 
   public function new() {
-    differ = new Differ();
     var el = Browser.document.createStyleElement();
     Browser.document.head.appendChild(el);
     sheet = cast el.sheet;

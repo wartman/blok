@@ -39,18 +39,17 @@ class Component<Node> {
 
   public function __render(context:Context<Node>) {
     var engine = context.engine;
-    var differ = engine.differ;
 
     __preRender();
 
     switch __rendered {
       case null:
-        __rendered = differ.renderAll(__processRender(context), this, context);
+        __rendered = Differ.renderAll(__processRender(context), this, context);
       case before:
         var previousCount = 0;
         var first:Node = null;
 
-        __rendered = differ.updateAll(before, __processRender(context), this, context);
+        __rendered = Differ.updateAll(before, __processRender(context), this, context);
 
         for (node in before.getNodes()) {
           if (first == null) first = node;
@@ -58,7 +57,7 @@ class Component<Node> {
         }
 
         if (first != null) {
-          differ.setChildren(previousCount, engine.traverseSiblings(first), __rendered);
+          Differ.setChildren(previousCount, engine.traverseSiblings(first), __rendered);
         }
     }
   }

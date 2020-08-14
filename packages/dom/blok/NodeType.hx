@@ -4,6 +4,7 @@ import haxe.ds.Map;
 import js.Browser;
 import js.html.Node;
 import js.html.Element;
+import blok.internal.Differ;
 
 class NodeType<Props:{}> {
   public static inline final SVG_NS = 'http://www.w3.org/2000/svg';
@@ -57,7 +58,7 @@ class NodeType<Props:{}> {
   
   public function create(props:Props, context:Context):Node {
     var node = Browser.document.createElement(tag);
-    context.engine.differ.diffObject(
+    Differ.diffObject(
       {}, 
       props, 
       updateNodeAttribute.bind(node)
@@ -66,7 +67,7 @@ class NodeType<Props:{}> {
   }
 
   public function update(node:Node, previousProps:Props, props:Props, context:Context):Node {
-    context.engine.differ.diffObject(
+    Differ.diffObject(
       previousProps, 
       props, 
       updateNodeAttribute.bind(node)

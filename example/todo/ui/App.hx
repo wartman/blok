@@ -8,7 +8,6 @@ import blok.scaffold.PortalManager;
 using Blok;
 
 class App extends Component {
-
   override function render(context:Context):VNode {
     return TodoState.provide(context, {
       todos: []
@@ -36,5 +35,4 @@ class App extends Component {
       ]
     }));
   }
-
 }

@@ -139,7 +139,7 @@ class ComponentBuilder {
             Context.error('@init methods cannot have any arguments', field.pos);
           }
           var name = field.name;
-          initHooks.push(macro @:pos(field.pos) this.$name());
+          initHooks.push(macro @:pos(field.pos) inline this.$name());
         default:
           Context.error('@init must be used on a method', field.pos);
       }
@@ -155,7 +155,7 @@ class ComponentBuilder {
             Context.error('@dispose methods cannot have any arguments', field.pos);
           }
           var name = field.name;
-          disposeHooks.push(macro @:pos(field.pos) this.$name());
+          disposeHooks.push(macro @:pos(field.pos) inline this.$name());
         default:
           Context.error('@dispose must be used on a method', field.pos);
       }
@@ -171,7 +171,7 @@ class ComponentBuilder {
             Context.error('@effect methods cannot have any arguments', field.pos);
           }
           var name = field.name;
-          effectHooks.push(macro @:pos(field.pos) this.$name());
+          effectHooks.push(macro @:pos(field.pos) inline this.$name());
         default:
           Context.error('@effect must be used on a method', field.pos);
       }

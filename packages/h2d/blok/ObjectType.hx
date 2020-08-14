@@ -2,6 +2,7 @@ package blok;
 
 import h2d.Object;
 import blok.internal.Context;
+import blok.internal.Differ;
 
 class ObjectType<Props:{}> {
   static var __empty:ObjectType<Dynamic>;
@@ -21,12 +22,12 @@ class ObjectType<Props:{}> {
 
 	public function create(props:Props, context:Context<Object>):Object {
     var node = factory();
-    context.engine.differ.diffObject({}, props, applyProperty.bind(node));
+    Differ.diffObject({}, props, applyProperty.bind(node));
     return node;
   }
 
   public function update(node:Object, previousProps:Props, props:Props, context:Context<Object>):Object {
-    context.engine.differ.diffObject(previousProps, props, applyProperty.bind(node));
+    Differ.diffObject(previousProps, props, applyProperty.bind(node));
     return node;
   }
 

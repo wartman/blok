@@ -1,7 +1,6 @@
 package blok.internal;
 
 interface Engine<Node> {
-  final differ:Differ<Node>;
   public function createPlaceholder(target:Component<Node>):VNode<Node>;
   public function traverseSiblings(first:Node):Cursor<Node>;
   public function traverseChildren(parent:Node):Cursor<Node>;

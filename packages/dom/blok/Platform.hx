@@ -5,7 +5,6 @@ import js.html.Element;
 import blok.internal.VNode;
 
 class Platform {
-  
   inline public static function createContext() {
     return new blok.internal.Context(new Engine());
   }
@@ -15,5 +14,4 @@ class Platform {
     var context = createContext();
     context.render(el, factory);
   }
-
 }

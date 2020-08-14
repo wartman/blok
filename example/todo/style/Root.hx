@@ -7,7 +7,7 @@ using Blok;
 class Root extends Style {
   override function render():Array<VStyleExpr> {
     return [
-      Style.global(Style.properties([
+      Style.global(
         Style.child('body', Style.properties([
           Style.property('background-color', Config.darkColor),
           Style.property('margin', EdgeInsets.all(Px(0))),
@@ -18,7 +18,7 @@ class Root extends Style {
             color: Config.darkColor
           })
         ]))
-      ])),
+      ),
       Flex.export({
         direction: Row
       }),
