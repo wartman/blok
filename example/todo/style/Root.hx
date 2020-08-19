@@ -7,24 +7,38 @@ using Blok;
 class Root extends Style {
   override function render():Array<VStyleExpr> {
     return [
-      Style.global(
-        Style.child('body', Style.properties([
-          Style.property('background-color', Config.darkColor),
-          Style.property('margin', EdgeInsets.all(Px(0))),
-          Style.property('padding', EdgeInsets.all(Px(0))),
-          Font.export({
-            family: 'sans-serif',
-            size: Px(13),
-            color: Config.darkColor
-          })
-        ]))
-      ),
+      globals(),
       Flex.export({
         direction: Row
       }),
       Box.export({
-        padding: EdgeInsets.all(Config.mediumGap)
-      })
+        padding: EdgeInsets.all(Config.mediumGap),
+        width: Px(900)
+      }),
+      MediaQuery.maxWidth(Px(900), [
+        Box.export({
+          width: Pct(100)
+        })
+      ])
     ];
+  }
+
+  inline function globals() {
+    return Style.global([
+      Style.child('#root', [
+        Style.property('width', Pct(100)),
+        Flex.horizontallyCentered()
+      ]),
+      Style.child('body', [
+        Style.property('background-color', Config.darkColor),
+        Style.property('margin', EdgeInsets.all(Px(0))),
+        Style.property('padding', EdgeInsets.all(Px(0))),
+        Font.export({
+          family: 'sans-serif',
+          size: Px(13),
+          color: Config.darkColor
+        })
+      ])
+    ]);
   }
 }

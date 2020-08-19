@@ -1,7 +1,6 @@
 package todo.state;
 
 class Todo {
-
   public static function fromJson(data:{ id:Int, content:String, complete:Bool }) {
     return new Todo(data.content, data.id, data.complete);
   }
@@ -23,5 +22,4 @@ class Todo {
       complete: complete
     };
   }
-
 }

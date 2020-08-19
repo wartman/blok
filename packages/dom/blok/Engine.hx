@@ -5,7 +5,6 @@ import js.html.Node;
 import js.html.Element;
 import js.html.CSSStyleSheet;
 import blok.internal.VStyle;
-import blok.internal.Differ;
 import blok.internal.VNode;
 import blok.internal.Rendered;
 import blok.internal.StyleList;

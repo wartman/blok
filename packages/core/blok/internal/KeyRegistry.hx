@@ -1,7 +1,6 @@
 package blok.internal;
 
 class KeyRegistry<Node> implements Registry<Key, RNode<Node>> {
-  
   var strings:Map<String, RNode<Node>>;
   var objects:Map<{}, RNode<Node>>;
 
@@ -38,5 +37,4 @@ class KeyRegistry<Node> implements Registry<Key, RNode<Node>> {
     if (strings != null) for (v in strings) cb(v);
     if (objects != null) for (v in objects) cb(v);
   }
-
 }

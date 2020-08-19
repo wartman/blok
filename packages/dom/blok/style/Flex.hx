@@ -1,5 +1,6 @@
 package blok.style;
 
+import h2d.Text.Align;
 import blok.internal.Style;
 import blok.internal.VStyle;
 
@@ -70,6 +71,28 @@ enum FlexAlignItems {
 }
 
 class Flex extends Style {
+  public inline static function centered() {
+    return Flex.export({
+      direction: Row,
+      justifyContent: Content(Center),
+      alignItems: Position(Center)
+    });
+  }
+
+  public inline static function horizontallyCentered() {
+    return Flex.export({
+      direction: Row,
+      justifyContent: Content(Center)
+    });
+  }
+
+  public inline static function verticallyCentered() {
+    return Flex.export({
+      direction: Column,
+      justifyContent: Content(Center)
+    });
+  } 
+
   @prop var direction:FlexDirection;
   @prop var wrap:FlexWrap = null;
   @prop var justifyContent:FlexJustifyContent = null;
@@ -99,7 +122,7 @@ class Flex extends Style {
       case Normal: 'normal';
       case Stretch: 'stretch';
       case Baseline(pos) if (pos == null): 'baseline';
-      case Baseline(pos): '${pos} baselin';
+      case Baseline(pos): '${pos} baseline';
       case Position(pos, overflow) if (overflow == null): pos;
       case Position(pos, overflow): '$overflow $pos'; 
     }));

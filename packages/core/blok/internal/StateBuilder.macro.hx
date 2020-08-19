@@ -187,49 +187,83 @@ class StateBuilder {
       var createParams = cls.params.length > 0
         ? [ for (p in cls.params) { name: p.name, constraints: BuilderHelpers.extractTypeParams(p) } ]
         : [];
-      var type = Context
-        .getType(clsName)
-        .toComplexType();
+      var type = Context.getType(clsName);
       var nodeType = Context.getType(nodeTypeName).toComplexType();
+      var ct = (switch type {
+        case TInst(t, _): haxe.macro.Type.TInst(t, cls.params.map(f -> f.t));
+        default: throw 'assert';
+      }).toComplexType();
       var providerFactory = macro:(context:blok.internal.Context<$nodeType>)->blok.internal.VNode<$nodeType>;
-      var subscriberFactory = macro:(data:$type)->blok.internal.VNode<$nodeType>;
+      var subscriberFactory = macro:(data:$ct)->blok.internal.VNode<$nodeType>;
   
-      return (macro class {
-        public static function provide(
-          context:blok.internal.Context<$nodeType>, 
-          props:$propType,
-          build:$providerFactory
-        ):blok.internal.VNode<$nodeType> {
-          return VComponent({
-            __create: function (props, context, parent) {
-              var state = new $clsTp(props, context, parent, build);
-              state.__inserted = true;
+      var newFields:Array<Field> = [
+
+        {
+          name: 'provide',
+          pos: (macro null).pos,
+          access: [ APublic, AStatic ],
+          kind: FFun({
+            params: createParams,
+            ret: macro:blok.internal.VNode<$nodeType>,
+            args: [
+              { name: 'context', type: macro:blok.internal.Context<$nodeType> },
+              { name: 'props', type: macro:$propType },
+              { name: 'build', type: macro:$providerFactory  }
+            ],
+            expr: macro return VComponent({
+              __create: function (props, context, parent) {
+                var state = new $clsTp(props, context, parent, build);
+                state.__inserted = true;
+                return state;
+              }
+            }, props)
+          })
+        },
+
+        {
+          name: 'subscribe',
+          pos: (macro null).pos,
+          access: [ APublic, AStatic ],
+          kind: FFun({
+            params: createParams,
+            ret: macro:blok.internal.VNode<$nodeType>,
+            args: [
+              { name: 'context', type: macro:blok.internal.Context<$nodeType> },
+              { name: 'build', type: macro:$subscriberFactory }
+            ],
+            expr: macro {
+              var state = forContext(context);
+              return VComponent(blok.internal.StateSubscriber, {
+                state: state,
+                build: build
+              });
+            }
+          })
+        },
+
+        {
+          name: 'forContext',
+          pos: (macro null).pos,
+          access: [ APublic, AStatic ],
+          kind: FFun({
+            params: createParams,
+            ret: ct,
+            args: [
+              { name: 'context', type: macro:blok.internal.Context<$nodeType> },
+            ],
+            expr: macro {
+              var state = context.get($v{id});
+              #if debug
+                if (state == null) {
+                  throw 'The required state ' + $v{cls.pack.concat([cls.name]).join('.')} + ' was not provided.';
+                }
+              #end
               return state;
             }
-          }, props);
+          })
         }
 
-        public static function subscribe(
-          context:blok.internal.Context<$nodeType>,
-          build:$subscriberFactory
-        ):blok.internal.VNode<$nodeType> {
-          var state = forContext(context);
-          return VComponent(blok.internal.StateSubscriber, {
-            state: state,
-            build: build
-          });
-        }
-
-        public static function forContext(context:blok.internal.Context<$nodeType>):$type {
-          var state = context.get($v{id});
-          #if debug
-            if (state == null) {
-              throw 'The required state ' + $v{cls.pack.concat([cls.name]).join('.')} + ' was not provided.';
-            }
-          #end
-          return state;
-        }
-
+      ].concat((macro class {
         var $PROPS:$propType;
 
         public function new($INCOMING_PROPS:$propType, __context, __parent, __build:$providerFactory) {
@@ -251,8 +285,9 @@ class StateBuilder {
         override function __updateProps($INCOMING_PROPS:Dynamic) {
           $b{updates};
         }
+      }).fields);
 
-      }).fields;
+      return newFields;
     });
 
     return builder.export();

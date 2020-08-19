@@ -101,7 +101,7 @@ class Component<Node> {
   }
 
   function __registerEffects() {
-    // void
+    // noop
   }
   
   function __requestUpdate() {

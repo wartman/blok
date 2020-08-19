@@ -4,11 +4,11 @@ import blok.internal.Style;
 import blok.internal.VStyle;
 
 class Box extends Style {
-   
   @prop var padding:EdgeInsets = null;
   @prop var spacing:EdgeInsets = null;
   @prop var height:Unit = null;
   @prop var width:Unit = null;
+  @prop var centerVertical:Bool = false;
 
   override function render():Array<VStyleExpr> {
     var props:Array<VStyleExpr> = [
@@ -24,18 +24,17 @@ class Box extends Style {
       // horizontal spacing, depending on context.
       props = props.concat([
         Style.property('margin', spacing),
-        Style.modifier(':first-child', Style.properties([
+        Style.modifier(':first-child', [
           Style.property('margin-left', Unit.None),
           Style.property('margin-top', Unit.None)
-        ])),
-        Style.modifier(':last-child', Style.properties([
+        ]),
+        Style.modifier(':last-child', [
           Style.property('margin-right', Unit.None),
           Style.property('margin-bottom', Unit.None)
-        ]))
+        ])
       ]);
     }
 
     return props;
   }
-
 }

@@ -1,8 +1,5 @@
 package blok.scaffold;
 
-import blok.State;
-import blok.VNode;
-
 using Lambda;
 
 typedef PortalEntry = { key:String, vnode:VNode }; 

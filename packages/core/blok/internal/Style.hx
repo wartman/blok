@@ -8,20 +8,20 @@ class Style {
     return EScope(scope, expr);
   }
 
-  public static inline function global(expr:VStyleExpr) {
-    return scope(SGlobal, expr);
+  public static inline function global(exprs:Array<VStyleExpr>) {
+    return scope(SGlobal, properties(exprs));
   }
 
-  public static inline function wrap(name:String, expr:VStyleExpr) {
-    return scope(SWrapper(name), expr);
+  public static inline function wrap(name:String, exprs:Array<VStyleExpr>) {
+    return scope(SWrapper(name), properties(exprs));
   }
   
-  public static inline function child(name:String, expr:VStyleExpr) {
-    return scope(SChild(name), expr);
+  public static inline function child(name:String, exprs:Array<VStyleExpr>) {
+    return scope(SChild(name), properties(exprs));
   }
   
-  public static inline function modifier(modifier:String, expr:VStyleExpr) {
-    return scope(SModifier(modifier), expr);
+  public static inline function modifier(modifier:String, exprs:Array<VStyleExpr>) {
+    return scope(SModifier(modifier), properties(exprs));
   }
 
   public inline static function raw(value:String):VStyleExpr {

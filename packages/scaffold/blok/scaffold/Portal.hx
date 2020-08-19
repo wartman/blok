@@ -1,9 +1,5 @@
 package blok.scaffold;
 
-import blok.Context;
-import blok.VNode;
-import blok.Component;
-
 class Portal extends Component {
   static var id:Int = 0;
 

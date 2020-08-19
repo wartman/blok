@@ -11,7 +11,7 @@ class Card extends Style {
     return [
       Style.property('color', color),
       Box.export({
-        padding: EdgeInsets.symmetric(Px(10), Px(20))
+        padding: EdgeInsets.symmetric(Config.smallGap, Config.mediumGap)
       }),
       Border.export({
         width: Px(2),

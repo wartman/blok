@@ -1,9 +1,5 @@
 package blok.scaffold;
 
-import blok.VNode;
-import blok.Context;
-import blok.Component;
-
 class PortalManager extends Component {
   @prop var children:Array<VNode>;
 

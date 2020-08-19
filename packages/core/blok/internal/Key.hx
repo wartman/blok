@@ -1,7 +1,6 @@
 package blok.internal;
 
 abstract Key({}) from {} to {} {
-  
   @:from public static function ofFloat(f:Float):Key {
     return Std.string(f);
   }
@@ -9,5 +8,4 @@ abstract Key({}) from {} to {} {
   public function isString() {
     return Std.is(this, String);
   }
-
 }

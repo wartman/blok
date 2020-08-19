@@ -2,6 +2,9 @@ package blok.internal;
 
 import haxe.ds.Map;
 
+/**
+  Context stores the current state of an app.
+**/
 class Context<Node> {
   public final engine:Engine<Node>;
 
@@ -30,9 +33,11 @@ class Context<Node> {
 
   /**
     Handle a callback and fire off any effects when done.
+
+    This is probably not the best way to handle effects, but it was simple
+    to quickly implement.
   **/
-  // todo: this might be part of making Blok async?
-  public function scope(cb:(context:Context<Node>)->Void) {
+  public inline function scope(cb:(context:Context<Node>)->Void) {
     clearEffects();
     cb(this);
     dispatchEffects();

@@ -2,7 +2,7 @@ package blok.internal;
 
 class Delay {
   #if js
-  static final hasRaf:Bool = js.Syntax.code("typeof window != 'undefined' && 'requestAnimationFrame' in window");
+    static final hasRaf:Bool = js.Syntax.code("typeof window != 'undefined' && 'requestAnimationFrame' in window");
   #end
 
   public static function add(exec:() -> Void) {
