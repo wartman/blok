@@ -1,6 +1,6 @@
 package todo.ui;
 
-import blok.style.*;
+import blok.ui.style.*;
 import todo.style.Config;
 import todo.style.Card;
 import todo.state.TodoState;

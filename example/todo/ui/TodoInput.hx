@@ -7,6 +7,7 @@ class TodoInput extends Component {
   @prop var requestClose:()->Void = null;
   @prop var initialValue:String = '';
   @prop var placeholder:String = '';
+  
   var ref:js.html.InputElement;
 
   function clickOff(e:js.html.Event) {

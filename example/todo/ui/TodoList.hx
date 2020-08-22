@@ -1,6 +1,6 @@
 package todo.ui;
 
-import blok.style.*;
+import blok.ui.style.*;
 import todo.state.TodoState;
 
 using Blok;

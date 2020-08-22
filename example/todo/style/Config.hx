@@ -1,6 +1,6 @@
 package todo.style;
 
-import blok.style.Color;
+import blok.ui.style.Color;
 
 using Blok;
 

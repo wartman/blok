@@ -2,18 +2,20 @@ package blok;
 
 import js.Browser;
 import js.html.Node;
+import js.html.Event;
 import js.html.Element;
 import js.html.CSSStyleSheet;
-import blok.internal.VStyle;
-import blok.internal.VNode;
-import blok.internal.Rendered;
-import blok.internal.StyleList;
-import blok.style.BaseStyle;
+import blok.core.VStyle;
+import blok.core.Rendered;
+import blok.core.StyleList;
+import blok.ui.style.BaseStyle;
 
 using StringTools;
 
-class Engine implements blok.internal.Engine<Node> {
+class Engine implements blok.core.Engine<Node, Event> {
   static inline final RENDERED_PROP = '__blok_rendered';
+
+  public final builder = new NativeNodeBuilder();
 
   final sheet:CSSStyleSheet;
   final defined:Map<String, Bool> = [];
@@ -24,10 +26,6 @@ class Engine implements blok.internal.Engine<Node> {
     Browser.document.head.appendChild(el);
     sheet = cast el.sheet;
     registerStyle(VStyleDef(BaseStyle));
-  }
-
-  public function createPlaceholder(target:blok.internal.Component<Node>):VNode<Node> {
-    return Html.text('');
   }
 
   public function traverseSiblings(first:Node):Cursor {

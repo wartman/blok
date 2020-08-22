@@ -1,8 +1,8 @@
 package blok;
 
 import h2d.Object;
-import blok.internal.Context;
-import blok.internal.Differ;
+import blok.core.Context;
+import blok.core.Differ;
 
 class ObjectType<Props:{}> {
   static var __empty:ObjectType<Dynamic>;

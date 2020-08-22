@@ -2,7 +2,7 @@ package blok;
 
 import js.html.Node;
 
-class Cursor implements blok.internal.Cursor<Node> {
+class Cursor implements blok.core.Cursor<Node> {
   final parent:Node;
   var currentNode:Node;
 

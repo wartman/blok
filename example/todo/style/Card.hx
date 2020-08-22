@@ -1,6 +1,6 @@
 package todo.style;
 
-import blok.style.*;
+import blok.ui.style.*;
 
 using Blok;
 
@@ -9,14 +9,17 @@ class Card extends Style {
 
   override function render():Array<VStyleExpr> {
     return [
-      Style.property('color', color),
+      Style.property('color', if (color.getName() == Config.lightColor.getName()) {
+        Config.darkColor;
+      } else {
+        Config.lightColor;
+      }),
+      Style.property('background-color', color),
       Box.export({
         padding: EdgeInsets.symmetric(Config.smallGap, Config.mediumGap)
       }),
       Border.export({
-        width: Px(2),
-        type: Solid,
-        color: color
+        radius: Px(5)
       })
     ];
   }

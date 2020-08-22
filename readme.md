@@ -8,6 +8,17 @@ About
 
 Blok is a UI framework for Haxe designed to be simple and free of dependencies or DSLs. Everything is written in normal Haxe, with just a little macro magic to make things simpler.
 
+Packages
+--------
+
+Packages will be split out eventually, but they're all in one place for now (for ease of development and because I'm not sure what works best yet).
+
+- blok-core: The base implementation used everywhere.
+- blok-dom: Implementation for browsers, plus HTML implementation.
+- blok-static: Static HTML rendering?
+- blok-h2d: Implementation for heaps, plus implementations for most h2d classes.
+- blok-ui: Cross-platform UI which should work regardless of implementation.
+
 Example
 -------
 

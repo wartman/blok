@@ -1,6 +1,6 @@
 package blok;
 
-typedef Style = blok.internal.Style;
-typedef VStyle = blok.internal.VStyle;
-typedef VStyleExpr = blok.internal.VStyle.VStyleExpr;
-typedef Unit = blok.internal.VStyle.Unit;
+typedef Style = blok.core.Style;
+typedef VStyle = blok.core.VStyle;
+typedef VStyleExpr = blok.core.VStyle.VStyleExpr;
+typedef Unit = blok.core.VStyle.Unit;

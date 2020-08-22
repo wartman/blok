@@ -4,7 +4,7 @@ import haxe.ds.Map;
 import js.Browser;
 import js.html.Node;
 import js.html.Element;
-import blok.internal.Differ;
+import blok.core.Differ;
 
 class NodeType<Props:{}> {
   public static inline final SVG_NS = 'http://www.w3.org/2000/svg';

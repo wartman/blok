@@ -1,6 +1,6 @@
 -cp packages/core
 -cp packages/dom
--cp packages/scaffold
+-cp packages/ui
 -cp example
 # -cp test
 
@@ -12,6 +12,6 @@
 
 -main Todo
 
--lib heaps
+# -lib heaps
 
 -js dist/test.js

@@ -2,7 +2,7 @@ package blok;
 
 import h2d.Object;
 
-class Cursor implements blok.internal.Cursor<Object> {
+class Cursor implements blok.core.Cursor<Object> {
   final parent:Object;
   var pos:Int;
 

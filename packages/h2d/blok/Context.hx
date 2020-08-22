@@ -1,3 +1,3 @@
 package blok;
 
-typedef Context = blok.internal.Context<h2d.Object>; 
+typedef Context = blok.core.Context<h2d.Object>; 

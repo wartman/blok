@@ -1,16 +1,16 @@
 package blok;
 
 import h2d.Object;
-import blok.internal.Differ;
-import blok.internal.Cursor;
-import blok.internal.Context;
-import blok.internal.Rendered;
-import blok.internal.Component;
-import blok.internal.Style;
-import blok.internal.StyleList;
-import blok.internal.VNode;
+import blok.core.Differ;
+import blok.core.Cursor;
+import blok.core.Context;
+import blok.core.Rendered;
+import blok.core.Component;
+import blok.core.Style;
+import blok.core.StyleList;
+import blok.core.VNode;
 
-class Engine implements blok.internal.Engine<Object> {
+class Engine implements blok.core.Engine<Object> {
   final renderedRegistry:Map<Object, Rendered<Object>> = [];
   
   public function new() {}

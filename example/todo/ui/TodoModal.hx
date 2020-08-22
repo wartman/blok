@@ -1,9 +1,9 @@
 package todo.ui;
 
 import js.Browser;
-import blok.style.Background;
-import blok.scaffold.Portal;
-import blok.internal.Delay;
+import blok.ui.style.Background;
+import blok.ui.Portal;
+import blok.core.Delay;
 import blok.util.Body;
 import todo.style.Overlay;
 import todo.style.Config;
@@ -46,9 +46,6 @@ class TodoModal extends Component {
             style: [
               Card.style({
                 color: Config.lightColor
-              }, 'modal'),
-              Background.style({
-                color: Config.darkColor
               }, 'modal')
             ],
             attrs: {

@@ -1,6 +1,6 @@
 package blok;
 
 import js.html.Node;
-import blok.internal.VNode;
+import blok.core.VNode;
 
 typedef Children = Array<VNode<Node>>;
