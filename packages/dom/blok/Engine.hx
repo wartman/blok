@@ -66,7 +66,7 @@ class Engine implements blok.core.Engine<Node, Event> {
               if (!defined.contains(name)) {
                 defined.push(name);
                 definedClassNames.push(className);
-                addCss(prepareSelector(name), type.__create(props).render());
+                addCss('.${className}', type.__create(props).render());
               }
             case VStyleList(styles):
               registerStyle(styles);
@@ -164,9 +164,5 @@ class Engine implements blok.core.Engine<Node, Event> {
       .replace(')', '_')
       .replace('%', 'pct');
     // etc
-  }
-
-  function prepareSelector(name:String) {
-    return '.${escapeClassName(name.trim())}';
   }
 }
