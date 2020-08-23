@@ -5,6 +5,8 @@ import haxe.macro.Context;
 
 using haxe.macro.Tools;
 
+// @TODO: There is a lot of coppied code with ComponentBuilder here:
+//        try to DRY it up.
 class StateBuilder {
   static final PROPS = '__props';
   static final INCOMING_PROPS = '__incomingProps';

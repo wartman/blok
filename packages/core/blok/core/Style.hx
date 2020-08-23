@@ -36,7 +36,7 @@ class Style {
     return EChildren(props);
   }
 
-  public function getName(suffix:Null<String>):String {
+  public function getName(?suffix:Null<String>):String {
     return '';
   }
 

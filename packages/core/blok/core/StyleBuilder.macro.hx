@@ -142,7 +142,7 @@ class StyleBuilder {
           return ${name};
         }
 
-        override function getName($SUFFIX:Null<String>):String {
+        override function getName(?$SUFFIX:Null<String>):String {
           return ${name};
         }
 

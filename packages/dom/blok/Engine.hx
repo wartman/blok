@@ -18,14 +18,17 @@ class Engine implements blok.core.Engine<Node, Event> {
   public final builder = new NativeNodeBuilder();
 
   final sheet:CSSStyleSheet;
-  final defined:Map<String, Bool> = [];
+  final defined:Array<String> = [];
+  final definedClassNames:Array<String> = [];
   final indices:Map<String, Int> = [];
 
   public function new() {
     var el = Browser.document.createStyleElement();
     Browser.document.head.appendChild(el);
     sheet = cast el.sheet;
-    registerStyle(VStyleDef(BaseStyle));
+
+    var base = new BaseStyle({});
+    addCss(base.getName(), base.render());
   }
 
   public function traverseSiblings(first:Node):Cursor {
@@ -44,31 +47,38 @@ class Engine implements blok.core.Engine<Node, Event> {
     Reflect.setField(node, RENDERED_PROP, rendered);
   }
 
-  public function registerStyle(style:StyleList):Void {
-    for (s in style) switch s {
-      case VStyleDef(type, props, suffix):
-        var name = type.__generateName(props, suffix);
-        if (!defined.exists(name)) {
-          defined.set(name, true);
-          addCss(prepareSelector(name), type.__create(props).render());
-        }
-      case VStyleList(styles): 
-        registerStyle(styles);
-    }
-  }
-
   public function applyStyles(node:Node, style:StyleList):Void {
+    // Todo: this could likely be made much more efficient.
     switch Std.downcast(node, Element) {
       case null:
       case el:
-        registerStyle(style);
-        var names = style.getNames().map(escapeClassName);
-        var definedNames = [ for (key in defined.keys()) key ].map(escapeClassName);
-        for (name in el.classList) {
-          // seems iffy and innefficent, but this is how we might remove classes?
-          if (definedNames.contains(name) && !names.contains(name)) el.classList.remove(name);
+        var classNames:Array<String> = [];
+        function registerStyle(style:StyleList) {
+          for (s in style) switch s {
+            case VStyleDef(type, props, suffix):
+              // Todo: we have way too many names to deal with here.
+              //       We need to escape things better.
+              var name = type.__generateName(props, suffix);
+              var className = escapeClassName(name);
+
+              classNames.push(className);
+
+              if (!defined.contains(name)) {
+                defined.push(name);
+                definedClassNames.push(className);
+                addCss(prepareSelector(name), type.__create(props).render());
+              }
+            case VStyleList(styles):
+              registerStyle(styles);
+          }
         }
-        for (name in names) {
+
+        registerStyle(style);
+        
+        for (name in el.classList) {
+          if (definedClassNames.contains(name) && !classNames.contains(name)) el.classList.remove(name);
+        }
+        for (name in classNames) {
           if (!el.classList.contains(name)) el.classList.add(name);
         }
     }

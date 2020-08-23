@@ -1,6 +1,5 @@
 package blok.core;
 
-import blok.core.ClassBuilder.ClassBuilderHook;
 import haxe.macro.Expr;
 import haxe.macro.Context;
 

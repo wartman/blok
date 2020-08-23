@@ -1,7 +1,6 @@
 package todo.ui;
 
 import js.Browser;
-import blok.ui.style.Background;
 import blok.ui.Portal;
 import blok.core.Delay;
 import blok.util.Body;
