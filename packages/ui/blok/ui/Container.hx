@@ -12,7 +12,7 @@ class Container extends Component {
   // todo: handle some simple style stuff in here?
   
   override function render(context:Context):VNode {
-    return context.engine.builder.container({
+    return context.engine.createContainer({
       style: style,
       children: children
     });

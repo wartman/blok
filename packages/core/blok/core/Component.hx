@@ -64,7 +64,7 @@ class Component<Node> {
 
   inline function __processRender(context:Context<Node>):Array<VNode<Node>> {
     return switch render(context) {
-      case null | VFragment([], _): [context.engine.builder.placeholder({ component: this })];
+      case null | VFragment([], _): [context.engine.createPlaceholder({ component: this })];
       case VFragment(children, _): children;
       case node: [node];
     }
