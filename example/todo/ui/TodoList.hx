@@ -1,6 +1,6 @@
 package todo.ui;
 
-import blok.ui.style.*;
+import todo.style.CardGrid;
 import todo.state.TodoState;
 
 using Blok;
@@ -8,9 +8,7 @@ using Blok;
 class TodoList extends Component {
   override function render(context:Context):VNode {
     return TodoState.subscribe(context, state -> Html.ul({
-      style: Box.style({
-        padding: EdgeInsets.symmetric(Px(20), None)
-      }),
+      style: CardGrid.style({}),
       children: if (state.visibleTodos.length == 0) [
         TodoPlaceholder.node({})
       ] else  [

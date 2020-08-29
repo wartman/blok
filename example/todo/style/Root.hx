@@ -9,7 +9,7 @@ class Root extends Style {
     return [
       globals(),
       Flex.export({
-        direction: Row
+        direction: Column
       }),
       Box.export({
         padding: EdgeInsets.all(Config.mediumGap),

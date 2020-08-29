@@ -4,6 +4,8 @@ import blok.core.VStyle;
 
 @:autoBuild(blok.core.StyleBuilder.build())
 class Style {
+  public static macro function define(e:haxe.macro.Expr.ExprOf<Array<blok.core.VStyle.VStyleExpr>>);
+
   public static inline function scope(scope:VStyleExprScope, expr:VStyleExpr) {
     return EScope(scope, expr);
   }

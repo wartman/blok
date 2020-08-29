@@ -65,9 +65,7 @@ class StateBuilder {
           f.kind = FProp('get', 'never', t, null);
 
           builder.add((macro class {
-
             function $getName() return $i{PROPS}.$name;
-
           }).fields);
 
           addProp(name, t, e != null);
@@ -101,11 +99,6 @@ class StateBuilder {
       options: [],
       build: function (_, builder, f) switch f.kind {
         case FVar(t, e):
-          var name = f.name;
-          var computeName = '__compute_${name}';
-          var backingName = '__computedValue_${name}';
-          var getName = 'get_${name}';
-
           if (t == null) {
             Context.error('Types cannot be inferred for @computed vars', f.pos);
           }
@@ -113,6 +106,11 @@ class StateBuilder {
           if (e == null) {
             Context.error('An expression is required for @computed', f.pos);
           }
+
+          var name = f.name;
+          var computeName = '__compute_${name}';
+          var backingName = '__computedValue_${name}';
+          var getName = 'get_${name}';
 
           f.kind = FProp('get', 'never', t, null);
 
@@ -122,7 +120,6 @@ class StateBuilder {
           }
 
           builder.add((macro class {
-  
             var $backingName:$t = null;
   
             function $computeName() {
@@ -135,7 +132,6 @@ class StateBuilder {
               }
               return this.$backingName;
             }
-  
           }).fields);
 
           updates.push(macro @:pos(f.pos) this.$backingName = null);

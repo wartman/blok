@@ -107,6 +107,11 @@ class Component<Node> {
   function __requestUpdate() {
     if (__dirty) return;
     __dirty = true;
+  
+    // The idea here is that we're making sure that we never render things
+    // more than once in a component tree every update.
+    //
+    // Probably needs some testing, but that's why all this logic is here.
     if (__parent == null) {
       Delay.add(() -> __context.scope(__render));
     } else {

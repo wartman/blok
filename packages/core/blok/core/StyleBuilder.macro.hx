@@ -88,6 +88,7 @@ class StyleBuilder {
           name: 'style',
           access: [ AStatic, APublic, AInline ],
           pos: cls.pos,
+          meta: [],
           kind: FFun({
             ret: macro:blok.core.VStyle,
             params: cls.params.length > 0
@@ -105,6 +106,7 @@ class StyleBuilder {
           name: 'export',
           access: [ AStatic, APublic ],
           pos: cls.pos,
+          meta: [],
           kind: FFun({
             ret: macro:blok.core.VStyle.VStyleExpr,
             params: cls.params.length > 0
@@ -124,6 +126,9 @@ class StyleBuilder {
           name: '__create',
           access: [ AStatic, APublic, AInline ],
           pos: cls.pos,
+          meta: [
+            { name: ':noCompletion', pos: (macro null).pos }
+          ],
           kind: FFun({
             ret: macro:blok.core.Style,
             params: cls.params.length > 0
@@ -138,12 +143,13 @@ class StyleBuilder {
       ].concat((macro class {
         var $PROPS:$propType;
 
+        @:noCompletion
         public static function __generateName($PROPS:$propType, $SUFFIX:Null<String>):String {
           return ${name};
         }
 
         override function getName(?$SUFFIX:Null<String>):String {
-          return ${name};
+          return __generateName(this.$PROPS, $i{SUFFIX});
         }
 
         public function new($INCOMING_PROPS:$propType) {

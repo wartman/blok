@@ -11,9 +11,7 @@ class Box extends Style {
   @prop var centerVertical:Bool = false;
 
   override function render():Array<VStyleExpr> {
-    var props:Array<VStyleExpr> = [
-      Style.property('display', 'block')
-    ];
+    var props:Array<VStyleExpr> = [];
     
     if (padding != null) props.push(Style.property('padding', padding));
     if (height != null) props.push(Style.property('height', height));

@@ -69,6 +69,9 @@ enum FlexAlignItems {
   Position(pos:FlexSelfPosition, ?overflow:FlexOverflowPosition);
 }
 
+/**
+  Generates rules for CSS flexbox layouts.
+**/
 class Flex extends Style {
   public inline static function centered() {
     return Flex.export({

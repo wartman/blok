@@ -82,7 +82,7 @@ abstract Value(ValueDef) to ValueDef from ValueDef {
       case ValueSingle(value): 
         value;
       case ValueCompound(values) | ValueList(values): 
-        values.map(v -> v.forIdentifier()).join('-');
+        values.map(v -> v.forIdentifier()).join('_');
       case ValueCall(_, value): 
         value.forIdentifier();
     }
@@ -108,19 +108,19 @@ abstract Value(ValueDef) to ValueDef from ValueDef {
 enum Unit {
   None;
   Auto;
-  Num(value:Int);
-  Px(value:Int);
-  Pct(value:Int);
-  Em(value:Int);
-  Rem(value:Int);
-  Vh(value:Int);
-  Vw(value:Int);
-  VMin(value:Int);
-  VMax(value:Int);
-  Deg(value:Int);
-  Sec(value:Int);
-  Ms(value:Int);
-  Fr(value:Int);
+  Num(value:Float);
+  Px(value:Float);
+  Pct(value:Float);
+  Em(value:Float);
+  Rem(value:Float);
+  Vh(value:Float);
+  Vw(value:Float);
+  VMin(value:Float);
+  VMax(value:Float);
+  Deg(value:Float);
+  Sec(value:Float);
+  Ms(value:Float);
+  Fr(value:Float);
 }
 
 class UnitTools {
@@ -142,6 +142,25 @@ class UnitTools {
       case Sec(value): '${value}s';
       case Ms(value): '${value}ms';
       case Fr(value): '${value}fr';
+    }
+  }
+
+  public static function negate(unit:Unit) {
+    return switch unit {
+      case None | Auto: unit;
+      case Num(value): Num(-value);
+      case Px(value): Px(-value);
+      case Pct(value): Pct(-value);
+      case Em(value): Em(-value);
+      case Rem(value): Rem(-value);
+      case Vh(value): Vh(-value);
+      case Vw(value): Vw(-value);
+      case VMin(value): VMin(-value);
+      case VMax(value): VMax(-value);
+      case Deg(value): Deg(-value);
+      case Sec(value): Sec(-value);
+      case Ms(value): Ms(-value);
+      case Fr(value): Fr(-value);
     }
   }
 }

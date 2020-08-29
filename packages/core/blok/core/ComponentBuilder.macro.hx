@@ -10,6 +10,7 @@ class ComponentBuilder {
   static final INCOMING_PROPS = '__incomingProps';
   static final OPTIONAL_META = {name: ':optional', pos: (macro null).pos};
 
+  // todo: The way I'm handling `nodeTypeName` feels really hacky.
   public static function build(nodeTypeName:String) {
     var fields = Context.getBuildFields();
     var cls = Context.getLocalClass().get();
@@ -192,6 +193,9 @@ class ComponentBuilder {
           name: '__create',
           pos: (macro null).pos,
           access: [ APublic, AStatic ],
+          meta: [
+            { name: ':noCompletion', pos: (macro null).pos }
+          ],
           kind: FFun({
             params: createParams,
             args: [
@@ -212,6 +216,7 @@ class ComponentBuilder {
           name: 'node',
           access: [ AStatic, APublic, AInline ],
           pos: (macro null).pos,
+          meta: [],
           kind: FFun({
             params: createParams,
             args: [
@@ -231,12 +236,12 @@ class ComponentBuilder {
         var $PROPS:$propType;
 
         public function new($INCOMING_PROPS:$propType, __context, __parent) {
-          __registerContext(__context);
           this.__parent = __parent;
           this.$PROPS = ${ {
             expr: EObjectDecl(initializers),
             pos: (macro null).pos
           } };
+          __registerContext(__context);
           $b{initHooks}
           __render(this.__context);
         }

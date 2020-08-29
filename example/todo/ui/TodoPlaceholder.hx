@@ -23,7 +23,8 @@ class TodoPlaceholder extends Component {
     var state = TodoState.forContext(context);
     return Html.li({
       style: Card.style({
-        color: Config.midColor
+        color: Config.midColor,
+        height: Px(150)
       }),
       attrs: {
         ondblclick: _ -> toggleModal()

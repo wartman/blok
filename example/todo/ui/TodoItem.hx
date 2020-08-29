@@ -1,7 +1,5 @@
 package todo.ui;
 
-import blok.ui.style.*;
-import todo.style.Config;
 import todo.style.Card;
 import todo.state.TodoState;
 import todo.state.Todo;
@@ -35,12 +33,9 @@ class TodoItem extends Component {
     var state = TodoState.forContext(context);
     return Html.li({
       key: todo.id,
-      style: [
-        Box.style({
-          spacing: EdgeInsets.symmetric(Config.mediumGap, Px(0))
-        }),
-        Card.style({})
-      ],
+      style: Card.style({
+        height: Px(150)
+      }),
       attrs: {
         ondblclick: _ -> startEditing()
       },
@@ -53,6 +48,10 @@ class TodoItem extends Component {
           });
         } else {
           Html.fragment([
+            Ui.header({
+              title: 'Todo ${todo.id}',
+              requestClose: () -> state.removeTodo(todo)
+            }),
             Html.input({
               attrs: {
                 type: Checkbox,
@@ -66,12 +65,12 @@ class TodoItem extends Component {
             Html.span({
               children: [ Html.text(todo.content) ]
             }),
-            Html.button({
-              attrs: {
-                onclick: _ -> state.removeTodo(todo)
-              },
-              children: [ Html.text('X') ]
-            })
+            // Html.button({
+            //   attrs: {
+            //     onclick: _ -> state.removeTodo(todo)
+            //   },
+            //   children: [ Html.text('X') ]
+            // })
           ]);
         }
       ]

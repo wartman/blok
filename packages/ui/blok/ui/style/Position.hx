@@ -6,6 +6,7 @@ import blok.core.VStyle;
 enum abstract PositionType(String) to String {
   var Absolute = 'absolute';
   var Fixed = 'fixed';
+  var Relative = 'relative';
 }
 
 class Position extends Style {

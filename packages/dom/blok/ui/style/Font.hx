@@ -8,7 +8,7 @@ class Font extends Style {
   @prop var size:Unit = null;
   @prop var spacing:Unit = null;
   @prop var weight:Int = null;
-  @prop var color:Color;
+  @prop var color:Color = null;
   // @todo: This class should handle @font-face as well
 
   override function render():Array<VStyleExpr> {

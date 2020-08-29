@@ -1,7 +1,9 @@
 package blok.core;
 
+import haxe.ds.List;
+
 class State<Node> extends Component<Node> {
-  var __subscribers:Array<() -> Void> = [];
+  var __subscribers:List<() -> Void> = new List();
   var __factory:(context:Context<Node>) -> VNode<Node>;
 
   override function __registerContext(context:Context<Node>) {
@@ -11,12 +13,12 @@ class State<Node> extends Component<Node> {
   }
   
   function __dispatch() {
-    for (sub in __subscribers) sub();
+    for (subscription in __subscribers) subscription();
   }
 
-  public function __subscribe(listener:() -> Void) {
-    __subscribers.push(listener);
-    return () -> __subscribers.remove(listener);
+  public function __subscribe(subscription:() -> Void) {
+    __subscribers.add(subscription);
+    return () -> __subscribers.remove(subscription);
   }
 
   function __getId():String {
