@@ -1,8 +1,8 @@
 -cp packages/core
--cp packages/dom
+-cp packages/h2d
 -cp packages/ui
--cp example
-# -cp test
+# -cp example
+-cp test
 
 -dce full
 
@@ -10,8 +10,8 @@
 -D debug
 -D js-es=6
 
--main Todo
+-main Run
 
-# -lib heaps
+-lib heaps
 
 -js dist/test.js

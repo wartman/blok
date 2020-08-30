@@ -1,3 +1,6 @@
+import h2d.Font;
+import hxd.App;
+
 using Blok;
 
 class ExampleStyle extends Style {
@@ -7,8 +10,8 @@ class ExampleStyle extends Style {
   override function render():Array<VStyleExpr> {
     return [
       Style.property('color', color),
-      Style.property('background-color', blok.style.Color.rgba(0, 0, 0, 0.5)),
-      blok.style.Box.export({
+      Style.property('background-color', blok.ui.style.Color.rgba(0, 0, 0, 0.5)),
+      blok.ui.style.Box.export({
         height: height
       })
     ];
@@ -17,6 +20,7 @@ class ExampleStyle extends Style {
 
 class ExampleTheme extends State {
   @prop var color:Value;
+  @prop var font:Font;
 
   @update
   public function setColor(color:Value) {
@@ -35,62 +39,80 @@ class ExampleComponent extends Component {
 
   @update
   public function makeShorter(by:Int) {
-    if (height - by <= 150) return null;
+    if (height - by <= 50) return null;
     return { height: height - by };
   }
 
   override function render(context:Context):VNode {
-    return ExampleTheme.subscribe(context, state ->
-      Html.div({
-        style: ExampleStyle.style({ color: state.color,  height: Px(height) }),
-        children: [
-          Html.h1({ children: [ Html.text(title) ] }),
-          Html.button({
-            attrs: {
-              onclick: e -> {
-                e.preventDefault();
-                makeTaller(20);
+    return ExampleTheme.subscribe(context, state -> Ui.flow({
+      props: {
+        minHeight: height,
+        maxHeight: 200
+      },
+      children: [
+        Ui.text({
+          props: {
+            font: state.font,
+            text: title
+          }
+        }),
+        Ui.interactive({
+          props: {
+            height: height,
+            width: 100,
+            backgroundColor: 0xFFCCCCCC,
+            onClick: e -> makeTaller(10)
+          },
+          children: [
+            Ui.text({
+              props: {
+                font: state.font,
+                text: 'More'
               }
-            },
-            children: [ Html.text('Taller!') ]
-          }),
-          Html.button({
-            attrs: {
-              onclick: e -> {
-                e.preventDefault();
-                makeShorter(20);
+            })
+          ]
+        }),
+        Ui.interactive({
+          props: {
+            height: height,
+            width: 100,
+            backgroundColor: 0xFFCCCCCC,
+            onClick: e -> makeShorter(10)
+          },
+          children: [
+            Ui.text({
+              props: {
+                font: state.font,
+                text: 'Less'
               }
-            },
-            children: [ Html.text('Shorter!') ]
-          })
-        ]
-      })
-    );
+            })
+          ]
+        })
+      ]
+    }));
   }
 }
 
-class Run {
-
+class Run extends App {
   public static function main() {
-    Platform.mount(
-      js.Browser.document.getElementById('root'),
-      context -> ExampleTheme.provide(context, {
-        color: blok.style.Color.hex(0xCCC)
-      }, ctx -> Html.fragment([
-        ExampleComponent.node({
-          title: 'Hello world',
-          height: 150
-        }),
-        Html.button({
-          attrs: {
-            onclick: _ -> ExampleTheme
-              .forContext(ctx)
-              .setColor(blok.style.Color.hex(0x666))
-          },
-          children: [ Html.text('Swap color') ]
-        })
-      ]))
-    );
+    var app = new Run();
   }
 
+  public function new() {
+    super();
+  }
+
+  override function init() {
+    hxd.Res.initEmbed();
+    Platform.mount(
+      s2d,
+      context -> ExampleTheme.provide(context, {
+        color: blok.ui.style.Color.hex(0xCCC),
+        font: hxd.res.DefaultFont.get()
+      }, ctx -> ExampleComponent.node({
+        title: 'Foo',
+        height: 100
+      }))
+    );
+  }
 }

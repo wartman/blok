@@ -13,4 +13,4 @@
 @:noUsing @:noDoc typedef Value = blok.core.VStyle.Value;
 
 @:noUsing @:noDoc typedef Html = blok.dom.Html;
-// @:noUsing @:noDoc typedef Css = blok.dom.Css;
+@:noUsing @:noDoc typedef Css = blok.dom.Css;

@@ -5,6 +5,7 @@ import haxe.macro.Context;
 
 using Lambda;
 using haxe.macro.PositionTools;
+using haxe.macro.Tools;
 
 class Style {
   /**
@@ -19,10 +20,11 @@ class Style {
   **/
   public static function define(e:ExprOf<Array<blok.core.VStyle.VStyleExpr>>) {
     var min = e.pos.getInfos().min;
-    var parent = Context.getLocalClass().get();
-    var name = parent.name;
+    var typeName = Context.getLocalType().toString();
+    var pack = typeName.split('.');
+    var name = pack.pop();
     var tp:TypePath = {
-      pack: parent.pack,
+      pack: pack,
       name: '${name}_Style${min}'
     };
     var cls = macro class {
@@ -49,7 +51,7 @@ class Style {
       {
         pack: tp.pack,
         name: tp.name,
-        pos: e.pos,
+        pos: (macro null).pos,
         params: [],
         kind: TDClass({
           pack: [ 'blok', 'core' ],

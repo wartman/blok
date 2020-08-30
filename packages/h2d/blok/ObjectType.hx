@@ -9,20 +9,20 @@ class ObjectType<Props:{}> {
   
   public static function empty<Props:{}>():ObjectType<Props> {
     if (__empty == null) {
-      __empty = new ObjectType(() -> new Object());
+      __empty = new ObjectType(_ -> new Object());
     }
     return cast __empty;
   }
 
-  final factory:()->Object;
+  final factory:(props:Props)->Object;
 
   public function new(factory) {
     this.factory = factory;
   }
 
 	public function create(props:Props, context:Context<Object>):Object {
-    var node = factory();
-    Differ.diffObject({}, props, applyProperty.bind(node));
+    var node = factory(props);
+    // Differ.diffObject({}, props, applyProperty.bind(node));
     return node;
   }
 

@@ -1,24 +1,17 @@
 package blok;
 
 import h2d.Object;
-import blok.core.Differ;
 import blok.core.Cursor;
-import blok.core.Context;
 import blok.core.Rendered;
 import blok.core.Component;
-import blok.core.Style;
 import blok.core.StyleList;
 import blok.core.VNode;
 
-class Engine implements blok.core.Engine<Object> {
+class Engine implements blok.core.Engine<Object, Dynamic> {
   final renderedRegistry:Map<Object, Rendered<Object>> = [];
   
   public function new() {}
   
-	public function createPlaceholder(target:Component<Object>):VNode<Object> {
-    return VNative(ObjectType.empty(), {});
-  }
-
 	public function traverseSiblings(target:Object):Cursor<Object> {
     return new blok.Cursor(target.parent, target.getChildIndex(target));
   }
@@ -35,11 +28,31 @@ class Engine implements blok.core.Engine<Object> {
     renderedRegistry.set(node, rendered);
   }
 
-	public function registerStyle(style:Style):Void {
-
-  }
-
 	public function applyStyles(node:Object, style:StyleList):Void {
     
+  }
+
+  // TODO: just trying to compile atm
+
+  public function createContainer(props:{
+    ?style:StyleList,
+    ?children:Array<VNode<Object>>
+  }):VNode<Object> {
+    return VNative(ObjectType.empty(), props);
+  }
+  
+  public function createButton(props:{
+    ?style:StyleList,
+    ?onClick:(e:Dynamic)->Void,
+    // etc
+    ?children:Array<VNode<Object>>
+  }):VNode<Object> {
+    return VNative(ObjectType.empty(), props);
+  }
+
+  public function createPlaceholder(props:{
+    component:Component<Object>
+  }):VNode<Object> {
+    return VNative(ObjectType.empty(), props);
   }
 }

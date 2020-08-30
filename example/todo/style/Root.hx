@@ -29,13 +29,18 @@ class Root extends Style {
         Style.property('width', Pct(100)),
         Flex.horizontallyCentered()
       ]),
+      Style.child('h1, h2, h3', [
+        Font.export({ size: Em(1), weight: Bold }),
+        Style.property('padding', Num(0)),
+        Style.property('margin', Num(0))
+      ]),
       Style.child('body', [
         Style.property('background-color', Config.darkColor),
-        Style.property('margin', EdgeInsets.all(Px(0))),
-        Style.property('padding', EdgeInsets.all(Px(0))),
+        Style.property('margin', EdgeInsets.all(Num(0))),
+        Style.property('padding', EdgeInsets.all(Num(0))),
         Font.export({
           family: 'sans-serif',
-          size: Px(13),
+          size: Em(.8),
           color: Config.darkColor
         })
       ])

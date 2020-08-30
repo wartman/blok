@@ -51,7 +51,10 @@ class TodoModal extends Component {
               onclick: e -> e.stopPropagation()
             },
             children: [
-              Html.h1({ children: [ Html.text('Add todo') ] }),
+              Ui.header({
+                title: 'Create Todo',
+                requestClose: requestClose
+              }),
               TodoInput.node({
                 requestClose: requestClose,
                 placeholder: 'What needs doing?',

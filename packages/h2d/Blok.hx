@@ -6,8 +6,10 @@
 @:noUsing @:noDoc typedef StyleList = blok.core.StyleList;
 
 @:noUsing @:noDoc typedef VNode = blok.VNode;
+
 @:noUsing @:noDoc typedef VStyle = blok.core.VStyle;
 @:noUsing @:noDoc typedef VStyleExpr = blok.core.VStyle.VStyleExpr;
 @:noUsing @:noDoc typedef Unit = blok.core.VStyle.Unit;
+@:noUsing @:noDoc typedef Value = blok.core.VStyle.Value;
 
 @:noUsing @:noDoc typedef Ui = blok.h2d.Ui;
