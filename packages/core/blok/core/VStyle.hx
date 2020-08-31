@@ -24,7 +24,7 @@ enum VStyleExprScope {
 
 enum ValueDef {
   ValueKeyed(key:String, value:Value);
-  ValueSingle(value:String);
+  ValueSingle(value:Dynamic);
   ValueCompound(values:Array<Value>);
   ValueList(values:Array<Value>);
   ValueCall(name:String, value:Value);
@@ -93,7 +93,7 @@ abstract Value(ValueDef) to ValueDef from ValueDef {
       case ValueKeyed(_, value):
         value.toString();
       case ValueSingle(value): 
-        value;
+        Std.string(value);
       case ValueCompound(values): 
         values.map(v -> v.toString()).join(' ');
       case ValueList(values): 

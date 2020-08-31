@@ -9,6 +9,7 @@ import blok.core.VNode;
 
 class Engine implements blok.core.Engine<Object, Dynamic> {
   final renderedRegistry:Map<Object, Rendered<Object>> = [];
+  final styleEngine = new StyleEngine();
   
   public function new() {}
   
@@ -29,7 +30,7 @@ class Engine implements blok.core.Engine<Object, Dynamic> {
   }
 
 	public function applyStyles(node:Object, style:StyleList):Void {
-    
+    styleEngine.apply(node, style);
   }
 
   // TODO: just trying to compile atm

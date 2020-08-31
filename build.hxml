@@ -9,6 +9,7 @@
 -D analyzer-optimize
 -D debug
 -D js-es=6
+-D resourcesPath=dist/res
 
 -main Run
 

@@ -10,7 +10,8 @@ class ExampleStyle extends Style {
   override function render():Array<VStyleExpr> {
     return [
       Style.property('color', color),
-      Style.property('background-color', blok.ui.style.Color.rgba(0, 0, 0, 0.5)),
+      Style.property('background-color', 0xFFCCCCCC),
+      // Style.property('background-color', blok.ui.style.Color.rgba(0, 0, 0, 0.5)),
       blok.ui.style.Box.export({
         height: height
       })
@@ -46,9 +47,14 @@ class ExampleComponent extends Component {
   override function render(context:Context):VNode {
     return ExampleTheme.subscribe(context, state -> Ui.flow({
       props: {
-        minHeight: height,
-        maxHeight: 200
+        verticalAlign: Top,
+        layout: Horizontal,
+        padding: 10,
       },
+      style: ExampleStyle.style({
+        height: Num(100),
+        color: blok.ui.style.Color.hex(0xFFCCCCCC)
+      }),
       children: [
         Ui.text({
           props: {
@@ -60,15 +66,32 @@ class ExampleComponent extends Component {
           props: {
             height: height,
             width: 100,
-            backgroundColor: 0xFFCCCCCC,
             onClick: e -> makeTaller(10)
           },
+          // this sorta works
+          style: Style.define([
+            Style.property('backgroundColor', 0xFF666666)
+          ]),
           children: [
-            Ui.text({
+            Ui.flow({
               props: {
-                font: state.font,
-                text: 'More'
-              }
+                padding: 10,
+                layout: Vertical
+              },
+              children: [
+                Ui.text({
+                  props: {
+                    font: state.font,
+                    text: 'More'
+                  }
+                }),
+                Ui.text({
+                  props: {
+                    font: state.font,
+                    text: 'And stuff'
+                  }
+                }),
+              ]
             })
           ]
         }),
