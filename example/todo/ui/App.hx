@@ -1,29 +1,42 @@
 package todo.ui;
 
-import todo.state.TodoRoute;
-import blok.ui.history.BrowserRouterState;
+import todo.state.TodoFilter;
+import blok.ui.RouterState;
 import blok.ui.history.BrowserHistory;
+import blok.ui.PortalManager;
 import todo.style.Card;
 import todo.style.Root;
 import todo.state.AppState;
 import todo.state.TodoState;
-import blok.ui.PortalManager;
+import todo.state.TodoRoute;
 
 using Blok;
 
 class App extends Component {
   override function render(context:Context):VNode {
     return AppState.provide(context, {
-      router: {
-        router: {
-          urlToRoute: url -> Home,
-          routeToUrl: route -> '/',
-          history: new BrowserHistory('/'),
-          route: Home
-        }
-      },
       title: 'Todo',
-      todos: { todos: [] }
+      router: {
+        urlToRoute: url -> switch url.split('/') {
+          case [''] | ['', '']: Home;
+          case ['filter', type]: switch (type:TodoFilter) {
+            case FilterAll: Filter(FilterAll);
+            case FilterCompleted: Filter(FilterCompleted);
+            case FilterPending: Filter(FilterPending);
+            default: NotFound(url);
+          }
+          default: NotFound(url);
+        },
+        routeToUrl: route -> switch route {
+          case Home: '/';
+          case NotFound(url): url;
+          case Filter(filter): 'filter/${filter}';
+        },
+        history: new BrowserHistory('')
+      },
+      todos: {
+        todos: []
+      }
     }, childContext -> PortalManager.node({
       children: [
         Html.div({
@@ -43,9 +56,10 @@ class App extends Component {
                   onSave: value -> state.addTodo(value),
                   placeholder: 'Add Todo'
                 })),
-                BrowserRouterState.subscribe(childContext, (state:BrowserRouterState<TodoRoute>) -> Html.text(switch state.route {
+                RouterState.subscribe(childContext, (state:RouterState<TodoRoute>) -> Html.text(switch state.route {
                   case Home: 'home';
-                  case Edit(todoId): Std.string(todoId);
+                  case NotFound(url): '${url} not found';
+                  case Filter(filter): Std.string(filter);
                 }))
               ]
             }),

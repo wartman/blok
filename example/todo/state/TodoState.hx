@@ -5,6 +5,7 @@ using Blok;
 class TodoState extends State {
   @prop var todos:Array<Todo>;
   @prop var filter:TodoFilter = TodoFilter.FilterAll;
+  @computed var length:Int = todos.length;
   @computed var remainingTodos:Int = todos.filter(t -> !t.complete).length;
   @computed var visibleTodos:Array<Todo> = {
     var filtered = todos.copy();
@@ -55,7 +56,7 @@ class TodoState extends State {
   }
 
   @update
-  function removeCompleted() {
+  public function removeCompleted() {
     return {
       filter: FilterAll,
       todos: todos.filter(todo -> !todo.complete) 

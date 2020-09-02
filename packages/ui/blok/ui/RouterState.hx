@@ -3,9 +3,15 @@ package blok.ui;
 class RouterState<Route:EnumValue> extends State {
   @prop var urlToRoute:(url:String)->Route;
   @prop var routeToUrl:(route:Route)->String;
-  @prop var url:String = null;
-  @prop var route:Route = null;
   @prop var history:History;
+  // todo: route and url could be @computed?
+  @prop var route:Route = null;
+  @prop var url:String = null;
+
+  @init
+  function setup() {
+    if (url == null) setUrl(history.getLocation(), false);
+  }
 
   @update
   public function setUrl(url:String, ?pushState:Bool = true) {

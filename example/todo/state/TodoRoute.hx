@@ -2,5 +2,6 @@ package todo.state;
 
 enum TodoRoute {
   Home;
-  Edit(todoId:Int);
+  NotFound(url:String);
+  Filter(filter:TodoFilter);
 }

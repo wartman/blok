@@ -115,7 +115,10 @@ class ClassBuilder {
       }
     }
 
-    if (toRemove.length > 0) for (entry in toRemove) field.meta.remove(entry);
+    if (toRemove.length > 0) for (entry in toRemove) {
+      field.meta.remove(entry);
+      field.meta.push({ name: entry.name, pos: entry.pos });
+    }
   }
 
   function parseClassMeta(classHandlers:Array<ClassMetaHandler<Dynamic>>) {

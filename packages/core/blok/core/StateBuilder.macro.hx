@@ -37,9 +37,23 @@ class StateBuilder {
         meta: isOptional ? [ OPTIONAL_META ] : [],
         pos: (macro null).pos
       });
+      var updateType = switch type {
+        case TAnonymous(fields):
+          TAnonymous(fields.map(f -> {
+            name: f.name,
+            doc: f.doc,
+            access: f.access,
+            pos: f.pos,
+            meta: f.meta.contains(OPTIONAL_META) 
+              ? f.meta
+              : f.meta.concat([ OPTIONAL_META ]),
+            kind: f.kind
+          }));
+        default: type;
+      }
       updateProps.push({
         name: name,
-        kind: FVar(type, null),
+        kind: FVar(updateType, null),
         access: [ APublic ],
         meta: [ OPTIONAL_META ],
         pos: (macro null).pos
@@ -98,10 +112,7 @@ class StateBuilder {
       }
     });
 
-    // This handler is a work in progress. Mostly what I'm realizing
-    // from it is that it will work a *lot* better if I'm doing it
-    // with real reactive programing (like `tink_state`). Alternatively,
-    // we might start using Signals here?
+    // This works, but is way too complex.
     builder.addFieldMetaHandler({
       name: 'state',
       options: [],
@@ -136,7 +147,7 @@ class StateBuilder {
           var params = cls.params;
           var paramMap:Map<String, haxe.macro.Type> = [];
           var constructor = cls.constructor.get();
-          var props:Array<Field> = [];
+          var stateProps:Array<Field> = [];
           var ct = switch constructor.type {
             case TLazy(f): f();
             default: constructor.type;
@@ -156,7 +167,7 @@ class StateBuilder {
                 case TAnonymous(fields):
                   for (field in fields.get().fields) {
                     var type = field.type.mapTypes(paramMap);
-                    props.push({
+                    stateProps.push({
                       name: field.name,
                       meta: field.meta.has(':optional')
                         ? [ { name: ':optional', pos: (macro null).pos } ]
@@ -171,28 +182,90 @@ class StateBuilder {
               throw 'assert';
           }
 
-          // todo: we need to resolve params.
-          var anon = TAnonymous(props);
-          addProp(name, anon.toType().toComplexType(), false);
+          var anon = TAnonymous(stateProps);
+          props.push({
+            name: name,
+            kind: FVar(anon.toType().toComplexType(), null),
+            access: [ APublic ],
+            meta: [],
+            pos: (macro null).pos
+          });
           initializers.push({
             field: name,
             expr: macro $i{INCOMING_PROPS}.$name
           });
-          // dunno if this is a good way to do this. Probably not.
+
+          var updateCalls:Array<Expr> = [];
+          var updateMethods = TAnonymous(cls.fields.get()
+            .filter(f -> f.meta.has('update') && f.isPublic)
+            .map(f -> {
+              var methodName = f.name;
+              var fType = switch f.type {
+                case TLazy(f): f();
+                default: f.type;
+              }
+              var argProps:Array<Field> = switch fType {
+                case TFun(args, _): args.map(a -> ({
+                    name: a.name,
+                    meta: a.opt
+                      ? [ OPTIONAL_META ]
+                      : [],
+                    pos: (macro null).pos,
+                    kind: FVar(a.t.mapTypes(paramMap).toComplexType())
+                  }:Field));
+                default: throw 'assert';
+              };
+              var type = argProps.length > 0 
+                ? TAnonymous(argProps)
+                : macro:Bool;
+              var arguments:Array<Expr> = argProps.length > 0 
+                ? [ for (arg in argProps) {
+                    var n = arg.name;
+                    macro __calls.$methodName.$n;
+                  } ]
+                : [];
+              if (argProps.length > 0)
+                updateCalls.push(macro {
+                  if (__calls.$methodName != null) {
+                    this.$name.$methodName($a{arguments});
+                  }
+                });
+              else
+                updateCalls.push(macro {
+                  if (__calls.$methodName == true) {
+                    this.$name.$methodName();
+                  }
+                });
+              return ({
+                name: f.name,
+                kind: FVar(type),
+                access: [APublic],
+                meta: [OPTIONAL_META],
+                pos: (macro null).pos
+              }:Field);
+            }));
+          updateProps.push({
+            name: name,
+            kind: FVar(updateMethods),
+            access: [APublic],
+            meta: [OPTIONAL_META],
+            pos: (macro null).pos
+          });
           updates.push(macro {
             if (Reflect.hasField($i{INCOMING_PROPS}, $v{name})) {
-              var props:$anon = Reflect.field($i{INCOMING_PROPS}, $v{name});
-              this.$name.__update(props, __context, this);
+              var __calls:$updateMethods = Reflect.field($i{INCOMING_PROPS}, $v{name});
+              @:privateAccess this.$name.__dispatching = true;
+              $b{updateCalls};
+              @:privateAccess this.$name.__dispatching = false;
+              this.$name.__dispatch();
             }
           });
+
           subStates.push(macro {
             var sub = this.$name;
-            // // For now, I'm *not* subscribing the parent state to the child.
-            // // To propagate changes on the parent you'll need to use an @update
-            // // method. 
-            // sub.__subscribe(() -> __dispatch());
             this.__context.set(sub.__getId(), sub);
           });
+
           disposals.push(macro this.$name.__dispose());
 
           builder.add((macro class {
@@ -326,6 +399,12 @@ class StateBuilder {
               }
             });
           });
+
+          // updates.push(macro {
+          //   if ($i{backingName} != $i{state}.$stateProperty) {
+          //     $i{backingName} = $i{state}.$stateProperty;
+          //   }
+          // });
 
         default:
           // todo: allow `@subscribe` to be used on functions. This will
