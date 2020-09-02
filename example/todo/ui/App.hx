@@ -2,6 +2,7 @@ package todo.ui;
 
 import todo.style.Card;
 import todo.style.Root;
+import todo.state.AppState;
 import todo.state.TodoState;
 import blok.ui.PortalManager;
 
@@ -9,8 +10,9 @@ using Blok;
 
 class App extends Component {
   override function render(context:Context):VNode {
-    return TodoState.provide(context, {
-      todos: []
+    return AppState.provide(context, {
+      title: 'Todo',
+      todos: { todos: [] }
     }, childContext -> PortalManager.node({
       children: [
         Html.div({
@@ -19,9 +21,13 @@ class App extends Component {
             Html.header({
               style: Card.style({}),
               children: [
-                // Note that children inside a State provider will not be updated
-                // when the state is -- you need to use a State subscriber to
-                // subscribe to changes.
+                Html.h1({
+                  children: [
+                    AppState.subscribe(childContext, state -> Html.text(state.title))
+                  ]
+                }),
+                // Because AppState provides a TodoState it is now
+                // available in the current Context.
                 TodoState.subscribe(childContext, state -> TodoInput.node({
                   onSave: value -> state.addTodo(value),
                   placeholder: 'Add Todo'

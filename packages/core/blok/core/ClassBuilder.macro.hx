@@ -15,7 +15,7 @@ enum ClassBuilderHook {
 typedef ClassBuilderOption = {
   name:String,
   optional:Bool,
-  ?handleValue:(expr:Expr)->Expr
+  ?handleValue:(expr:Expr)->Dynamic
 } 
 
 typedef FieldMetaHandler<Options:{}> = {

@@ -22,6 +22,10 @@ class StateBuilder {
     var updateProps:Array<Field> = [];
     var updates:Array<Expr> = [];
     var initializers:Array<ObjectField> = [];
+    var availableStates:Array<String> = [];
+    var subStates:Array<Expr> = [];
+    var initHooks:Array<Expr> = [];
+    var disposals:Array<Expr> = [];
     var id = cls.pack.concat([ cls.name ]).join('_').toLowerCase();
 
     function addProp(name:String, type:ComplexType, isOptional:Bool) {
@@ -45,7 +49,7 @@ class StateBuilder {
       name: 'prop',
       hook: Normal,
       options: [],
-      build: function (_, builder, f) switch f.kind {
+      build: function (options:{}, builder, f) switch f.kind {
         case FVar(t, e):
           if (t == null) {
             Context.error('Types cannot be inferred for @prop vars', f.pos);
@@ -90,6 +94,103 @@ class StateBuilder {
 
         default:
           Context.error('@prop can only be used on vars', f.pos);
+      }
+    });
+
+    // This handler is a work in progress. Mostly what I'm realizing
+    // from it is that it will work a *lot* better if I'm doing it
+    // with real reactive programing (like `tink_state`).
+    builder.addFieldMetaHandler({
+      name: 'state',
+      options: [],
+      hook: Init,
+      build: function(options:{}, builder, field) switch field.kind {
+        case FVar(t, e):
+          if (!Context.unify(t.toType(), Context.getType('blok.core.State'))) {
+            Context.error('Must be a `blok.core.State`', field.pos);
+          }
+          if (e != null) {
+            Context.error('Expressions are not allowed for @state vars', e.pos);
+          }
+
+          if (!field.access.contains(APublic)) {
+            field.access.remove(APrivate);
+            field.access.push(APublic);
+          }
+          field.kind = FProp('get', 'never', t, null);
+
+          var name = field.name;
+          var getName = 'get_${name}';
+          var lazyInit = '__state_${name}';
+          var cls = t.toType().getClass();
+          var tp:TypePath = {
+            pack: cls.pack,
+            name: cls.name
+          };
+          var constructor = cls.constructor.get();
+          var props:Array<Field> = [];
+          var ct = switch constructor.type {
+            case TLazy(f): f();
+            default: constructor.type;
+          }
+
+          availableStates.push(field.name);
+
+          switch ct {
+            case TFun(args, _):
+              switch args[0].t {
+                case TAnonymous(fields):
+                  for (field in fields.get().fields) {
+                    props.push({
+                      name: field.name,
+                      meta: field.meta.has(':optional')
+                        ? [ { name: ':optional', pos: (macro null).pos } ]
+                        : [],
+                      kind: FVar(field.type.toComplexType()),
+                      pos: (macro null).pos
+                    });
+                  }
+                default: throw 'assert';
+              }
+            default: 
+              throw 'assert';
+          }
+
+          var anon = TAnonymous(props);
+          addProp(name, anon.toType().toComplexType(), false);
+          initializers.push({
+            field: name,
+            expr: macro $i{INCOMING_PROPS}.$name
+          });
+          // dunno if this is a good way to do this. Probably not.
+          updates.push(macro {
+            if (Reflect.hasField($i{INCOMING_PROPS}, $v{name})) {
+              var props:$anon = Reflect.field($i{INCOMING_PROPS}, $v{name});
+              this.$name.__update(props, __context, this);
+            }
+          });
+          initHooks.push(macro {
+            var sub = this.$name;
+            // // For now, I'm *not* subscribing the parent state to the child.
+            // // To propagate changes on the parent you'll need to use an @update
+            // // method. 
+            // sub.__subscribe(() -> __dispatch());
+            __context.set(sub.__getId(), sub);
+          });
+          disposals.push(macro this.$name.__dispose());
+
+          builder.add((macro class {
+            var $lazyInit:$t;
+            function $getName() {
+              if (this.$lazyInit == null) {
+                this.$lazyInit = new $tp($i{PROPS}.$name, __context, this, _->null);
+              }
+              return this.$lazyInit;
+            }
+          }).fields);
+          
+        default:
+          Context.error('@state can only be used on vars', field.pos);
       }
     });
 
@@ -138,6 +239,77 @@ class StateBuilder {
           
         default:
           Context.error('@computed can only be used on vars', f.pos);
+      }
+    });
+
+    builder.addFieldMetaHandler({
+      name: 'subscribe',
+      hook: Normal,
+      options: [
+        {
+          name: 'target',
+          optional: false,
+          handleValue: expr -> switch expr.expr {
+            case EConst(CIdent(s)) if (availableStates.contains(s)): s;
+            case EConst(CIdent(s)) if (!availableStates.contains(s)):
+              Context.error('[$s] is not a valid state. Available states are: [${availableStates.join(', ')}]', expr.pos);
+              '';
+            default:
+              Context.error('Expected an identifier', expr.pos);
+              '';
+          }
+        }
+      ],
+      build: function(options:{ target:String }, builder, field) switch field.kind {
+        case FVar(t, e):
+          if (t == null) {
+            Context.error('Types cannot be inferred for @subscribe vars', field.pos);
+          }
+  
+          if (e != null) {
+            Context.error('An expression is not allowed for @subscribe', field.pos);
+          }
+
+          var name = field.name;
+          var getName = 'get_${name}';
+          var backingName = '__computedValue_${name}';
+          var state = options.target;
+
+          field.kind = FProp('get', 'never', t, null);
+
+          builder.add((macro class {
+            var $backingName:$t = null;
+            function $getName() return $i{backingName};
+          }).fields);
+
+          initHooks.push(macro {
+            @:pos(field.pos) $i{backingName} = $i{state}.$name;
+            $i{state}.__subscribe(() -> {
+              if ($i{backingName} != $i{state}.$name) {
+                $i{backingName} = $i{state}.$name;
+                __dispatch();
+              }
+            });
+          });
+
+        default:
+          Context.error('@subscribe can only be used on vars', field.pos);
+      }
+    });
+
+    builder.addFieldMetaHandler({
+      name: 'init',
+      hook: After,
+      options: [],
+      build: function(_, builder, field) switch field.kind {
+        case FFun(func):
+          if (func.args.length > 0) {
+            Context.error('@init methods cannot have any arguments', field.pos);
+          }
+          var name = field.name;
+          initHooks.push(macro @:pos(field.pos) inline this.$name());
+        default:
+          Context.error('@init must be used on a method', field.pos);
       }
     });
 
@@ -272,11 +444,17 @@ class StateBuilder {
             pos: (macro null).pos
           } };
           __registerContext(__context);
+          $b{initHooks};
           __render(this.__context);
         }
 
         override function __getId() {
           return $v{id};
+        }
+
+        override function __dispose() {
+          $b{disposals};
+          super.__dispose();
         }
 
         @:noCompletion

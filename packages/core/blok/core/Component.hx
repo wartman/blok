@@ -70,7 +70,7 @@ class Component<Node> {
     }
   }
 
-  inline function __preRender() {
+  function __preRender() {
     if (!__alive) {
       #if debug
       throw 'Attempted to render a component that was dismounted';
