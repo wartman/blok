@@ -4,6 +4,7 @@ import haxe.macro.Expr;
 import haxe.macro.Context;
 
 using haxe.macro.Tools;
+using blok.core.BuilderHelpers;
 
 // @TODO: There is a lot of coppied code with ComponentBuilder here:
 //        try to DRY it up.
@@ -99,7 +100,8 @@ class StateBuilder {
 
     // This handler is a work in progress. Mostly what I'm realizing
     // from it is that it will work a *lot* better if I'm doing it
-    // with real reactive programing (like `tink_state`).
+    // with real reactive programing (like `tink_state`). Alternatively,
+    // we might start using Signals here?
     builder.addFieldMetaHandler({
       name: 'state',
       options: [],
@@ -127,11 +129,23 @@ class StateBuilder {
             pack: cls.pack,
             name: cls.name
           };
+          var tParams = switch t.toType() {
+            case TInst(t, params): params;
+            default: [];
+          }
+          var params = cls.params;
+          var paramMap:Map<String, haxe.macro.Type> = [];
           var constructor = cls.constructor.get();
           var props:Array<Field> = [];
           var ct = switch constructor.type {
             case TLazy(f): f();
             default: constructor.type;
+          }
+
+          for (i in 0...tParams.length) {
+            var impl = tParams[i];
+            var name = params[i].t.toString();
+            paramMap.set(name, impl);
           }
 
           availableStates.push(field.name);
@@ -141,12 +155,13 @@ class StateBuilder {
               switch args[0].t {
                 case TAnonymous(fields):
                   for (field in fields.get().fields) {
+                    var type = field.type.mapTypes(paramMap);
                     props.push({
                       name: field.name,
                       meta: field.meta.has(':optional')
                         ? [ { name: ':optional', pos: (macro null).pos } ]
                         : [],
-                      kind: FVar(field.type.toComplexType()),
+                      kind: FVar(type.toComplexType()),
                       pos: (macro null).pos
                     });
                   }
@@ -156,6 +171,7 @@ class StateBuilder {
               throw 'assert';
           }
 
+          // todo: we need to resolve params.
           var anon = TAnonymous(props);
           addProp(name, anon.toType().toComplexType(), false);
           initializers.push({
@@ -169,13 +185,13 @@ class StateBuilder {
               this.$name.__update(props, __context, this);
             }
           });
-          initHooks.push(macro {
+          subStates.push(macro {
             var sub = this.$name;
             // // For now, I'm *not* subscribing the parent state to the child.
             // // To propagate changes on the parent you'll need to use an @update
             // // method. 
             // sub.__subscribe(() -> __dispatch());
-            __context.set(sub.__getId(), sub);
+            this.__context.set(sub.__getId(), sub);
           });
           disposals.push(macro this.$name.__dispose());
 
@@ -244,7 +260,7 @@ class StateBuilder {
 
     builder.addFieldMetaHandler({
       name: 'subscribe',
-      hook: Normal,
+      hook: After,
       options: [
         {
           name: 'target',
@@ -258,9 +274,20 @@ class StateBuilder {
               Context.error('Expected an identifier', expr.pos);
               '';
           }
+        },
+        
+        {
+          name: 'property',
+          optional: true,
+          handleValue: expr -> switch expr.expr {
+            case EConst(CIdent(s)): s;
+            default:
+              Context.error('Expected an identifier', expr.pos);
+              '';
+          }
         }
       ],
-      build: function(options:{ target:String }, builder, field) switch field.kind {
+      build: function(options:{ target:String, ?property:String }, builder, field) switch field.kind {
         case FVar(t, e):
           if (t == null) {
             Context.error('Types cannot be inferred for @subscribe vars', field.pos);
@@ -274,6 +301,14 @@ class StateBuilder {
           var getName = 'get_${name}';
           var backingName = '__computedValue_${name}';
           var state = options.target;
+          var stateProperty = options.property == null
+            ? name
+            : options.property;
+
+          if (!field.access.contains(APublic)) {
+            field.access.remove(APrivate);
+            field.access.push(APublic);
+          }
 
           field.kind = FProp('get', 'never', t, null);
 
@@ -283,16 +318,18 @@ class StateBuilder {
           }).fields);
 
           initHooks.push(macro {
-            @:pos(field.pos) $i{backingName} = $i{state}.$name;
+            @:pos(field.pos) $i{backingName} = $i{state}.$stateProperty;
             $i{state}.__subscribe(() -> {
-              if ($i{backingName} != $i{state}.$name) {
-                $i{backingName} = $i{state}.$name;
+              if ($i{backingName} != $i{state}.$stateProperty) {
+                $i{backingName} = $i{state}.$stateProperty;
                 __dispatch();
               }
             });
           });
 
         default:
+          // todo: allow `@subscribe` to be used on functions. This will
+          //       work like `@update` I think.
           Context.error('@subscribe can only be used on vars', field.pos);
       }
     });
@@ -446,6 +483,11 @@ class StateBuilder {
           __registerContext(__context);
           $b{initHooks};
           __render(this.__context);
+        }
+
+        override function __registerContext(context) {
+          super.__registerContext(context);
+          $b{subStates};
         }
 
         override function __getId() {

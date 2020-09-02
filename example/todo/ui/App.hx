@@ -1,5 +1,8 @@
 package todo.ui;
 
+import todo.state.TodoRoute;
+import blok.ui.history.BrowserRouterState;
+import blok.ui.history.BrowserHistory;
 import todo.style.Card;
 import todo.style.Root;
 import todo.state.AppState;
@@ -11,6 +14,14 @@ using Blok;
 class App extends Component {
   override function render(context:Context):VNode {
     return AppState.provide(context, {
+      router: {
+        router: {
+          urlToRoute: url -> Home,
+          routeToUrl: route -> '/',
+          history: new BrowserHistory('/'),
+          route: Home
+        }
+      },
       title: 'Todo',
       todos: { todos: [] }
     }, childContext -> PortalManager.node({
@@ -31,6 +42,10 @@ class App extends Component {
                 TodoState.subscribe(childContext, state -> TodoInput.node({
                   onSave: value -> state.addTodo(value),
                   placeholder: 'Add Todo'
+                })),
+                BrowserRouterState.subscribe(childContext, (state:BrowserRouterState<TodoRoute>) -> Html.text(switch state.route {
+                  case Home: 'home';
+                  case Edit(todoId): Std.string(todoId);
                 }))
               ]
             }),
