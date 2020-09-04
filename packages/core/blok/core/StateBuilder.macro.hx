@@ -6,8 +6,11 @@ import haxe.macro.Context;
 using haxe.macro.Tools;
 using blok.core.BuilderHelpers;
 
-// @TODO: There is a lot of coppied code with ComponentBuilder here:
+// @todo: There is a lot of coppied code with ComponentBuilder here:
 //        try to DRY it up.
+// @todo: I am becoming increasingly unsure about this approach. We may
+//        need a more robust observable impl, or we might want to remove
+//        sub states (which add a LOT of complexity).
 class StateBuilder {
   static final PROPS = '__props';
   static final INCOMING_PROPS = '__incomingProps';
@@ -37,23 +40,9 @@ class StateBuilder {
         meta: isOptional ? [ OPTIONAL_META ] : [],
         pos: (macro null).pos
       });
-      var updateType = switch type {
-        case TAnonymous(fields):
-          TAnonymous(fields.map(f -> {
-            name: f.name,
-            doc: f.doc,
-            access: f.access,
-            pos: f.pos,
-            meta: f.meta.contains(OPTIONAL_META) 
-              ? f.meta
-              : f.meta.concat([ OPTIONAL_META ]),
-            kind: f.kind
-          }));
-        default: type;
-      }
       updateProps.push({
         name: name,
-        kind: FVar(updateType, null),
+        kind: FVar(type, null),
         access: [ APublic ],
         meta: [ OPTIONAL_META ],
         pos: (macro null).pos
@@ -224,6 +213,7 @@ class StateBuilder {
                     macro __calls.$methodName.$n;
                   } ]
                 : [];
+
               if (argProps.length > 0)
                 updateCalls.push(macro {
                   if (__calls.$methodName != null) {
@@ -236,6 +226,7 @@ class StateBuilder {
                     this.$name.$methodName();
                   }
                 });
+
               return ({
                 name: f.name,
                 kind: FVar(type),
@@ -244,6 +235,7 @@ class StateBuilder {
                 pos: (macro null).pos
               }:Field);
             }));
+
           updateProps.push({
             name: name,
             kind: FVar(updateMethods),
@@ -251,6 +243,7 @@ class StateBuilder {
             meta: [OPTIONAL_META],
             pos: (macro null).pos
           });
+          
           updates.push(macro {
             if (Reflect.hasField($i{INCOMING_PROPS}, $v{name})) {
               var __calls:$updateMethods = Reflect.field($i{INCOMING_PROPS}, $v{name});
@@ -263,6 +256,7 @@ class StateBuilder {
 
           subStates.push(macro {
             var sub = this.$name;
+            sub.__subscribe(this.__dispatch);
             this.__context.set(sub.__getId(), sub);
           });
 
@@ -324,92 +318,12 @@ class StateBuilder {
             }
           }).fields);
 
+          // @todo: batch all computed subscriptions.
+          initHooks.push(macro this.__subscribe(() -> this.$backingName = null));
           updates.push(macro @:pos(f.pos) this.$backingName = null);
           
         default:
           Context.error('@computed can only be used on vars', f.pos);
-      }
-    });
-
-    builder.addFieldMetaHandler({
-      name: 'subscribe',
-      hook: After,
-      options: [
-        {
-          name: 'target',
-          optional: false,
-          handleValue: expr -> switch expr.expr {
-            case EConst(CIdent(s)) if (availableStates.contains(s)): s;
-            case EConst(CIdent(s)) if (!availableStates.contains(s)):
-              Context.error('[$s] is not a valid state. Available states are: [${availableStates.join(', ')}]', expr.pos);
-              '';
-            default:
-              Context.error('Expected an identifier', expr.pos);
-              '';
-          }
-        },
-        
-        {
-          name: 'property',
-          optional: true,
-          handleValue: expr -> switch expr.expr {
-            case EConst(CIdent(s)): s;
-            default:
-              Context.error('Expected an identifier', expr.pos);
-              '';
-          }
-        }
-      ],
-      build: function(options:{ target:String, ?property:String }, builder, field) switch field.kind {
-        case FVar(t, e):
-          if (t == null) {
-            Context.error('Types cannot be inferred for @subscribe vars', field.pos);
-          }
-  
-          if (e != null) {
-            Context.error('An expression is not allowed for @subscribe', field.pos);
-          }
-
-          var name = field.name;
-          var getName = 'get_${name}';
-          var backingName = '__computedValue_${name}';
-          var state = options.target;
-          var stateProperty = options.property == null
-            ? name
-            : options.property;
-
-          if (!field.access.contains(APublic)) {
-            field.access.remove(APrivate);
-            field.access.push(APublic);
-          }
-
-          field.kind = FProp('get', 'never', t, null);
-
-          builder.add((macro class {
-            var $backingName:$t = null;
-            function $getName() return $i{backingName};
-          }).fields);
-
-          initHooks.push(macro {
-            @:pos(field.pos) $i{backingName} = $i{state}.$stateProperty;
-            $i{state}.__subscribe(() -> {
-              if ($i{backingName} != $i{state}.$stateProperty) {
-                $i{backingName} = $i{state}.$stateProperty;
-                __dispatch();
-              }
-            });
-          });
-
-          // updates.push(macro {
-          //   if ($i{backingName} != $i{state}.$stateProperty) {
-          //     $i{backingName} = $i{state}.$stateProperty;
-          //   }
-          // });
-
-        default:
-          // todo: allow `@subscribe` to be used on functions. This will
-          //       work like `@update` I think.
-          Context.error('@subscribe can only be used on vars', field.pos);
       }
     });
 

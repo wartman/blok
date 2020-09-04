@@ -8,8 +8,15 @@ class AppState extends State {
   @prop var title:String;
   @state var todos:TodoState;
   @state var router:RouterState<TodoRoute>;
-  @subscribe(target = todos) var filter:TodoFilter;
-  @subscribe(target = todos) var remainingTodos:Int;
+  @computed var filter:TodoFilter = todos.filter;
+  @computed var remainingTodos:Int = todos.remainingTodos;
+
+  @init
+  function watchHistory() {
+    js.Browser.window.addEventListener('popstate', (e) -> {
+      router.setUrl(router.history.getLocation(), false);
+    });
+  }
 
   @update
   public function addTodo(content:String) {
@@ -35,13 +42,6 @@ class AppState extends State {
         setRoute: { route: Home }
       }
     };
-  }
-
-  @init
-  function watchHistory() {
-    js.Browser.window.addEventListener('popstate', (e) -> {
-      router.setUrl(router.history.getLocation(), false);
-    });
   }
 
   @update
