@@ -8,6 +8,7 @@ class AppState extends State {
   @prop var title:String;
   @state var todos:TodoState;
   @state var router:RouterState<TodoRoute>;
+  @computed var route:TodoRoute = router.route;
   @computed var filter:TodoFilter = todos.filter;
   @computed var remainingTodos:Int = todos.remainingTodos;
 

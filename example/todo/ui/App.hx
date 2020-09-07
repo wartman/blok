@@ -1,21 +1,22 @@
 package todo.ui;
 
-import todo.state.TodoFilter;
-import blok.ui.RouterState;
+// import blok.ui.RouterState;
 import blok.ui.history.BrowserHistory;
 import blok.ui.PortalManager;
+import todo.state.TodoFilter;
 import todo.style.Card;
 import todo.style.Root;
+import todo.style.MainTitle;
 import todo.state.AppState;
 import todo.state.TodoState;
-import todo.state.TodoRoute;
+// import todo.state.TodoRoute;
 
 using Blok;
 
 class App extends Component {
   override function render(context:Context):VNode {
     return AppState.provide(context, {
-      title: 'Todo',
+      title: 'Todos',
       router: {
         urlToRoute: url -> switch url.split('/') {
           case [''] | ['', '']: Home;
@@ -46,6 +47,7 @@ class App extends Component {
               style: Card.style({}),
               children: [
                 Html.h1({
+                  style: MainTitle.style({}), 
                   children: [
                     AppState.subscribe(childContext, state -> Html.text(state.title))
                   ]
@@ -56,11 +58,11 @@ class App extends Component {
                   onSave: value -> state.addTodo(value),
                   placeholder: 'Add Todo'
                 })),
-                RouterState.subscribe(childContext, (state:RouterState<TodoRoute>) -> Html.text(switch state.route {
-                  case Home: 'home';
-                  case NotFound(url): '${url} not found';
-                  case Filter(filter): Std.string(filter);
-                }))
+                // RouterState.subscribe(childContext, (state:RouterState<TodoRoute>) -> Html.text(switch state.route {
+                //   case Home: 'home';
+                //   case NotFound(url): '${url} not found';
+                //   case Filter(filter): Std.string(filter);
+                // }))
               ]
             }),
             TodoList.node({}),

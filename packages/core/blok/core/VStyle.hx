@@ -4,6 +4,7 @@ import blok.core.StyleType;
 
 enum VStyle {
   VStyleDef<Props:{}>(type:StyleType<Props>, ?props:Props, ?suffix:String);
+  VStyleInline(name:String, ?def:()->Array<VStyleExpr>);
   VStyleList(styles:Array<VStyle>);
 }
 
@@ -73,6 +74,15 @@ abstract Value(ValueDef) to ValueDef from ValueDef {
 
   public inline function withKey(?key:String) {
     return if (key == null) this else  Value.keyed(key, this);
+  }
+
+  public function getKey():String {
+    return switch unwrap() {
+      case ValueKeyed(key, _): 
+        key;
+      default: 
+        null;
+    }
   }
 
   public function forIdentifier():String {

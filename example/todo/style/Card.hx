@@ -7,19 +7,24 @@ using Blok;
 class Card extends Style {
   @prop var color:Color = Config.lightColor;
   @prop var height:Unit = null;
+  @prop var padding:EdgeInsets = EdgeInsets.symmetric(Config.smallGap, Config.mediumGap);
 
   override function render():Array<VStyleExpr> {
     return [
-      Style.property('color', if (color.getName() == Config.lightColor.getName()) {
-        Config.darkColor;
-      } else {
-        Config.lightColor;
+      Style.property('color', switch color.getKey() {
+        case 'white' | 'light': Config.darkColor;
+        case 'mid' | 'dark': Config.lightColor;
+        case _: Config.darkColor; 
       }),
       Background.export({ color: color }),
       Display.export({ kind: Block }),
-      Border.export({ radius: Px(5) }),
+      Border.export({ 
+        type: None,
+        width: Px(0),
+        radius: Px(5) 
+      }),
       Box.export({
-        padding: EdgeInsets.symmetric(Config.smallGap, Config.mediumGap),
+        padding: padding,
         height: height
       })
     ];

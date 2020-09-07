@@ -247,10 +247,7 @@ class StateBuilder {
           updates.push(macro {
             if (Reflect.hasField($i{INCOMING_PROPS}, $v{name})) {
               var __calls:$updateMethods = Reflect.field($i{INCOMING_PROPS}, $v{name});
-              @:privateAccess this.$name.__dispatching = true;
-              $b{updateCalls};
-              @:privateAccess this.$name.__dispatching = false;
-              this.$name.__dispatch();
+              blok.core.State.__batchUpdate(this.$name, () -> $b{updateCalls});
             }
           });
 

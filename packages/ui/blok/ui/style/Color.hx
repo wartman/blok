@@ -2,7 +2,7 @@ package blok.ui.style;
 
 import blok.core.VStyle;
 
-@:forward(forIdentifier, toString)
+@:forward(forIdentifier, toString, getKey)
 abstract Color(Value) to Value {
   public static function rgb(r:Float, g:Float, b:Float):Color {
     return new Color(Value.call('rgb', Value.list([ r, g, b ])));

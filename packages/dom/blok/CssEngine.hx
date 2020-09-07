@@ -46,6 +46,14 @@ class CssEngine {
                 definedClassNames.push(className);
                 addCss('.${className}', type.__create(props).render());
               }
+            case VStyleInline(name, def):
+              var className = escapeClassName(name);
+              classNames.push(className);
+              if (!defined.contains(name)) {
+                defined.push(name);
+                definedClassNames.push(className);
+                addCss('.${className}', def());
+              }
             case VStyleList(styles):
               registerStyle(styles);
           }

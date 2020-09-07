@@ -31,6 +31,8 @@ abstract StyleList(Array<VStyle>) from Array<VStyle> to Array<VStyle> {
     return this.map(style -> switch style {
       case VStyleDef(type, props, suffix): 
         type.__generateName(props, suffix);
+      case VStyleInline(name, def):
+        name;
       case VStyleList(styles): 
         new StyleList(styles).getName();
     });

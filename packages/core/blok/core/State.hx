@@ -3,6 +3,14 @@ package blok.core;
 import haxe.ds.List;
 
 class State<Node> extends Component<Node> {
+  static inline function __batchUpdate(state:State<Dynamic>, cb:()->Void) {
+    var prevDispatching = state.__dispatching;
+    state.__dispatching = true;
+    cb();
+    state.__dispatching = prevDispatching;
+    state.__dispatch();
+  }
+
   var __subscribers:List<() -> Void> = new List();
   var __factory:(context:Context<Node>) -> VNode<Node>;
   var __dispatching:Bool;

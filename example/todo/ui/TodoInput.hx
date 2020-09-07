@@ -31,22 +31,19 @@ class TodoInput extends Component {
   }
 
   override function render(context:Context):VNode {
-    return Html.input({
+    return Ui.input({
       ref: node -> ref = cast node,
-      attrs: {
-        onkeydown: e -> {
-          var ev:js.html.KeyboardEvent = cast e;
-          if (ev.key == 'Enter') {
-            onSave(ref.value);
-            if (requestClose != null) requestClose();
-            ref.value = '';
-          } else if (ev.key == 'Escape') {
-            if (requestClose != null) requestClose();
-            ref.value = '';
-          }
-        },
-        value: initialValue,
-        placeholder: placeholder
+      value: initialValue,
+      placeholder: placeholder,
+      onInput: ev -> {
+        if (ev.key == 'Enter') {
+          onSave(ref.value);
+          if (requestClose != null) requestClose();
+          ref.value = '';
+        } else if (ev.key == 'Escape') {
+          if (requestClose != null) requestClose();
+          ref.value = '';
+        }
       }
     });
   }
