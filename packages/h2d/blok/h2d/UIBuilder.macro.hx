@@ -33,24 +33,31 @@ class UiBuilder {
       var propsFields:Array<Field> = [];
       var conProps:Array<String> = [];
       var conArgs:Array<Expr> = [];
-      for (field in type.getClass().fields.get()) 
-        if (field.isPublic) switch field.kind {
-          case FVar(_, AccNormal | AccCall):
-            propsFields.push({
-              name: field.name,
-              kind: FVar(field.type.toComplexType(), null),
-              pos: (macro null).pos,
-              meta: [ { name: ':optional', pos: (macro null).pos } ]
-            });
-          case FMethod(MethDynamic):
-            propsFields.push({
-              name: field.name,
-              kind: FVar(field.type.toComplexType(), null),
-              pos: (macro null).pos,
-              meta: [ { name: ':optional', pos: (macro null).pos } ]
-            });
-          default:
+
+      function scanFields(cls:haxe.macro.Type.ClassType) {
+        for (field in cls.fields.get()) 
+          if (field.isPublic && !field.isFinal) switch field.kind {
+            case FVar(_, AccNormal | AccCall):
+              propsFields.push({
+                name: field.name,
+                kind: FVar(field.type.toComplexType(), null),
+                pos: (macro null).pos,
+                meta: [ { name: ':optional', pos: (macro null).pos } ]
+              });
+            case FMethod(MethDynamic):
+              propsFields.push({
+                name: field.name,
+                kind: FVar(field.type.toComplexType(), null),
+                pos: (macro null).pos,
+                meta: [ { name: ':optional', pos: (macro null).pos } ]
+              });
+            default:
+          }
+        if (cls.superClass != null) {
+          scanFields(cls.superClass.t.get());
         }
+      }
+      scanFields(type.getClass());
       
       var ct = switch constructor.type {
         case TLazy(f): f();

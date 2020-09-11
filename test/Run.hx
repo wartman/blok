@@ -5,12 +5,14 @@ using Blok;
 
 class ExampleStyle extends Style {
   @prop var height:Unit;
-  @prop var color:Value;
+  @prop var color:Int;
+  @prop var backgroundColor:Int = 0xFFCCCCCC;
 
   override function render():Array<VStyleExpr> {
     return [
+      Style.property('padding', 10),
       Style.property('color', color),
-      Style.property('background-color', 0xFFCCCCCC),
+      Style.property('background-color', backgroundColor),
       // Style.property('background-color', blok.ui.style.Color.rgba(0, 0, 0, 0.5)),
       blok.ui.style.Box.export({
         height: height
@@ -51,27 +53,36 @@ class ExampleComponent extends Component {
         layout: Horizontal,
         padding: 10,
       },
-      style: ExampleStyle.style({
-        height: Num(100),
-        color: blok.ui.style.Color.hex(0xFFCCCCCC)
-      }),
+      // style: ExampleStyle.style({
+      //   height: Num(100),
+      //   color: 0xFFCCCCCC
+      // }),
       children: [
-        Ui.text({
-          props: {
-            font: state.font,
-            text: title
-          }
+        Ui.flow({
+          props: {},
+          style: ExampleStyle.style({
+            height: Num(50),
+            color: 0xFF666666,
+            backgroundColor: 0xFF666666
+          }),
+          children: [ Ui.text({
+            props: {
+              font: state.font,
+              text: title
+            }
+          }) ]
         }),
         Ui.interactive({
           props: {
-            height: height,
+            height: 100,
             width: 100,
             onClick: e -> makeTaller(10)
           },
-          // this sorta works
-          style: Style.define([
-            Style.property('backgroundColor', 0xFF666666)
-          ]),
+          style: ExampleStyle.style({
+            height: Num(height),
+            color: 0xFFCCCCCC,
+            backgroundColor: 0xFF666666
+          }),
           children: [
             Ui.flow({
               props: {

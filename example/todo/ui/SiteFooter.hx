@@ -1,39 +1,52 @@
 package todo.ui;
 
-import todo.style.Card;
+import blok.ui.style.Grid;
 import todo.state.AppState;
+import todo.style.*;
 
 using Blok;
 
 class SiteFooter extends Component {
   override function render(context:Context):VNode {
     return AppState.subscribe(context, state -> Html.footer({
-      style: Card.style({}),
+      style: [
+        Card.style({}),
+        Grid.style({
+          columns: GridDefinition.repeat(4, Fr(1)),
+          gap: Config.mediumGap
+        })
+      ],
       children: if (state.todos.length > 0) [
-        Html.text('${state.remainingTodos} of ${state.todos.length} remaining'),
-        Html.button({
-          attrs: {
-            onclick: _ -> state.setFilter(FilterAll),
-            disabled: state.filter == FilterAll
-          },
-          children: [ Html.text('All') ]
+        Html.div({
+          style: Pill.style({
+            color: Config.darkColor
+          }),
+          children: [
+            Html.text('${state.remainingTodos} of ${state.todos.length} remaining'),
+          ]
+        }),    
+        Ui.button({
+          onClick: _ -> state.setFilter(FilterAll),
+          disabled: state.filter == FilterAll,
+          label: 'All'
         }),
-        Html.button({
-          attrs: {
-            onclick: _ -> state.setFilter(FilterCompleted),
-            disabled: state.filter == FilterCompleted
-          },
-          children: [ Html.text('Complete') ]
+        Ui.button({
+          onClick: _ -> state.setFilter(FilterCompleted),
+          disabled: state.filter == FilterCompleted,
+          label: 'Complete'
         }),
-        Html.button({
-          attrs: {
-            onclick: _ -> state.setFilter(FilterPending),
-            disabled: state.filter == FilterPending
-          },
-          children: [ Html.text('Pending') ]
+        Ui.button({
+          onClick: _ -> state.setFilter(FilterPending),
+          disabled: state.filter == FilterPending,
+          label: 'Pending'
         })
       ] else [
-        Html.text('No todos yet!')
+        Html.div({
+          style: Pill.style({
+            color: Config.darkColor
+          }),
+          children: [ Html.text('No todos yet!') ]
+        })
       ]
     }));
   }

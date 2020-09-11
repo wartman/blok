@@ -40,39 +40,29 @@ class TodoItem extends Component {
         ondblclick: _ -> startEditing()
       },
       children: [
-        if (isEditing) {
-          TodoInput.node({
-            onSave: value -> todo.content = value,
-            requestClose: stopEditing,
-            initialValue: todo.content
-          });
-        } else {
-          Html.fragment([
-            Ui.header({
-              title: 'Todo ${todo.id}',
-              requestClose: () -> state.removeTodo(todo)
-            }),
-            Html.input({
-              attrs: {
-                type: Checkbox,
-                checked: todo.complete,
-                onclick: e -> {
-                  e.stopPropagation();
-                  state.toggleTodoComplete(todo);
-                }
+        Ui.header({
+          title: 'Todo ${todo.id}',
+          requestClose: () -> state.removeTodo(todo)
+        }),
+        if (isEditing) TodoInput.node({
+          onSave: value -> todo.content = value,
+          requestClose: stopEditing,
+          initialValue: todo.content
+        }) else Html.fragment([
+          Html.input({
+            attrs: {
+              type: Checkbox,
+              checked: todo.complete,
+              onclick: e -> {
+                e.stopPropagation();
+                state.toggleTodoComplete(todo);
               }
-            }),
-            Html.span({
-              children: [ Html.text(todo.content) ]
-            }),
-            // Html.button({
-            //   attrs: {
-            //     onclick: _ -> state.removeTodo(todo)
-            //   },
-            //   children: [ Html.text('X') ]
-            // })
-          ]);
-        }
+            }
+          }),
+          Html.span({
+            children: [ Html.text(todo.content) ]
+          })
+        ])
       ]
     });
   }

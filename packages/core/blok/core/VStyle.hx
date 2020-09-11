@@ -53,15 +53,19 @@ abstract Value(ValueDef) to ValueDef from ValueDef {
   }
 
   @:from public inline static function ofInt(value:Int) {
-    return new Value(ValueSingle(Std.string(value)));
+    return new Value(ValueSingle(value));
   }
 
   @:from public inline static function ofFloat(value:Float) {
-    return new Value(ValueSingle(Std.string(value)));
+    return new Value(ValueSingle(value));
   }
 
   @:from public inline static function ofUnit(unit:Unit) {
-    return new Value(ValueSingle(unit.toString()));
+    return new Value(ValueSingle(switch unit {
+      case None: null;
+      case Num(value): value;
+      default: unit.toString();
+    }));
   }
 
   public inline function new(value:ValueDef) {
@@ -90,7 +94,7 @@ abstract Value(ValueDef) to ValueDef from ValueDef {
       case ValueKeyed(key, _): 
         key;
       case ValueSingle(value): 
-        value;
+        Std.string(value);
       case ValueCompound(values) | ValueList(values): 
         values.map(v -> v.forIdentifier()).join('_');
       case ValueCall(_, value): 

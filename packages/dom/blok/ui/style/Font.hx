@@ -12,6 +12,20 @@ enum FontWeight {
   Custom(value:Unit);
 }
 
+enum abstract TextAlign(String) to String {
+  var Left = "left";
+  var Right = "right";
+  var Center = "center";
+  var Justify = "justify";
+  var JustifyAll = "justify-all";
+  var Start = "start";
+  var End = "end";
+  var MatchParent = "match-parent";
+  var Inherit = "inherit";
+  var Initial = "initial";
+  var Unset = "unset";
+}
+
 class Font extends Style {
   @prop var family:String = null;
   @prop var size:Unit = null;
@@ -19,6 +33,7 @@ class Font extends Style {
   @prop var weight:FontWeight = null;
   @prop var color:Color = null;
   @prop var lineHeight:Unit = null;
+  @prop var align:TextAlign = null;
   // @todo: This class should handle @font-face as well
 
   override function render():Array<VStyleExpr> {
@@ -41,6 +56,7 @@ class Font extends Style {
     }));
     if (color != null) props.push(Style.property('color', color));
     if (lineHeight != null) props.push(Style.property('line-height', lineHeight));
+    if (align != null) props.push(Style.property('text-align', align));
 
     return props;
   }

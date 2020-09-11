@@ -12,7 +12,7 @@ class CssBuilder {
   public static function define(e:Expr):Expr {
     return switch e.expr {
       case EObjectDecl(decls) if (decls.length >= 0):
-        return macro blok.core.Style.define([ $a{parse(decls)} ]);
+        return macro @:pos(e.pos) blok.core.Style.define([ $a{parse(decls)} ]);
       case EBlock(_) | EObjectDecl(_):
         macro null;
       default:

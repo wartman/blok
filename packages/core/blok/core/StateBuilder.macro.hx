@@ -26,7 +26,6 @@ class StateBuilder {
     var updateProps:Array<Field> = [];
     var updates:Array<Expr> = [];
     var initializers:Array<ObjectField> = [];
-    var availableStates:Array<String> = [];
     var subStates:Array<Expr> = [];
     var initHooks:Array<Expr> = [];
     var disposals:Array<Expr> = [];
@@ -147,8 +146,6 @@ class StateBuilder {
             var name = params[i].t.toString();
             paramMap.set(name, impl);
           }
-
-          availableStates.push(field.name);
 
           switch ct {
             case TFun(args, _):

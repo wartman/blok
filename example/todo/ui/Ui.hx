@@ -40,16 +40,14 @@ class Ui {
           weight: Bold,
           size: Em(1),
           lineHeight: Pct(100)
-        }, 'ui-button'),
+        }, 'ui-closeButton'),
         Position.style({ 
           type: Absolute, 
           top: Config.smallGap, 
           right: Num(0)
-        }, 'ui-button'),
-        Card.style({
-          color: Config.midColor,
-          padding: EdgeInsets.symmetric(None, Em(.5)),
-          height: Em(2)
+        }, 'ui-closeButton'),
+        Pill.style({
+          color: Config.midColor
         }),
         Display.style({ kind: Block })
       ],
@@ -57,6 +55,28 @@ class Ui {
         onclick: props.onClick
       },
       children: [ Html.text('X') ]
+    });
+  }
+
+  public static function button(props:{
+    label:String,
+    onClick:(e:Event)->Void,
+    ?disabled:Bool
+  }):VNode {
+    return Html.button({
+      style: [
+        Css.define({
+          cursor: 'pointer'
+        }),
+        Pill.style({
+          color: Config.midColor
+        })
+      ],
+      attrs: {
+        disabled: props.disabled,
+        onclick: props.onClick
+      },
+      children: [ Html.text(props.label) ]
     });
   }
 
@@ -68,14 +88,10 @@ class Ui {
   }) {
     return Html.input({
       style: [
-        Font.style({
-          size: Em(1),
-          lineHeight: Pct(100)
-        }, 'ui-input'),
-        Card.style({
+        Box.style({ width: Pct(100) }),
+        Pill.style({
           color: Config.whiteColor,
-          padding: EdgeInsets.symmetric(None, Em(.5)),
-          height: Em(2)
+          centered: false
         })
       ],
       ref: props.ref,

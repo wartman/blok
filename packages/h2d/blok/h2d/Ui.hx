@@ -2,9 +2,9 @@ package blok.h2d;
 
 @:build(blok.h2d.UiBuilder.build([
   'h2d.Object',
-  'h2d.Flow',
-  'h2d.Interactive',
-  'h2d.Text',
+  'blok.h2d.Flow',
+  'blok.h2d.Text',
+  'blok.h2d.Interactive',
   'h2d.TextInput',
   'h2d.Dropdown',
   'h2d.Layers',
