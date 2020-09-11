@@ -62,7 +62,7 @@ abstract Value(ValueDef) to ValueDef from ValueDef {
 
   @:from public inline static function ofUnit(unit:Unit) {
     return new Value(ValueSingle(switch unit {
-      case None: null;
+      case None: 0;
       case Num(value): value;
       default: unit.toString();
     }));
@@ -106,12 +106,16 @@ abstract Value(ValueDef) to ValueDef from ValueDef {
     return switch unwrap() {
       case ValueKeyed(_, value):
         value.toString();
-      case ValueSingle(value): 
-        Std.string(value);
+      case ValueSingle(value):
+        value == null ? null : Std.string(value);
       case ValueCompound(values): 
-        values.map(v -> v.toString()).join(' ');
+        values.map(v -> v.toString())
+          .filter(v -> v != null)
+          .join(' ');
       case ValueList(values): 
-        values.map(v -> v.toString()).join(',');
+        values.map(v -> v.toString())
+          .filter(v -> v != null)
+          .join(',');
       case ValueCall(name, value):
         return '${name}(${value.toString()})';
     }

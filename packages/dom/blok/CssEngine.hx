@@ -100,7 +100,8 @@ class CssEngine {
           out.push(style);
         }
       case EProperty(name, value, important):
-        if (important == true) {
+        var value = value.toString();
+        if (value != null) if (important == true) {
           def.push('${name}: ${value} !important;');
         } else {
           def.push('${name}: ${value};');
