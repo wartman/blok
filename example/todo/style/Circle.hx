@@ -4,10 +4,9 @@ import blok.ui.style.*;
 
 using Blok;
 
-class Pill extends Style {
+class Circle extends Style {
   @prop var color:Color = Config.lightColor;
   @prop var outlined:Bool = false;
-  @prop var centered:Bool = true;
 
   override function render():Array<VStyleExpr> {
     return [
@@ -16,7 +15,7 @@ class Pill extends Style {
           color: Color.name('transparent')
         }),
         Border.export({
-          radius: Em(1),
+          radius: Pct(50),
           width: Px(1),
           type: Solid,
           color: color
@@ -24,21 +23,19 @@ class Pill extends Style {
         Style.property('color', color)
       ]) else Style.properties([
         AutoColor.export({ color: color }),
-        Border.export({ 
+        Border.export({
           type: None,
           width: Px(0),
-          radius: Em(1) 
-        })
+          radius: Pct(50) 
+        }),
       ]),
-      Display.export({ kind: Block }),
-      Font.export({
-        size: Em(1),
-        lineHeight: Em(2),
-        align: centered ? Center : null
-      }),
       Box.export({
         padding: EdgeInsets.symmetric(None, Em(.5)),
-        height: Em(2)
+        height: Em(2),
+        width: Em(2)
+      }),
+      Font.export({
+        lineHeight: Em(2)
       })
     ];
   }

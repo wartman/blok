@@ -36,20 +36,17 @@ class Ui {
   }):VNode {
     return Html.button({
       style: [
-        Font.style({ 
-          weight: Bold,
-          size: Em(1),
-          lineHeight: Pct(100)
-        }, 'ui-closeButton'),
         Position.style({ 
           type: Absolute, 
           top: Config.smallGap, 
           right: Num(0)
         }, 'ui-closeButton'),
-        Pill.style({
-          color: Config.midColor
+        Css.define({
+          cursor: 'pointer'
         }),
-        Display.style({ kind: Block })
+        Circle.style({
+          color: Config.midColor
+        })
       ],
       attrs: {
         onclick: props.onClick
@@ -61,19 +58,25 @@ class Ui {
   public static function button(props:{
     label:String,
     onClick:(e:Event)->Void,
-    ?disabled:Bool
+    ?selected:Bool
   }):VNode {
     return Html.button({
       style: [
         Css.define({
           cursor: 'pointer'
         }),
-        Pill.style({
-          color: Config.midColor
-        })
+        if (!props.selected)
+          Pill.style({
+            color: Config.midColor,
+            outlined: true
+          })
+        else
+          Pill.style({
+            color: Config.midColor
+          })
       ],
       attrs: {
-        disabled: props.disabled,
+        disabled: props.selected,
         onclick: props.onClick
       },
       children: [ Html.text(props.label) ]

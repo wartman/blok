@@ -11,12 +11,7 @@ class Card extends Style {
 
   override function render():Array<VStyleExpr> {
     return [
-      Style.property('color', switch color.getKey() {
-        case 'white' | 'light': Config.darkColor;
-        case 'mid' | 'dark': Config.lightColor;
-        case _: Config.darkColor; 
-      }),
-      Background.export({ color: color }),
+      AutoColor.export({ color: color }),
       Display.export({ kind: Block }),
       Border.export({ 
         type: None,

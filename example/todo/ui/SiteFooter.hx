@@ -19,7 +19,8 @@ class SiteFooter extends Component {
       children: if (state.todos.length > 0) [
         Html.div({
           style: Pill.style({
-            color: Config.darkColor
+            color: Config.darkColor,
+            outlined: true
           }),
           children: [
             Html.text('${state.remainingTodos} of ${state.todos.length} remaining'),
@@ -27,23 +28,24 @@ class SiteFooter extends Component {
         }),    
         Ui.button({
           onClick: _ -> state.setFilter(FilterAll),
-          disabled: state.filter == FilterAll,
+          selected: state.filter == FilterAll,
           label: 'All'
         }),
         Ui.button({
           onClick: _ -> state.setFilter(FilterCompleted),
-          disabled: state.filter == FilterCompleted,
+          selected: state.filter == FilterCompleted,
           label: 'Complete'
         }),
         Ui.button({
           onClick: _ -> state.setFilter(FilterPending),
-          disabled: state.filter == FilterPending,
+          selected: state.filter == FilterPending,
           label: 'Pending'
         })
       ] else [
         Html.div({
           style: Pill.style({
-            color: Config.darkColor
+            color: Config.darkColor,
+            outlined: true
           }),
           children: [ Html.text('No todos yet!') ]
         })
