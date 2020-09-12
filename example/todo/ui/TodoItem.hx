@@ -23,14 +23,6 @@ class TodoItem extends Component {
   }
   
   override function render(context:Context):VNode {
-    // Note: we could use `TodoState.subscribe` here, but
-    //       this component will always be the child of 
-    //       a `TodoList`, which is already subscribed to TodoState.
-    //       This actually would work fine -- Blok won't
-    //       rerender a child component if the parent is
-    //       already rendering -- but this is just an illustration
-    //       of how to use state without subscribing to it.
-    var state = TodoState.forContext(context);
     return Html.li({
       key: todo.id,
       style: Card.style({
@@ -42,7 +34,7 @@ class TodoItem extends Component {
       children: [
         Ui.header({
           title: 'Todo ${todo.id}',
-          requestClose: () -> state.removeTodo(todo)
+          requestClose: () -> TodoState.from(context).removeTodo(todo)
         }),
         if (isEditing) TodoInput.node({
           onSave: value -> todo.content = value,
@@ -55,7 +47,7 @@ class TodoItem extends Component {
               checked: todo.complete,
               onclick: e -> {
                 e.stopPropagation();
-                state.toggleTodoComplete(todo);
+                TodoState.from(context).toggleTodoComplete(todo);
               }
             }
           }),

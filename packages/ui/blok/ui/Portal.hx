@@ -9,14 +9,14 @@ class Portal extends Component {
   @init
   function registerPortal() {
     PortalState
-      .forContext(getCurrentContext())
+      .from(getCurrentContext())
       .addPortal(key, child);
   }
 
   @dispose
   function removePortal() {
     PortalState
-      .forContext(getCurrentContext())
+      .from(getCurrentContext())
       .removePortal(key);
   }
 

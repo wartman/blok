@@ -109,7 +109,7 @@ class Run {
         Html.button({
           attrs: {
             onclick: _ -> ExampleTheme
-              .forContext(ctx)
+              .from(ctx)
               .setColor(blok.style.Color.hex(0x666))
           },
           children: [ Html.text('Swap color') ]

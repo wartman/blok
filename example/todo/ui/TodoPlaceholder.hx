@@ -20,7 +20,6 @@ class TodoPlaceholder extends Component {
   }
 
   override function render(context:Context):VNode {
-    var state = TodoState.forContext(context);
     return Html.li({
       style: Card.style({
         color: Config.midColor,
@@ -35,7 +34,7 @@ class TodoPlaceholder extends Component {
           TodoModal.node({
             requestClose: hideModal,
             onSave: value -> {
-              state.addTodo(value);
+              TodoState.from(context).addTodo(value);
               hideModal();
             }
           })

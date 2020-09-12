@@ -250,6 +250,7 @@ class StateBuilder {
 
           subStates.push(macro {
             var sub = this.$name;
+            // @todo: subscribing to every change might be a bad idea?
             sub.__subscribe(this.__dispatch);
             this.__context.set(sub.__getId(), sub);
           });
@@ -390,7 +391,7 @@ class StateBuilder {
       var providerFactory = macro:(context:blok.core.Context<$nodeType>)->blok.core.VNode<$nodeType>;
       var subscriberFactory = macro:(data:$ct)->blok.core.VNode<$nodeType>;
   
-      var newFields:Array<Field> = [
+      var newFields = ([
 
         {
           name: 'provide',
@@ -417,6 +418,15 @@ class StateBuilder {
         {
           name: 'subscribe',
           pos: (macro null).pos,
+          doc: '
+Subscribe to this state\'s instance in the current context.
+
+Whenever the state updtates the components returned by `build` will
+be updated as well.
+
+If you just want access to the current state, use 
+`${clsName}.from(context)` instead.
+          ',
           access: [ APublic, AStatic ],
           kind: FFun({
             params: createParams,
@@ -426,7 +436,7 @@ class StateBuilder {
               { name: 'build', type: macro:$subscriberFactory }
             ],
             expr: macro {
-              var state = forContext(context);
+              var state = from(context);
               return VComponent(blok.core.StateSubscriber, {
                 state: state,
                 build: build
@@ -436,9 +446,15 @@ class StateBuilder {
         },
 
         {
-          name: 'forContext',
+          name: 'from',
           pos: (macro null).pos,
           access: [ APublic, AStatic ],
+          doc: '
+Get the current instance of this state from the given context.
+
+If you want to re-render whenever the state changes, use
+`${clsName}.subscribe(context, state -> ...)` instead.
+          ',
           kind: FFun({
             params: createParams,
             ret: ct,
@@ -457,7 +473,7 @@ class StateBuilder {
           })
         }
 
-      ].concat((macro class {
+      ]:Array<Field>).concat((macro class {
         var $PROPS:$propType;
 
         public function new($INCOMING_PROPS:$propType, __context, __parent, __build:$providerFactory) {
