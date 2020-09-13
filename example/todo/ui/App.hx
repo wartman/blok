@@ -17,7 +17,7 @@ class App extends Component {
     // Note: this is a shortcut for the following:
     //
     // TodoState.provide({ todos: [] }, ctx -> RouterState.provide({ ... }, ctx -> ...));
-    return StateProvider.provide([
+    return ObservableProvider.provide([
       new TodoState({ todos: [] }),
       new RouterState<TodoRoute>({
         urlToRoute: url -> switch url.split('/') {

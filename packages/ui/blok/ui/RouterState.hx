@@ -1,6 +1,6 @@
 package blok.ui;
 
-class RouterState<Route:EnumValue> extends State {
+class RouterState<Route:EnumValue> implements State {
   @prop var urlToRoute:(url:String)->Route;
   @prop var routeToUrl:(route:Route)->String;
   @prop var history:History;

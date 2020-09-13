@@ -16,6 +16,7 @@ class StateBuilder {
     var cls = Context.getLocalClass().get();
     var clsName = cls.pack.concat([cls.name]).join('.');
     var clsTp:TypePath = { pack: cls.pack, name: cls.name };
+    var clsType = Context.getLocalType().toComplexType();
     var builder = new ClassBuilder(cls, fields);
     var props:Array<Field> = [];
     var updateProps:Array<Field> = [];
@@ -138,7 +139,7 @@ class StateBuilder {
           }).fields);
 
           // @todo: batch all computed subscriptions.
-          initHooks.push(macro this.__subscribe(() -> this.$backingName = null));
+          initHooks.push(macro this.observe().subscribe(_ -> this.$backingName = null));
           updates.push(macro @:pos(f.pos) this.$backingName = null);
           
         default:
@@ -192,7 +193,7 @@ class StateBuilder {
               var incoming = closure();
               if (incoming != null) {
                 __updateProps(incoming);
-                __notify();
+                observe().notify(this);
               }
             }
           }
@@ -228,11 +229,13 @@ class StateBuilder {
               { name: 'props', type: macro:$propType },
               { name: 'build', type: macro:$providerFactory  }
             ],
-            expr: macro return VComponent(blok.core.StateProvider, {
-              props: props,
-              create: $p{clsName.split('.')}.new,
-              build: build
-            })
+            expr: macro {
+              var state = new $clsTp(props);
+              return VComponent(blok.core.ObservableProvider, {
+                observable: state,
+                build: build
+              });
+            }
           })
         },
 
@@ -258,8 +261,8 @@ If you just want access to the current state, use
             ],
             expr: macro {
               var state = from(context);
-              return VComponent(blok.core.StateSubscriber, {
-                state: state,
+              return VComponent(blok.core.ObservableSubscriber, {
+                observable: state,
                 build: build
               });
             }
@@ -296,8 +299,10 @@ If you want to re-render whenever the state changes, use
 
       ]:Array<Field>).concat((macro class {
         var $PROPS:$propType;
+        final __observable:blok.core.Observable<$clsType>;
 
         public function new($INCOMING_PROPS:$propType) {
+          __observable = new blok.core.Observable.SimpleObservable(this, $v{id});
           this.$PROPS = ${ {
             expr: EObjectDecl(initializers),
             pos: (macro null).pos
@@ -305,17 +310,17 @@ If you want to re-render whenever the state changes, use
           $b{initHooks};
         }
 
-        override function __getId() {
-          return $v{id};
+        public function observe():blok.core.Observable<$clsType> {
+          return __observable;
         }
 
-        override function __dispose() {
+        function __dispose() {
           $b{disposals};
-          super.__dispose();
+          // super.__dispose();
         }
 
         @:noCompletion
-        override function __updateProps($INCOMING_PROPS:Dynamic) {
+        function __updateProps($INCOMING_PROPS:Dynamic) {
           $b{updates};
         }
       }).fields);

@@ -4,7 +4,7 @@ using Lambda;
 
 typedef PortalEntry = { key:String, vnode:VNode }; 
 
-class PortalState extends State {
+class PortalState implements State {
   @prop var portals:Array<PortalEntry> = [];
 
   @update

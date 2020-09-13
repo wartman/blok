@@ -2,7 +2,7 @@ package todo.state;
 
 using Blok;
 
-class TodoState extends State {
+class TodoState implements State {
   @prop var todos:Array<Todo>;
   @prop var filter:TodoFilter = TodoFilter.FilterAll;
   @computed var length:Int = todos.length;
