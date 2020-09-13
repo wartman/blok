@@ -2,6 +2,7 @@
 @:noUsing @:noDoc typedef Platform = blok.dom.Platform;
 @:noUsing @:noDoc typedef Component = blok.Component;
 @:noUsing @:noDoc typedef State = blok.State;
+@:noUsing @:noDoc typedef StateProvider<T:State> = blok.StateProvider<T>;
 @:noUsing @:noDoc typedef Style = blok.core.Style;
 @:noUsing @:noDoc typedef StyleList = blok.core.StyleList;
 

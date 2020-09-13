@@ -6,11 +6,6 @@ import haxe.macro.Context;
 using haxe.macro.Tools;
 using blok.core.BuilderHelpers;
 
-// @todo: There is a lot of coppied code with ComponentBuilder here:
-//        try to DRY it up.
-// @todo: I am becoming increasingly unsure about this approach. We may
-//        need a more robust observable impl, or we might want to remove
-//        sub states (which add a LOT of complexity).
 class StateBuilder {
   static final PROPS = '__props';
   static final INCOMING_PROPS = '__incomingProps';
@@ -30,7 +25,7 @@ class StateBuilder {
     var initHooks:Array<Expr> = [];
     var disposals:Array<Expr> = [];
     var id = cls.pack.concat([ cls.name ]).join('_').toLowerCase();
-
+  
     function addProp(name:String, type:ComplexType, isOptional:Bool) {
       props.push({
         name: name,
@@ -47,7 +42,7 @@ class StateBuilder {
         pos: (macro null).pos
       });
     }
-
+    
     builder.addFieldMetaHandler({
       name: 'prop',
       hook: Normal,
@@ -100,178 +95,7 @@ class StateBuilder {
       }
     });
 
-    // This works, but is way too complex.
-    builder.addFieldMetaHandler({
-      name: 'state',
-      options: [],
-      hook: Init,
-      build: function(options:{}, builder, field) switch field.kind {
-        case FVar(t, e):
-          if (!Context.unify(t.toType(), Context.getType('blok.core.State'))) {
-            Context.error('Must be a `blok.core.State`', field.pos);
-          }
-          if (e != null) {
-            Context.error('Expressions are not allowed for @state vars', e.pos);
-          }
-
-          if (!field.access.contains(APublic)) {
-            field.access.remove(APrivate);
-            field.access.push(APublic);
-          }
-          field.kind = FProp('get', 'never', t, null);
-
-          var name = field.name;
-          var getName = 'get_${name}';
-          var lazyInit = '__state_${name}';
-          var cls = t.toType().getClass();
-          var tp:TypePath = {
-            pack: cls.pack,
-            name: cls.name
-          };
-          var tParams = switch t.toType() {
-            case TInst(t, params): params;
-            default: [];
-          }
-          var params = cls.params;
-          var paramMap:Map<String, haxe.macro.Type> = [];
-          var constructor = cls.constructor.get();
-          var stateProps:Array<Field> = [];
-          var ct = switch constructor.type {
-            case TLazy(f): f();
-            default: constructor.type;
-          }
-
-          for (i in 0...tParams.length) {
-            var impl = tParams[i];
-            var name = params[i].t.toString();
-            paramMap.set(name, impl);
-          }
-
-          switch ct {
-            case TFun(args, _):
-              switch args[0].t {
-                case TAnonymous(fields):
-                  for (field in fields.get().fields) {
-                    var type = field.type.mapTypes(paramMap);
-                    stateProps.push({
-                      name: field.name,
-                      meta: field.meta.has(':optional')
-                        ? [ { name: ':optional', pos: (macro null).pos } ]
-                        : [],
-                      kind: FVar(type.toComplexType()),
-                      pos: (macro null).pos
-                    });
-                  }
-                default: throw 'assert';
-              }
-            default: 
-              throw 'assert';
-          }
-
-          var anon = TAnonymous(stateProps);
-          props.push({
-            name: name,
-            kind: FVar(anon.toType().toComplexType(), null),
-            access: [ APublic ],
-            meta: [],
-            pos: (macro null).pos
-          });
-          initializers.push({
-            field: name,
-            expr: macro $i{INCOMING_PROPS}.$name
-          });
-
-          var updateCalls:Array<Expr> = [];
-          var updateMethods = TAnonymous(cls.fields.get()
-            .filter(f -> f.meta.has('update') && f.isPublic)
-            .map(f -> {
-              var methodName = f.name;
-              var fType = switch f.type {
-                case TLazy(f): f();
-                default: f.type;
-              }
-              var argProps:Array<Field> = switch fType {
-                case TFun(args, _): args.map(a -> ({
-                    name: a.name,
-                    meta: a.opt
-                      ? [ OPTIONAL_META ]
-                      : [],
-                    pos: (macro null).pos,
-                    kind: FVar(a.t.mapTypes(paramMap).toComplexType())
-                  }:Field));
-                default: throw 'assert';
-              };
-              var type = argProps.length > 0 
-                ? TAnonymous(argProps)
-                : macro:Bool;
-              var arguments:Array<Expr> = argProps.length > 0 
-                ? [ for (arg in argProps) {
-                    var n = arg.name;
-                    macro __calls.$methodName.$n;
-                  } ]
-                : [];
-
-              if (argProps.length > 0)
-                updateCalls.push(macro {
-                  if (__calls.$methodName != null) {
-                    this.$name.$methodName($a{arguments});
-                  }
-                });
-              else
-                updateCalls.push(macro {
-                  if (__calls.$methodName == true) {
-                    this.$name.$methodName();
-                  }
-                });
-
-              return ({
-                name: f.name,
-                kind: FVar(type),
-                access: [APublic],
-                meta: [OPTIONAL_META],
-                pos: (macro null).pos
-              }:Field);
-            }));
-
-          updateProps.push({
-            name: name,
-            kind: FVar(updateMethods),
-            access: [APublic],
-            meta: [OPTIONAL_META],
-            pos: (macro null).pos
-          });
-          
-          updates.push(macro {
-            if (Reflect.hasField($i{INCOMING_PROPS}, $v{name})) {
-              var __calls:$updateMethods = Reflect.field($i{INCOMING_PROPS}, $v{name});
-              blok.core.State.__batchUpdate(this.$name, () -> $b{updateCalls});
-            }
-          });
-
-          subStates.push(macro {
-            var sub = this.$name;
-            // @todo: subscribing to every change might be a bad idea?
-            sub.__subscribe(this.__dispatch);
-            this.__context.set(sub.__getId(), sub);
-          });
-
-          disposals.push(macro this.$name.__dispose());
-
-          builder.add((macro class {
-            var $lazyInit:$t;
-            function $getName() {
-              if (this.$lazyInit == null) {
-                this.$lazyInit = new $tp($i{PROPS}.$name, __context, this, _->null);
-              }
-              return this.$lazyInit;
-            }
-          }).fields);
-          
-        default:
-          Context.error('@state can only be used on vars', field.pos);
-      }
-    });
-
+    
     builder.addFieldMetaHandler({
       name: 'computed',
       hook: Normal,
@@ -368,7 +192,7 @@ class StateBuilder {
               var incoming = closure();
               if (incoming != null) {
                 __updateProps(incoming);
-                __dispatch();
+                __notify();
               }
             }
           }
@@ -401,17 +225,14 @@ class StateBuilder {
             params: createParams,
             ret: macro:blok.core.VNode<$nodeType>,
             args: [
-              { name: 'context', type: macro:blok.core.Context<$nodeType> },
               { name: 'props', type: macro:$propType },
               { name: 'build', type: macro:$providerFactory  }
             ],
-            expr: macro return VComponent({
-              __create: function (props, context, parent) {
-                var state = new $clsTp(props, context, parent, build);
-                state.__inserted = true;
-                return state;
-              }
-            }, props)
+            expr: macro return VComponent(blok.core.StateProvider, {
+              props: props,
+              create: $p{clsName.split('.')}.new,
+              build: build
+            })
           })
         },
 
@@ -476,21 +297,12 @@ If you want to re-render whenever the state changes, use
       ]:Array<Field>).concat((macro class {
         var $PROPS:$propType;
 
-        public function new($INCOMING_PROPS:$propType, __context, __parent, __build:$providerFactory) {
-          this.__parent = __parent;
-          this.__factory = cast __build;
+        public function new($INCOMING_PROPS:$propType) {
           this.$PROPS = ${ {
             expr: EObjectDecl(initializers),
             pos: (macro null).pos
           } };
-          __registerContext(__context);
           $b{initHooks};
-          __render(this.__context);
-        }
-
-        override function __registerContext(context) {
-          super.__registerContext(context);
-          $b{subStates};
         }
 
         override function __getId() {

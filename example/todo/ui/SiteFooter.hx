@@ -1,14 +1,16 @@
 package todo.ui;
 
 import blok.ui.style.Grid;
-import todo.state.AppState;
+import todo.state.TodoState;
+// import todo.state.AppState;
 import todo.style.*;
 
 using Blok;
 
 class SiteFooter extends Component {
   override function render(context:Context):VNode {
-    return AppState.subscribe(context, state -> Html.footer({
+    // todo: change navigation on the RouterState instead.
+    return TodoState.subscribe(context, state -> Html.footer({
       style: [
         Card.style({}),
         Grid.style({

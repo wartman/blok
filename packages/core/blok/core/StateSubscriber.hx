@@ -2,8 +2,8 @@ package blok.core;
 
 using Reflect;
 
-final class StateSubscriber<T:State<Node>, Node> extends Component<Node> {
-  public static function __create<T:State<Node>, Node>(props:{
+final class StateSubscriber<T:State, Node> extends Component<Node> {
+  public static function __create<T:State, Node>(props:{
     state:T,
     build:(state:T)->VNode<Node>
   }, context:Context<Node>, parent:Component<Node>):Component<Node> {
@@ -19,9 +19,9 @@ final class StateSubscriber<T:State<Node>, Node> extends Component<Node> {
   public function new(state, build, context, parent) {
     this.state = state;
     this.build = build;
-    this.__context = context;
     this.__parent = parent;
     this.unsub = state.__subscribe(__requestUpdate);
+    __registerContext(context);
     __render(__context);
   }
 

@@ -1,23 +1,25 @@
 package todo.ui;
 
-// import blok.ui.RouterState;
+import blok.ui.RouterState;
 import blok.ui.history.BrowserHistory;
 import blok.ui.PortalManager;
 import todo.state.TodoFilter;
+import todo.state.TodoRoute;
 import todo.style.Card;
 import todo.style.Root;
 import todo.style.MainTitle;
-import todo.state.AppState;
 import todo.state.TodoState;
-// import todo.state.TodoRoute;
 
 using Blok;
 
 class App extends Component {
   override function render(context:Context):VNode {
-    return AppState.provide(context, {
-      title: 'Todos',
-      router: {
+    // Note: this is a shortcut for the following:
+    //
+    // TodoState.provide({ todos: [] }, ctx -> RouterState.provide({ ... }, ctx -> ...));
+    return StateProvider.provide([
+      new TodoState({ todos: [] }),
+      new RouterState<TodoRoute>({
         urlToRoute: url -> switch url.split('/') {
           case [''] | ['', '']: Home;
           case ['filter', type]: switch (type:TodoFilter) {
@@ -34,11 +36,8 @@ class App extends Component {
           case Filter(filter): 'filter/${filter}';
         },
         history: new BrowserHistory('')
-      },
-      todos: {
-        todos: []
-      }
-    }, childContext -> PortalManager.node({
+      })
+    ], childContext -> PortalManager.node({
       children: [
         Html.div({
           style: Root.style({}),
@@ -48,12 +47,8 @@ class App extends Component {
               children: [
                 Html.h1({
                   style: MainTitle.style({}), 
-                  children: [
-                    AppState.subscribe(childContext, state -> Html.text(state.title))
-                  ]
+                  children: [ Html.text('Todos') ]
                 }),
-                // Because AppState provides a TodoState it is now
-                // available in the current Context.
                 TodoState.subscribe(childContext, state -> TodoInput.node({
                   onSave: value -> state.addTodo(value),
                   placeholder: 'Add Todo'

@@ -19,7 +19,7 @@ class BuilderHelpers {
   // This is a hack that I'm using probably because I don't understand
   // the Haxe type system well enough.
   //
-  // Currently only used in StateBuilder to resolve type params when building
+  // Currently only used in State to resolve type params when building
   // sub-states. There is probably a much safer way to do it.
   public static function mapTypes(type:Type, paramMap:Map<String, Type>) {
     function resolve(type:Type) {

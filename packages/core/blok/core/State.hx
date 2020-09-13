@@ -2,47 +2,31 @@ package blok.core;
 
 import haxe.ds.List;
 
-class State<Node> extends Component<Node> {
-  static inline function __batchUpdate(state:State<Dynamic>, cb:()->Void) {
-    var prevDispatching = state.__dispatching;
-    state.__dispatching = true;
-    cb();
-    state.__dispatching = prevDispatching;
-    state.__dispatch();
-  }
-
+class State {
   var __subscribers:List<() -> Void> = new List();
-  var __factory:(context:Context<Node>) -> VNode<Node>;
-  var __dispatching:Bool;
-
-  override function __registerContext(context:Context<Node>) {
-    if (context == __context) return;
-    __context = context.getChild();
-    __context.set(__getId(), this);
-  }
-  
-  function __dispatch() {
-    if (__dispatching) return;
-    __dispatching = true;
-    for (subscription in __subscribers) subscription();
-    __dispatching = false;
-  }
+  var __notifying:Bool;
 
   public function __subscribe(subscription:() -> Void) {
     __subscribers.add(subscription);
     return () -> __subscribers.remove(subscription);
   }
+  
+  public function __notify() {
+    if (__notifying) return;
+    __notifying = true;
+    for (subscription in __subscribers) subscription();
+    __notifying = false;
+  }
 
-  function __getId():String {
+  public function __updateProps(props:Dynamic) {
+    // noop
+  }
+
+  public function __getId():String {
     return ''; // Handled by macro.
   }
 
-  override function render(context:Context<Node>):VNode<Node> {
-    return __factory(context);
-  }
-
-  override function __dispose() {
+  function __dispose() {
     __subscribers = null;
-    super.__dispose();
   }
 }
