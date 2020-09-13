@@ -22,6 +22,8 @@ Packages will be split out eventually, but they're all in one place for now (for
 Example
 -------
 
+> Note: things are changing fast, this may be out of date.
+
 ```haxe
 using Blok;
 
@@ -40,7 +42,7 @@ class ExampleStyle extends Style {
   }
 }
 
-class ExampleTheme extends State {
+class ExampleTheme implements State {
   @prop var color:Value;
 
   @update
@@ -99,7 +101,7 @@ class Run {
   public static function main() {
     Platform.mount(
       js.Browser.document.getElementById('root'),
-      context -> ExampleTheme.provide(context, {
+      _ -> ExampleTheme.provide({
         color: blok.style.Color.hex(0xCCC)
       }, ctx -> Html.fragment([
         ExampleComponent.node({

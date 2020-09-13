@@ -27,6 +27,7 @@ class ObservableProvider<T, Node> extends Component<Node> {
   }
 
   var observable:Observable<T>;
+  var link:ObservableLink;
   var build:(context:Context<Node>)->VNode<Node>;
 
   public function new(observable, build, context, parent) {
@@ -40,7 +41,8 @@ class ObservableProvider<T, Node> extends Component<Node> {
   override function __registerContext(context:Context<Node>) {
     if (context == __context) return;
     __context = context.getChild();
-    __context.set(observable.getKey(), observable);
+    if (link != null) link.cancel();
+    link = observable.subscribe(value -> __context.set(observable.getKey(), value));
   }
 
   override function __shouldUpdate(props:Dynamic):Bool {
@@ -54,10 +56,15 @@ class ObservableProvider<T, Node> extends Component<Node> {
   override function __updateProps(props:Dynamic) {
     if (props.hasField('observable')) {
       var newObservable = props.field('observable');
-      if (newObservable != observable) {
-        observable = newObservable;
-      }
+      if (link != null) link.cancel();
+      observable = newObservable;
+      link = observable.subscribe(value -> __context.set(observable.getKey(), value));
     }
+  }
+
+  override function __dispose() {
+    if (link != null) link.cancel();
+    super.__dispose();
   }
 
   override function render(context:Context<Node>):VNode<Node> {
