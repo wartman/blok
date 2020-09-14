@@ -7,7 +7,6 @@ class Component<Node> {
   public var __dirty:Bool = false;
   public var __inserted:Bool = false;
 
-  var __nodes:Array<Dynamic> = [];
   var __rendered:Rendered<Node>;
   var __context:Context<Node>;
   var __pendingChildren:Array<Component<Node>> = [];
@@ -44,21 +43,32 @@ class Component<Node> {
 
     switch __rendered {
       case null:
-        __rendered = Differ.renderAll(__processRender(context), this, context);
+        Differ.renderAll(
+          __processRender(context), 
+          this, 
+          context,
+          rendered -> __rendered = rendered
+        );
       case before:
         var previousCount = 0;
         var first:Node = null;
 
-        __rendered = Differ.updateAll(before, __processRender(context), this, context);
+        Differ.updateAll(
+          before, 
+          __processRender(context), 
+          this, 
+          context,
+          rendered -> {
+            __rendered = rendered;
+            
+            for (node in before.getNodes()) {
+              if (first == null) first = node;
+              previousCount++;
+            }
 
-        for (node in before.getNodes()) {
-          if (first == null) first = node;
-          previousCount++;
-        }
-
-        if (first != null) {
-          Differ.setChildren(previousCount, engine.traverseSiblings(first), __rendered);
-        }
+            Differ.setChildren(previousCount, engine.traverseSiblings(first), __rendered);
+          }
+        );
     }
   }
 
@@ -77,7 +87,6 @@ class Component<Node> {
       #end
     }
     __dirty = false;
-    __nodes = null;
     __pendingChildren = [];
     __registerEffects();
   }

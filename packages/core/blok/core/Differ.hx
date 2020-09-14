@@ -54,33 +54,39 @@ class Differ {
     context:Context<Node>
   ) {
     var engine = context.engine;
-    var previousCount = 0;
-    var rendered = switch engine.getRendered(node) {
-      case null: 
-        renderAll(nodes, parent, context);
-      case before: 
-        previousCount = before.getNodes().length;
-        updateAll(before, nodes, parent, context);
+
+    inline function handleRendered(previousCount, rendered) {
+      engine.setRendered(node, rendered);
+      setChildren(previousCount, engine.traverseChildren(node), rendered);
     }
 
-    engine.setRendered(node, rendered);
-    setChildren(previousCount, engine.traverseChildren(node), rendered);
+    switch engine.getRendered(node) {
+      case null: 
+        renderAll(nodes, parent, context, rendered -> handleRendered(0, rendered));
+      case before: 
+        var previousCount = before.getNodes().length;
+        updateAll(before, nodes, parent, context, rendered -> handleRendered(previousCount, rendered));
+    }
   }
 
   public static function renderAll<Node>(
     nodes:Array<VNode<Node>>,
     parent:Component<Node>,
-    context:Context<Node>
+    context:Context<Node>,
+    ?handle:(rendered:Rendered<Node>)->Void
   ):Rendered<Node> {
     var differ = createDiffer((_, _) -> None);
-    return differ(nodes, parent, context);
+    var result = differ(nodes, parent, context);
+    if (handle != null) handle(result);
+    return result;
   }
 
   public static function updateAll<Node>(
     before:Rendered<Node>,
     nodes:Array<VNode<Node>>,
     parent:Component<Node>,
-    context:Context<Node>
+    context:Context<Node>,
+    ?handle:(rendered:Rendered<Node>)->Void
   ):Rendered<Node> {
     var differ = createDiffer((type, key) -> {
       var registry = before.types.get(type);
@@ -92,6 +98,7 @@ class Differ {
     });
     var result = differ(nodes, parent, context);
 
+    if (handle != null) handle(result);
     before.dispose(context);
 
     return result;
@@ -128,17 +135,17 @@ class Differ {
         types: [],
         children: []
       };
-      
-      function process(nodes:Array<VNode<Node>>, context:Context<Node>) {
-        if (nodes != null) for (n in nodes) if (n != null) {
-          inline function add(?key:Key, type:Dynamic, r:RNode<Node>) {
-            if (!result.types.exists(type)) {
-              result.types.set(type, new TypeRegistry());
-            }
-            result.types.get(type).put(key, r);
-            result.children.push(r);
-          }
 
+      inline function add(?key:Key, type:{}, r:RNode<Node>) {
+        if (!result.types.exists(type)) {
+          result.types.set(type, new TypeRegistry());
+        }
+        result.types.get(type).put(key, r);
+        result.children.push(r);
+      }
+      
+      function process(nodes:Array<VNode<Node>>) {
+        if (nodes != null) for (n in nodes) if (n != null) {
           switch n {
             case VNative(type, props, styles, ref, key, children): switch previous(type, key) {
               case None:
@@ -175,13 +182,12 @@ class Differ {
 
             case VFragment(children, key):
               // todo: handle key?
-              process(children, context);
+              process(children);
           }
-          
         }
       }
 
-      process(nodes, context);
+      process(nodes);
       return result;
     }
   }

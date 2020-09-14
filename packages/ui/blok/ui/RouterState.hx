@@ -1,58 +1,47 @@
 package blok.ui;
 
+import blok.core.Observable;
+
 class RouterState<Route:EnumValue> implements State {
   @prop var urlToRoute:(url:String)->Route;
   @prop var routeToUrl:(route:Route)->String;
   @prop var history:History;
-  // todo: route and url could be @computed?
   @prop var route:Route = null;
   @prop var url:String = null;
 
+  var link:ObservableLink;
+
   @init
   function setup() {
-    if (url == null) setUrl(history.getLocation(), false);
+    // @todo: add a first-class way to watch Observables?
+    link = history.observe().subscribe(setUrl);
   }
 
-  @update
-  public function setUrl(url:String, ?pushState:Bool = true) {
-    var route = urlToRoute(url);
-    if (this.route.equals(route)) return null; 
-    if (pushState) history.push(url);
-    return {
-      url: url,
-      route: route
-    };
+  @dispose
+  function cleanup() {
+    link.cancel();
   }
   
-  @update
-  public function setRoute(route:Route, ?pushState:Bool = true) {
-    if (this.route.equals(route)) return null; 
-    var url = routeToUrl(route);
-    if (pushState) history.push(url);
-    return {
-      url: routeToUrl(route),
-      route: route
-    };
+  public function setRoute(route:Route) {
+    if (!this.route.equals(route)) {
+      history.push(routeToUrl(route));
+    }
   }
 
-  @update
   public function previous() {
-    var previous = history.previous();
-    if (previous == null) return null;
-    var route = urlToRoute(previous);
-    return {
-      url: previous,
-      route: route
-    };
+    history.previous();
+  }
+
+  public function next() {
+    history.next();
   }
 
   @update
-  public function next() {
-    var next = history.next();
-    if (next == null) return null;
-    var route = urlToRoute(next);
+  function setUrl(url:String) {
+    var route = urlToRoute(url);
+    if (this.route.equals(route)) return null;
     return {
-      url: next,
+      url: url,
       route: route
     };
   }

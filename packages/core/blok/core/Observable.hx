@@ -12,16 +12,37 @@ abstract ObservableLink(()->Void) {
   }
 }
 
-typedef ObservableTarget<T> = {
+typedef ObservableType<T> = {
   public function observe():Observable<T>;
+};
+
+/**
+  Allows either `Observable<T>` or `ObservableType<T>` to be
+  used interchangeably.
+**/
+abstract ObservableTarget<T>(Observable<T>) from Observable<T> to Observable<T> {
+  @:from public static inline function ofObservableType<T>(obs:ObservableType<T>) {
+    return new ObservableTarget(obs.observe());
+  }
+
+  public inline function new(obs) {
+    this = obs;
+  }
+}
+
+typedef ObservableOptions = {
+  /**
+    If `true`, the ObservableListener will NOT be run immediately,
+    and will only be called when the observer is next notified.
+  **/
+  public var defer:Bool;
 }
 
 interface Observable<T> {
   public function getKey():String;
-  public function subscribe(listener:ObservableListener<T>):ObservableLink;
+  public function subscribe(listener:ObservableListener<T>, ?options:ObservableOptions):ObservableLink;
   public function notify(value:T):Void;
   public function dispose():Void;
-  public function observe():Observable<T>;
 }
 
 class ObservableValue<T> implements Observable<T> {
@@ -46,8 +67,9 @@ class ObservableValue<T> implements Observable<T> {
     return key;
   }
 
-  public function subscribe(listener:ObservableListener<T>):ObservableLink {
-    listener(value);
+  public function subscribe(listener:ObservableListener<T>, ?options:ObservableOptions):ObservableLink {
+    if (options == null) options = { defer: false }; 
+    if (!options.defer) listener(value);
     listeners.add(listener);
     return new ObservableLink(() -> listeners.remove(listener));
   }
@@ -62,9 +84,5 @@ class ObservableValue<T> implements Observable<T> {
 
   public function dispose() {
     listeners.clear();
-  }
-
-  public inline function observe():Observable<T> {
-    return this;
   }
 }

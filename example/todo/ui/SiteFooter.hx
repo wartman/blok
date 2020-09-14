@@ -1,15 +1,15 @@
 package todo.ui;
 
 import blok.ui.style.Grid;
+import blok.ui.RouterState;
 import todo.state.TodoState;
-// import todo.state.AppState;
+import todo.state.TodoRoute;
 import todo.style.*;
 
 using Blok;
 
 class SiteFooter extends Component {
   override function render(context:Context):VNode {
-    // todo: change navigation on the RouterState instead.
     return TodoState.subscribe(context, state -> Html.footer({
       style: [
         Card.style({}),
@@ -29,17 +29,17 @@ class SiteFooter extends Component {
           ]
         }),    
         Ui.button({
-          onClick: _ -> state.setFilter(FilterAll),
+          onClick: _ -> RouterState.from(context).setRoute(Filter(FilterAll)),
           selected: state.filter == FilterAll,
           label: 'All'
         }),
         Ui.button({
-          onClick: _ -> state.setFilter(FilterCompleted),
+          onClick: _ -> RouterState.from(context).setRoute(Filter(FilterCompleted)),
           selected: state.filter == FilterCompleted,
           label: 'Complete'
         }),
         Ui.button({
-          onClick: _ -> state.setFilter(FilterPending),
+          onClick: _ -> RouterState.from(context).setRoute(Filter(FilterPending)),
           selected: state.filter == FilterPending,
           label: 'Pending'
         })

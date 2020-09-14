@@ -4,7 +4,7 @@ import blok.core.Observable;
 
 using Reflect;
 
-class ObservableProvider<T, Node> extends Component<Node> {
+final class ObservableProvider<T, Node> extends Component<Node> {
   public static function provide<Node>(observables:Array<ObservableTarget<Dynamic>>, build:(context:Context<Node>)->VNode<Node>):VNode<Node> {
     var node:VNode<Node> = null;
     for (observable in observables) {
@@ -21,7 +21,7 @@ class ObservableProvider<T, Node> extends Component<Node> {
     observable:ObservableTarget<T>,
     build:(context:Context<Node>)->VNode<Node>
   }, context:Context<Node>, parent:Component<Node>):Component<Node> {
-    var provider = new ObservableProvider(props.observable.observe(), props.build, context, parent);
+    var provider = new ObservableProvider(props.observable, props.build, context, parent);
     provider.__inserted = true;
     return provider;
   }

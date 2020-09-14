@@ -1,17 +1,25 @@
 package blok.ui.history;
 
 import js.Browser;
+import haxe.io.Path;
+import blok.core.Observable;
 
 using StringTools;
 
 class BrowserHistory implements History {
+  final location:Observable<String>;
   var root:String;
 
   public function new(?root) {
     this.root = root;
-    // Browser.window.addEventListener('popstate', (e) -> {
-    //   // onChangeTrigger.trigger(getLocation());
-    // });
+    location = new ObservableValue(getLocation(), Type.getClassName(BrowserHistory));
+    Browser.window.addEventListener('popstate', (e) -> {
+      location.notify(getLocation());
+    });
+  }
+
+  public function observe() {
+    return location;
   }
   
   public function getLocation():String {
@@ -34,6 +42,6 @@ class BrowserHistory implements History {
   }
 
   public function push(url:String):Void {
-    Browser.window.history.pushState(null, null, url);
+    Browser.window.history.pushState(null, null, Path.join([ root, url ]));
   }
 }

@@ -16,7 +16,6 @@ class StateBuilder {
     var cls = Context.getLocalClass().get();
     var clsName = cls.pack.concat([cls.name]).join('.');
     var clsTp:TypePath = { pack: cls.pack, name: cls.name };
-    var clsType = Context.getLocalType().toComplexType();
     var builder = new ClassBuilder(cls, fields);
     var props:Array<Field> = [];
     var updateProps:Array<Field> = [];
@@ -139,7 +138,7 @@ class StateBuilder {
           }).fields);
 
           // @todo: batch all computed subscriptions.
-          initHooks.push(macro this.observe().subscribe(_ -> this.$backingName = null));
+          initHooks.push(macro this.__observable.subscribe(_ -> this.$backingName = null));
           updates.push(macro @:pos(f.pos) this.$backingName = null);
           
         default:
@@ -193,7 +192,7 @@ class StateBuilder {
               var incoming = closure();
               if (incoming != null) {
                 __updateProps(incoming);
-                observe().notify(this);
+                this.__observable.notify(this);
               }
             }
           }
@@ -299,7 +298,7 @@ If you want to re-render whenever the state changes, use
 
       ]:Array<Field>).concat((macro class {
         var $PROPS:$propType;
-        final __observable:blok.core.Observable<$clsType>;
+        final __observable:blok.core.Observable<$ct>;
 
         public function new($INCOMING_PROPS:$propType) {
           __observable = new blok.core.Observable.ObservableValue(this, $v{id});
@@ -310,7 +309,7 @@ If you want to re-render whenever the state changes, use
           $b{initHooks};
         }
 
-        public function observe():blok.core.Observable<$clsType> {
+        public function observe():blok.core.Observable<$ct> {
           return __observable;
         }
 

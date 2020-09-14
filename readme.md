@@ -124,4 +124,56 @@ class Run {
 
 ```
 
+Observables
+-----------
+
+Blok uses simple `Observables` to handle state. Here's an example:
+
+```haxe
+using Blok;
+
+class Example extends Component {
+  final foo = new ObservableValue('foo');
+
+  override function render(context:Context):VNode {
+    return Html.div({
+      children: [
+        Html.button({
+          attrs: {
+            onclick: _ -> foo.notify('bar')
+          },
+          children: [ Html.text('Make bar') ]
+        }),
+        ObservableSubscriber.subscribe(foo, value -> Html.text(value))
+      ]
+    });
+  }
+}
+
+```
+
+In this case, you'd probably just use `@update` methods instead, but you get the principal.
+
+> todo: explain ObservableProvider here, and how it's handy to provide
+> state across an app.
+
+Where this becomes more useful is with `blok.State`, which builds on top of `blok.core.Observable<T>`.
+
+```haxe
+using Blok;
+
+class FooState implements State {
+  @prop var foo:String;
+
+  @update
+  public function setFoo(foo) {
+    return { foo: foo };
+  }
+}
+```
+
+States are generally useful to provide state that's shared between components.
+
+> todo
+
 > More soon

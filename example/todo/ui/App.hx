@@ -1,70 +1,106 @@
 package todo.ui;
 
 import blok.ui.RouterState;
-import blok.ui.history.BrowserHistory;
+import blok.ui.history.HashHistory;
 import blok.ui.PortalManager;
-import todo.state.TodoFilter;
-import todo.state.TodoRoute;
 import todo.style.Card;
 import todo.style.Root;
 import todo.style.MainTitle;
 import todo.state.TodoState;
+import todo.state.TodoFilter;
+import todo.state.TodoRoute;
 
 using Blok;
 
 class App extends Component {
+  final todos:TodoState = new TodoState({ todos: [] });
+  final router:RouterState<TodoRoute> = new RouterState({
+    urlToRoute: url -> switch url.split('-') {
+      case [''] | ['', '']: Home;
+      case ['filter', type]: switch (type:TodoFilter) {
+        case FilterAll: Filter(FilterAll);
+        case FilterCompleted: Filter(FilterCompleted);
+        case FilterPending: Filter(FilterPending);
+        default: NotFound(url);
+      }
+      default: NotFound(url);
+    },
+    routeToUrl: route -> switch route {
+      case Home: '';
+      case NotFound(url): url;
+      case Filter(filter): 'filter-${filter}';
+    },
+    history: new HashHistory()
+  });
+
+  @init
+  function setupFilter() {
+    router.observe().subscribe(router -> {
+      switch router.route {
+        case Home: todos.setFilter(FilterAll);
+        case Filter(filter): todos.setFilter(filter);
+        default:
+      }
+    });
+  }
+
+  @dispose
+  function removeObservers() {
+    todos.observe().dispose();
+    router.observe().dispose();
+  }
+
   override function render(context:Context):VNode {
-    // Note: this is a shortcut for the following:
-    //
-    // TodoState.provide({ todos: [] }, ctx -> RouterState.provide({ ... }, ctx -> ...));
-    return ObservableProvider.provide([
-      new TodoState({ todos: [] }),
-      new RouterState<TodoRoute>({
-        urlToRoute: url -> switch url.split('/') {
-          case [''] | ['', '']: Home;
-          case ['filter', type]: switch (type:TodoFilter) {
-            case FilterAll: Filter(FilterAll);
-            case FilterCompleted: Filter(FilterCompleted);
-            case FilterPending: Filter(FilterPending);
-            default: NotFound(url);
-          }
-          default: NotFound(url);
-        },
-        routeToUrl: route -> switch route {
-          case Home: '/';
-          case NotFound(url): url;
-          case Filter(filter): 'filter/${filter}';
-        },
-        history: new BrowserHistory('')
+    return ObservableProvider.provide(
+      [ todos, router ], 
+      ctx -> PortalManager.node({
+        children: [
+          Html.div({
+            style: Root.style({}),
+            children: [
+              Html.header({
+                style: Card.style({}),
+                children: [
+                  Html.h1({
+                    style: MainTitle.style({}),
+                    attrs: {
+                      onclick: _ -> RouterState.from(ctx).setRoute(Home) 
+                    },
+                    children: [ 
+                      Html.text('Todos '),
+                      RouterState.subscribe(ctx, state -> Html.text(switch state.route {
+                        case Home: '';
+                        case NotFound(_): 'NotFound';
+                        case Filter(filter): switch filter {
+                          case FilterAll: 'All';
+                          case FilterCompleted: 'Completed';
+                          case FilterPending: 'Pending'; 
+                        }
+                      }))
+                    ]
+                  }),
+                  TodoInput.node({
+                    onSave: value -> TodoState.from(ctx).addTodo(value),
+                    placeholder: 'Add Todo'
+                  })
+                ]
+              }),
+              RouterState.subscribe(ctx, state -> switch state.route {
+                case NotFound(url):
+                  Html.div({
+                    style: Card.style({}),
+                    children: [ Html.text('Page not found: ${url}') ]
+                  });
+                default: 
+                  Html.fragment([
+                    TodoList.node({}),
+                    SiteFooter.node({})
+                  ]);
+              })
+            ]
+          })
+        ]
       })
-    ], childContext -> PortalManager.node({
-      children: [
-        Html.div({
-          style: Root.style({}),
-          children: [
-            Html.header({
-              style: Card.style({}),
-              children: [
-                Html.h1({
-                  style: MainTitle.style({}), 
-                  children: [ Html.text('Todos') ]
-                }),
-                TodoState.subscribe(childContext, state -> TodoInput.node({
-                  onSave: value -> state.addTodo(value),
-                  placeholder: 'Add Todo'
-                })),
-                // RouterState.subscribe(childContext, (state:RouterState<TodoRoute>) -> Html.text(switch state.route {
-                //   case Home: 'home';
-                //   case NotFound(url): '${url} not found';
-                //   case Filter(filter): Std.string(filter);
-                // }))
-              ]
-            }),
-            TodoList.node({}),
-            SiteFooter.node({})
-          ]
-        })
-      ]
-    }));
+    );
   }
 }

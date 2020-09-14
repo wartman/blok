@@ -10,6 +10,7 @@ import blok.core.ObservableSubscriber;
 @:noUsing @:noDoc typedef Observable<T> = blok.core.Observable<T>; 
 @:noUsing @:noDoc typedef ObservableProvider<T> = blok.ObservableProvider<T>;
 @:noUsing @:noDoc typedef ObservableSubscriber<T> = blok.ObservableSubscriber<T>;
+@:noDoc typedef ObservableTools = blok.core.ObservableTools;
 
 @:noUsing @:noDoc typedef VNode = blok.VNode;
 
