@@ -1,0 +1,16 @@
+-cp packages/core
+-cp packages/html
+-cp packages/css
+-cp packages/static
+-cp packages/ui
+-cp test
+
+-dce full
+
+-D analyzer-optimize
+-D debug
+-D js-es=6
+
+-main TestStatic
+
+-js dist/test.js

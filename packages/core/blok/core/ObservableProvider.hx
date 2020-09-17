@@ -27,7 +27,7 @@ final class ObservableProvider<T, Node> extends Component<Node> {
   }
 
   var observable:Observable<T>;
-  var link:ObservableLink;
+  var link:Observer<T>;
   var build:(context:Context<Node>)->VNode<Node>;
 
   public function new(observable, build, context, parent) {
@@ -42,7 +42,7 @@ final class ObservableProvider<T, Node> extends Component<Node> {
     if (context == __context) return;
     __context = context.getChild();
     if (link != null) link.cancel();
-    link = observable.subscribe(value -> __context.set(observable.getKey(), value));
+    link = observable.observe(value -> __context.set(observable.getKey(), value));
   }
 
   override function __shouldUpdate(props:Dynamic):Bool {
@@ -58,7 +58,7 @@ final class ObservableProvider<T, Node> extends Component<Node> {
       var newObservable = props.field('observable');
       if (link != null) link.cancel();
       observable = newObservable;
-      link = observable.subscribe(value -> __context.set(observable.getKey(), value));
+      link = observable.observe(value -> __context.set(observable.getKey(), value));
     }
   }
 

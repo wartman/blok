@@ -9,12 +9,12 @@ class RouterState<Route:EnumValue> implements State {
   @prop var route:Route = null;
   @prop var url:String = null;
 
-  var link:ObservableLink;
+  var link:Observer<String>;
 
   @init
   function setup() {
     // @todo: add a first-class way to watch Observables?
-    link = history.observe().subscribe(setUrl);
+    link = history.getObservable().observe(setUrl);
   }
 
   @dispose

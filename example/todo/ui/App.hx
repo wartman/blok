@@ -35,7 +35,7 @@ class App extends Component {
 
   @init
   function setupFilter() {
-    router.observe().subscribe(router -> {
+    router.getObservable().observe(router -> {
       switch router.route {
         case Home: todos.setFilter(FilterAll);
         case Filter(filter): todos.setFilter(filter);
@@ -46,8 +46,8 @@ class App extends Component {
 
   @dispose
   function removeObservers() {
-    todos.observe().dispose();
-    router.observe().dispose();
+    todos.getObservable().dispose();
+    router.getObservable().dispose();
   }
 
   override function render(context:Context):VNode {
@@ -68,7 +68,7 @@ class App extends Component {
                     },
                     children: [ 
                       Html.text('Todos '),
-                      RouterState.subscribe(ctx, state -> Html.text(switch state.route {
+                      RouterState.observe(ctx, state -> Html.text(switch state.route {
                         case Home: '';
                         case NotFound(_): 'NotFound';
                         case Filter(filter): switch filter {
@@ -85,7 +85,7 @@ class App extends Component {
                   })
                 ]
               }),
-              RouterState.subscribe(ctx, state -> switch state.route {
+              RouterState.observe(ctx, state -> switch state.route {
                 case NotFound(url):
                   Html.div({
                     style: Card.style({}),

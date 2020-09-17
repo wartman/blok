@@ -1,20 +1,16 @@
 package blok.core;
 
-typedef ObservableListener<T> = (value:T)->Void;
-
-abstract ObservableLink(()->Void) {
-  public inline function new(link) {
-    this = link;
-  }
-
-  public inline function cancel() {
-    this();
-  }
-}
-
 typedef ObservableType<T> = {
-  public function observe():Observable<T>;
+  public function getObservable():Observable<T>;
 };
+
+typedef ObservableOptions = {
+  /**
+    If `true`, the Observer will NOT be run immediately,
+    and will only be called when the observer is next notified.
+  **/
+  public var defer:Bool;
+}
 
 /**
   Allows either `Observable<T>` or `ObservableType<T>` to be
@@ -22,7 +18,7 @@ typedef ObservableType<T> = {
 **/
 abstract ObservableTarget<T>(Observable<T>) from Observable<T> to Observable<T> {
   @:from public static inline function ofObservableType<T>(obs:ObservableType<T>) {
-    return new ObservableTarget(obs.observe());
+    return new ObservableTarget(obs.getObservable());
   }
 
   public inline function new(obs) {
@@ -30,59 +26,143 @@ abstract ObservableTarget<T>(Observable<T>) from Observable<T> to Observable<T> 
   }
 }
 
-typedef ObservableOptions = {
-  /**
-    If `true`, the ObservableListener will NOT be run immediately,
-    and will only be called when the observer is next notified.
-  **/
-  public var defer:Bool;
-}
+typedef ObservableComparitor<T> = (a:T, b:T)->Bool; 
 
-interface Observable<T> {
-  public function getKey():String;
-  public function subscribe(listener:ObservableListener<T>, ?options:ObservableOptions):ObservableLink;
-  public function notify(value:T):Void;
-  public function dispose():Void;
-}
+@:nullSafety()
+@:allow(blok.core.Observable)
+class Observer<T> {
+  final listener:(value:T)->Void;
+  
+  var observable:Null<Observable<T>>;
+  var next:Null<Observer<T>>;
 
-class ObservableValue<T> implements Observable<T> {
-  public static inline function of<T>(value:T, ?key) {
-    return new ObservableValue(value, key);
+  public function new(observable, listener) {
+    this.observable = observable;
+    this.listener = listener;
   }
+
+  public inline function handle(value:T) {
+    listener(value);
+  }
+
+  public function cancel() {
+    if (observable != null) {
+      observable.remove(this);
+      observable = null;
+    }
+  }
+}
+
+// @todo: we need to check that this singly-linked list actually
+//        works right if we add a listener while dispatching.
+@:nullSafety()
+class Observable<T> {
+  static var uid:Int = 0;
 
   final key:String;
-  
-  var listeners:List<ObservableListener<T>> = new List();
+  final comparitor:Null<ObservableComparitor<T>>;
+
   var notifying:Bool = false;
   var value:T;
+  var head:Null<Observer<T>>;
+  var toAddHead:Null<Observer<T>>;
 
-  public function new(value:T, ?key) {
+  public function new(value, ?key, ?comparitor) {
     this.value = value;
-    this.key = if (key == null) {
-      Type.getClassName(Type.getClass(this));
-    } else key;
+    this.key = if (key == null) 'observe_${uid++}' else key;
+    this.comparitor = comparitor;
   }
-
+  
   public function getKey():String {
     return key;
   }
 
-  public function subscribe(listener:ObservableListener<T>, ?options:ObservableOptions):ObservableLink {
-    if (options == null) options = { defer: false }; 
-    if (!options.defer) listener(value);
-    listeners.add(listener);
-    return new ObservableLink(() -> listeners.remove(listener));
+  public function observe(listener:(value:T)->Void, ?options:ObservableOptions):Observer<T> {
+    if (options == null) options = { defer: false };
+    
+    var observer = new Observer(this, listener);
+    
+    if (notifying) {
+      observer.next = toAddHead;
+      toAddHead = observer;
+    } else {
+      observer.next = head;
+      head = observer;
+    }
+    
+    if (!options.defer) observer.handle(value);
+
+    return observer;
+  }
+  
+  public function remove(observer:Observer<T>):Void {
+    inline function clearObserver() {
+      observer.next = null;
+      observer.observable = null;
+    }
+
+    inline function iterate(head:Null<Observer<T>>) {
+      var current = head;
+      while (current != null) {
+        if (current.next == observer) {
+          current.next = observer.next;
+          clearObserver();
+          break;
+        }
+        current = current.next;
+      }
+    }
+
+    if (head == observer) {
+      head = observer.next;
+      clearObserver();
+      return;
+    }
+
+    iterate(head);
+    iterate(toAddHead);
   }
 
-  public function notify(value:T) {
-    if (notifying) return;
+  public function notify(value:T):Void {
+    if (comparitor != null && comparitor(this.value, value)) return;
+    
     notifying = true;
+
     this.value = value;
-    for (listener in listeners) listener(value);
+    
+    var current = head;
+    while (current != null) {
+      current.handle(this.value);
+      current = current.next;
+    }
+
     notifying = false;
+    
+    if (toAddHead != null) {
+      if (current != null) {
+        current.next = toAddHead;
+      } else {
+        head = toAddHead;
+      }
+      toAddHead = null;
+    }
   }
 
-  public function dispose() {
-    listeners.clear();
+  public function dispose():Void {
+    inline function iterate(head:Null<Observer<T>>) {
+      var current = head;
+      while (current != null) {
+        var next = current.next;
+        current.observable = null;
+        current.next = null;
+        current = next;
+      }
+    }
+
+    iterate(head);
+    iterate(toAddHead);
+
+    head = null;
+    toAddHead = null;
   }
 }

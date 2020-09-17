@@ -1,5 +1,3 @@
-import blok.core.ObservableSubscriber;
-
 @:noUsing @:noDoc typedef Context = blok.Context;
 @:noUsing @:noDoc typedef Platform = blok.dom.Platform;
 @:noUsing @:noDoc typedef Component = blok.Component;

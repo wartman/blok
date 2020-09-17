@@ -96,7 +96,7 @@ class ComponentBuilder {
       options: [
         { name: 'silent', optional: true }
       ],
-      build: function(options:{ ?silent:Bool }, builder, field) switch field.kind {
+      build: function (options:{ ?silent:Bool }, builder, field) switch field.kind {
         case FFun(func):
           if (func.ret != null) {
             Context.error('@update functions should not define their return type manually', field.pos);

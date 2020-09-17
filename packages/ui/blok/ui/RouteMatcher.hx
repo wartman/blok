@@ -5,7 +5,7 @@ class RouteMatcher<Route:EnumValue> extends Component {
   @prop var children:Children;
 
   override function render(context:Context):VNode {
-    return RouterState.subscribe(context, (state:RouterState<Route>) -> {
+    return RouterState.observe(context, (state:RouterState<Route>) -> {
       return if (state.route.equals(route)) VFragment(children) else null;
     });
   }

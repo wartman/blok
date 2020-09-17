@@ -14,7 +14,7 @@ final class ObservableSubscriber<T, Node> extends Component<Node> {
     return sub;
   }
 
-  public static function subscribe<T, Node>(observable:ObservableTarget<T>, build:(value:T)->VNode<Node>):VNode<Node> {
+  public static inline function observe<T, Node>(observable:ObservableTarget<T>, build:(value:T)->VNode<Node>):VNode<Node> {
     return VComponent(ObservableSubscriber, {
       observable: observable,
       build: build
@@ -24,13 +24,13 @@ final class ObservableSubscriber<T, Node> extends Component<Node> {
   var value:T;
   var build:(value:T)->VNode<Node>;
   var observable:Observable<T>;
-  var link:ObservableLink;
+  var link:Observer<T>;
 
   public function new(observable, build, context, parent) {
     this.__parent = parent;
     this.observable = observable;
     this.build = build;
-    this.link = observable.subscribe(createSubscriber());
+    this.link = observable.observe(createSubscriber());
 
     __registerContext(context);
     __render(__context);
@@ -53,7 +53,7 @@ final class ObservableSubscriber<T, Node> extends Component<Node> {
       var newObservable:Observable<T> = props.field('observable');
       if (newObservable != observable) {
         if (link != null) link.cancel();
-        link = newObservable.subscribe(createSubscriber());
+        link = newObservable.observe(createSubscriber());
         observable = newObservable;
       }
     }

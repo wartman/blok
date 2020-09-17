@@ -10,7 +10,7 @@ using Blok;
 
 class SiteFooter extends Component {
   override function render(context:Context):VNode {
-    return TodoState.subscribe(context, state -> Html.footer({
+    return TodoState.observe(context, state -> Html.footer({
       style: [
         Card.style({}),
         Grid.style({

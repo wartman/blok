@@ -5,16 +5,15 @@ import blok.core.Observable;
 
 using StringTools;
 
-// @todo: handle observable
 class HashHistory implements History {
   final location:Observable<String>;
 
   public function new() {
-    location = new ObservableValue(getLocation(), Type.getClassName(HashHistory));
+    location = new Observable(getLocation(), Type.getClassName(HashHistory));
     Browser.window.addEventListener('popstate', (e) -> location.notify(getLocation()));
   }
 
-  public function observe() {
+  public function getObservable() {
     return location;
   }
 

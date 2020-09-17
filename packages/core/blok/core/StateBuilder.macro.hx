@@ -138,7 +138,7 @@ class StateBuilder {
           }).fields);
 
           // @todo: batch all computed subscriptions.
-          initHooks.push(macro this.__observable.subscribe(_ -> this.$backingName = null));
+          initHooks.push(macro this.__observable.observe(_ -> this.$backingName = null));
           updates.push(macro @:pos(f.pos) this.$backingName = null);
           
         default:
@@ -213,7 +213,7 @@ class StateBuilder {
         default: throw 'assert';
       }).toComplexType();
       var providerFactory = macro:(context:blok.core.Context<$nodeType>)->blok.core.VNode<$nodeType>;
-      var subscriberFactory = macro:(data:$ct)->blok.core.VNode<$nodeType>;
+      var observerFactory = macro:(data:$ct)->blok.core.VNode<$nodeType>;
   
       var newFields = ([
 
@@ -239,7 +239,7 @@ class StateBuilder {
         },
 
         {
-          name: 'subscribe',
+          name: 'observe',
           pos: (macro null).pos,
           doc: '
 Subscribe to this state\'s instance in the current context.
@@ -256,7 +256,7 @@ If you just want access to the current state, use
             ret: macro:blok.core.VNode<$nodeType>,
             args: [
               { name: 'context', type: macro:blok.core.Context<$nodeType> },
-              { name: 'build', type: macro:$subscriberFactory }
+              { name: 'build', type: macro:$observerFactory }
             ],
             expr: macro {
               var state = from(context);
@@ -276,7 +276,7 @@ If you just want access to the current state, use
 Get the current instance of this state from the given context.
 
 If you want to re-render whenever the state changes, use
-`${clsName}.subscribe(context, state -> ...)` instead.
+`${clsName}.observe(context, state -> ...)` instead.
           ',
           kind: FFun({
             params: createParams,
@@ -301,7 +301,7 @@ If you want to re-render whenever the state changes, use
         final __observable:blok.core.Observable<$ct>;
 
         public function new($INCOMING_PROPS:$propType) {
-          __observable = new blok.core.Observable.ObservableValue(this, $v{id});
+          __observable = new blok.core.Observable(this, $v{id});
           this.$PROPS = ${ {
             expr: EObjectDecl(initializers),
             pos: (macro null).pos
@@ -309,13 +309,12 @@ If you want to re-render whenever the state changes, use
           $b{initHooks};
         }
 
-        public function observe():blok.core.Observable<$ct> {
+        public function getObservable():blok.core.Observable<$ct> {
           return __observable;
         }
 
         function __dispose() {
           $b{disposals};
-          // super.__dispose();
         }
 
         @:noCompletion

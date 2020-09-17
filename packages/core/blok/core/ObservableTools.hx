@@ -2,18 +2,32 @@ package blok.core;
 
 import blok.core.Observable;
 
+@:access(blok.core.Observable)
 class ObservableTools {
-  public static function map<T, R>(
-    observable:Observable<T>,
+  public static inline function map<T, R>(
+    observable:ObservableTarget<T>,
     transform:(value:T)->R,
     ?key
-  ) {
-    var obs:Observable<R> = new ObservableValue(null, key);
-    observable.subscribe(value -> obs.notify(transform(value)));
-    return obs;
+  ):Observable<R> {
+    return new LinkedObservable(observable, transform, key);
   }
 
-  public static function mapToSubscriber<T, Node>(observable:Observable<T>, build) {
-    return ObservableSubscriber.subscribe(observable, build);
+  public static inline function mapToNode<T, Node>(observable:ObservableTarget<T>, build) {
+    return ObservableSubscriber.observe(observable, build);
+  }
+}
+
+private final class LinkedObservable<T, R> extends Observable<R> {
+  var link:Observer<T>;
+
+  public function new(parent:Observable<T>, transform:(value:T)->R, ?key) {
+    super(transform(parent.value), key);
+    link = parent.observe(value -> notify(transform(value)), { defer: true });
+  }
+
+  override function dispose() {
+    link.cancel();
+    link = null;
+    super.dispose();
   }
 }

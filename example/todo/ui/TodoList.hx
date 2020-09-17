@@ -7,7 +7,7 @@ using Blok;
 
 class TodoList extends Component {
   override function render(context:Context):VNode {
-    return TodoState.subscribe(context, state -> Html.ul({
+    return TodoState.observe(context, state -> Html.ul({
       style: CardGrid.style({}),
       children: if (state.visibleTodos.length == 0) [
         TodoPlaceholder.node({})
