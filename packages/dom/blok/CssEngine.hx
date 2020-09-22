@@ -6,7 +6,6 @@ import js.html.Element;
 import js.html.CSSStyleSheet;
 import blok.core.VStyle;
 import blok.core.StyleList;
-import blok.ui.style.BaseStyle;
 
 using StringTools;
 
@@ -20,9 +19,6 @@ class CssEngine {
     var el = Browser.document.createStyleElement();
     Browser.document.head.appendChild(el);
     sheet = cast el.sheet;
-
-    var base = new BaseStyle({});
-    addCss(null, base.render());
   }
 
   public function apply(node:Node, style:StyleList):Void {

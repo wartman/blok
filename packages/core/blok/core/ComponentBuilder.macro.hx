@@ -93,9 +93,7 @@ class ComponentBuilder {
     builder.addFieldMetaHandler({
       name: 'update',
       hook: After,
-      options: [
-        { name: 'silent', optional: true }
-      ],
+      options: [],
       build: function (options:{ ?silent:Bool }, builder, field) switch field.kind {
         case FFun(func):
           if (func.ret != null) {
@@ -104,25 +102,25 @@ class ComponentBuilder {
           var updatePropsRet = TAnonymous(updateProps);
           var e = func.expr;
           func.ret = macro:Void;
-          if (options.silent == true) {
-            func.expr = macro {
-              inline function closure():$updatePropsRet ${e};
-              var incoming = closure();
-              if (incoming != null) {
-                __updateProps(incoming);
-              }
+          func.expr = macro {
+            inline function closure():blok.core.UpdateMessage<$updatePropsRet> ${e};
+            switch closure() {
+              case None | null:
+              case Update:
+                __requestUpdate();
+              case UpdateState(data): 
+                __updateProps(data);
+                __requestUpdate();
+              case UpdateStateSilent(data):
+                __updateProps(data);
             }
-          } else {
-            func.expr = macro {
-              inline function closure():$updatePropsRet ${e};
-              var incoming = closure();
-              if (incoming != null) {
-                if (__shouldUpdate(incoming)) {
-                  __updateProps(incoming);
-                  __requestUpdate();
-                }
-              }
-            }
+            // var incoming = closure();
+            // if (incoming != null) {
+            //   if (__shouldUpdate(incoming)) {
+            //     __updateProps(incoming);
+            //     __requestUpdate();
+            //   }
+            // }
           }
         default:
           Context.error('@update must be used on a method', field.pos);

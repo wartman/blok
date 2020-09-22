@@ -1,7 +1,5 @@
 package blok.core;
 
-using blok.core.RenderedTools;
-
 class Component<Node> {
   public var __alive:Bool = true;
   public var __dirty:Bool = false;

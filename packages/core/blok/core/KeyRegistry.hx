@@ -1,5 +1,7 @@
 package blok.core;
 
+import haxe.ds.Map;
+
 class KeyRegistry<Node> implements Registry<Key, RNode<Node>> {
   var strings:Map<String, RNode<Node>>;
   var objects:Map<{}, RNode<Node>>;

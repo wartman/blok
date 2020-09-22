@@ -1,14 +1,12 @@
-import todo.ui.App;
+import noted.ui.App;
 
 using Blok;
 
-class Todo {
-
+class Noted {
   static function main() {
     Platform.mount(
       js.Browser.document.getElementById('root'),
       context -> App.node({})
     );
   }
-
 }

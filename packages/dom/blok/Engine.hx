@@ -5,6 +5,7 @@ import js.html.Event;
 import blok.core.Rendered;
 import blok.core.StyleList;
 import blok.dom.Html;
+import blok.ui.style.BaseStyle;
 
 using StringTools;
 
@@ -13,7 +14,12 @@ class Engine implements blok.core.Engine<Node, Event> {
 
   final css = new CssEngine();
 
-  public function new() {}
+  public function new(useBaseStyle = true) {
+    if (useBaseStyle) {
+      var base = new BaseStyle({});
+      @:privateAccess css.addCss(null, base.render());
+    }
+  }
 
   public function traverseSiblings(first:Node):Cursor {
     return new Cursor(first.parentNode, first);

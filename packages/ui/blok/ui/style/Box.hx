@@ -8,7 +8,6 @@ class Box extends Style {
   @prop var spacing:EdgeInsets = null;
   @prop var height:Unit = null;
   @prop var width:Unit = null;
-  @prop var centerVertical:Bool = false;
 
   override function render():Array<VStyleExpr> {
     var props:Array<VStyleExpr> = [];

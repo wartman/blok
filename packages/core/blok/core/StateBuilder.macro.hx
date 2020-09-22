@@ -23,7 +23,6 @@ class StateBuilder {
     var initializers:Array<ObjectField> = [];
     var subStates:Array<Expr> = [];
     var initHooks:Array<Expr> = [];
-    var disposals:Array<Expr> = [];
     var id = cls.pack.concat([ cls.name ]).join('_').toLowerCase();
   
     function addProp(name:String, type:ComplexType, isOptional:Bool) {
@@ -71,31 +70,61 @@ class StateBuilder {
           }).fields);
 
           addProp(name, t, e != null);
-          initializers.push({
-            field: name,
-            expr: init
-          });
 
-          updates.push(macro {
-            if (Reflect.hasField($i{INCOMING_PROPS}, $v{name})) {
-              switch [
-                $i{PROPS}.$name, 
-                Reflect.field($i{INCOMING_PROPS}, $v{name}) 
-              ] {
-                case [ a, b ] if (a == b):
-                  // noop
-                case [ current, value ]:
-                  $i{PROPS}.$name = value;
-              }
+          if (Context.unify(t.toType(), Context.getType('blok.core.Observable.ObservableTarget'))) {
+            var linkName = '__link_${name}';
+            builder.add((macro class {
+              var $linkName:blok.core.Observable.Observer<Dynamic>;
+            }).fields);
+            init = macro {
+              var value = ${init};
+              this.$linkName = (value:ObservableTarget<Dynamic>).observe(_ -> __notify());
+              value;
             }
-          });
+            initializers.push({
+              field: name,
+              expr: init
+            });
+            updates.push(macro {
+              if (Reflect.hasField($i{INCOMING_PROPS}, $v{name})) {
+                switch [
+                  $i{PROPS}.$name, 
+                  Reflect.field($i{INCOMING_PROPS}, $v{name}) 
+                ] {
+                  case [ a, b ] if (a == b):
+                    // noop
+                  case [ current, value ]:
+                    this.$linkName.cancel();
+                    this.$PROPS.$name = value;
+                    this.$linkName = (this.$PROPS.$name:ObservableTarget<Dynamic>).observe(_ -> __notify());
+                }
+              }
+            });
+          } else {
+            initializers.push({
+              field: name,
+              expr: init
+            });
+            updates.push(macro {
+              if (Reflect.hasField($i{INCOMING_PROPS}, $v{name})) {
+                switch [
+                  $i{PROPS}.$name, 
+                  Reflect.field($i{INCOMING_PROPS}, $v{name}) 
+                ] {
+                  case [ a, b ] if (a == b):
+                    // noop
+                  case [ current, value ]:
+                    this.$PROPS.$name = value;
+                }
+              }
+            });
+          }
 
         default:
           Context.error('@prop can only be used on vars', f.pos);
       }
     });
 
-    
     builder.addFieldMetaHandler({
       name: 'computed',
       hook: Normal,
@@ -165,10 +194,8 @@ class StateBuilder {
     builder.addFieldMetaHandler({
       name: 'update',
       hook: After,
-      options: [
-        { name: 'silent', optional: true }
-      ],
-      build: function (options:{ silent:Bool }, builder, field) switch field.kind {
+      options: [],
+      build: function (_, builder, field) switch field.kind {
         case FFun(func):
           if (func.ret != null) {
             Context.error('@update functions should not define their return type manually', field.pos);
@@ -178,22 +205,17 @@ class StateBuilder {
 
           func.ret = macro:Void;
           
-          if (options.silent == true) {
-            func.expr = macro {
-              inline function closure():$updatePropsRet ${e};
-              var incoming = closure();
-              if (incoming != null) {
-                __updateProps(incoming);
-              }
-            }
-          } else {
-            func.expr = macro {
-              inline function closure():$updatePropsRet ${e};
-              var incoming = closure();
-              if (incoming != null) {
-                __updateProps(incoming);
-                this.__observable.notify(this);
-              }
+          func.expr = macro {
+            inline function closure():blok.core.UpdateMessage<$updatePropsRet> ${e};
+            switch closure() {
+              case None | null:
+              case Update:
+                __notify();
+              case UpdateState(data): 
+                __updateProps(data);
+                __notify();
+              case UpdateStateSilent(data):
+                __updateProps(data);
             }
           }
         default:
@@ -313,8 +335,8 @@ If you want to re-render whenever the state changes, use
           return __observable;
         }
 
-        function __dispose() {
-          $b{disposals};
+        inline function __notify() {
+          __observable.notify(this);
         }
 
         @:noCompletion

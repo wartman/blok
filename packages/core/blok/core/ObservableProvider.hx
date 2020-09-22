@@ -42,7 +42,7 @@ final class ObservableProvider<T, Node> extends Component<Node> {
     if (context == __context) return;
     __context = context.getChild();
     if (link != null) link.cancel();
-    link = observable.observe(value -> __context.set(observable.getKey(), value));
+    link = observable.observe(value -> __context.set(observable.key, value));
   }
 
   override function __shouldUpdate(props:Dynamic):Bool {
@@ -58,7 +58,7 @@ final class ObservableProvider<T, Node> extends Component<Node> {
       var newObservable = props.field('observable');
       if (link != null) link.cancel();
       observable = newObservable;
-      link = observable.observe(value -> __context.set(observable.getKey(), value));
+      link = observable.observe(value -> __context.set(observable.key, value));
     }
   }
 

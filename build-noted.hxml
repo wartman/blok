@@ -9,6 +9,6 @@
 -D debug
 -D js-es=6
 
--main todomvc.Main
+-main Noted
 
--js dist/test.js
+-js dist/noted.js

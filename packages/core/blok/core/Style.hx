@@ -12,8 +12,6 @@ class Style {
     var name = haxe.macro.TypeTools.toString(haxe.macro.Context.getLocalType());
     name = StringTools.replace(name, '.', '-');
     var min = haxe.macro.PositionTools.getInfos(e.pos).min;
-    // This may not be a good way of doing this -- I'm not smart enough to
-    // know if this is a memory issue or not
     return macro blok.core.VStyle.VStyleInline($v{name + '-Style' + min}, () -> ${e});
   }
 

@@ -3,8 +3,6 @@ package blok.core;
 import haxe.DynamicAccess;
 import haxe.ds.Option;
 
-using blok.core.RenderedTools;
-
 typedef DifferHandler<Node> = (
   nodes:Array<VNode<Node>>,
   parent:Component<Node>,
