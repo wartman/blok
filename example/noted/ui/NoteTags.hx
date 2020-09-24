@@ -87,12 +87,15 @@ class NoteTags extends Component {
         Html.li({
           children: [
             if (adding) Html.input({
-              style: Pill.style({
-                outlined: true,
-                color: Config.darkColor,
-                centered: false,
-                padding: Em(.5)
-              }),
+              style: [
+                Pill.style({
+                  outlined: true,
+                  color: Config.darkColor,
+                  centered: false,
+                  padding: Em(.5)
+                }),
+                Box.style({ width: Pct(100) }),
+              ],
               attrs: {
                 placeholder: 'add tag',
                 onblur: _ -> stopAdding(),
@@ -109,18 +112,19 @@ class NoteTags extends Component {
                   }
                 }
               }
-            }) else Html.div({
+            }) else Html.button({
               style: [
-                Box.style({
-                  padding: EdgeInsets.symmetric(Em(.5), None)
+                Display.style({ kind: Block }),
+                Box.style({ width: Pct(100) }),
+                Pill.style({
+                  color: Config.lightColor,
+                  padding: Em(.5)
                 })
               ],
-              children: [
-                Button.node({
-                  onClick: _ -> startAdding(),
-                  child: Html.text('Add Tag')
-                })
-              ]
+              attrs: {
+                onclick: _ -> startAdding()
+              },
+              children: [ Html.text('Add Tag') ]
             })
           ]
         })
