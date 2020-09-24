@@ -5,24 +5,53 @@ import blok.ui.style.*;
 using Blok;
 
 class Pill extends Style {
-  @prop var backgroundColor:Color;
+  @prop var color:Color = Config.lightColor;
+  @prop var outlined:Bool = false;
+  @prop var centered:Bool = true;
+  @prop var padding:Unit = None;
 
   override function render():Array<VStyleExpr> {
+    var radius = switch padding {
+      case Em(value): Em(1 + value);
+      default: Em(1); 
+    }
     return [
-      Box.export({
-        height: Em(2),
-        padding: EdgeInsets.symmetric(None, Em(1))
-      }),
-      Border.export({
-        radius: Em(1),
-        type: None,
-        width: None
-      }),
-      Background.export({
-        color: backgroundColor
-      }),
+      if (outlined) Style.properties([
+        Background.export({
+          color: Color.name('transparent')
+        }),
+        Border.export({
+          radius: radius,
+          width: Px(1),
+          type: Solid,
+          color: color
+        }),
+        Style.property('color', color)
+      ]) else Style.properties([
+        AutoColor.export({ color: color }),
+        Border.export({ 
+          type: None,
+          width: Px(0),
+          radius: radius 
+        })
+      ]),
       Font.export({
-        lineHeight: Em(2)
+        size: Em(1),
+        lineHeight: Em(2),
+        align: centered ? Center : null
+      }),
+      Box.export({
+        height: switch padding {
+          case Em(value): Em((value * 2) + 2);
+          default: Em(2);
+        },
+        padding: switch padding {
+          case None: EdgeInsets.symmetric(None, Em(1));
+          default: EdgeInsets.symmetric(padding, switch padding {
+            default: padding;
+            case Em(value): Em(value * 2);
+          });
+        }
       })
     ];
   }

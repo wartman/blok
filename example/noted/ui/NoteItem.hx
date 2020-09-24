@@ -1,7 +1,9 @@
 package noted.ui;
 
+import blok.ui.style.*;
 import noted.state.Note;
 import noted.state.NoteRepository;
+import noted.ui.style.Config;
 import noted.ui.style.Card;
 
 using Blok;
@@ -27,23 +29,37 @@ class NoteItem extends Component {
       children: [
         Html.div({
           children: if (!editing) [
-            Html.h2({
-              children: [ Html.text(note.title) ]
+            Html.header({
+              style: NoteItemSection.style({}),
+              children: [
+                Html.h2({
+                  children: [ Html.text(note.title) ]
+                })
+              ]
             }),
-            Html.button({
-              attrs: {
-                onclick: _ -> NoteRepository.from(context).removeNote(note)
-              },
-              children: [ Html.text('Remove') ]
+            Html.div({
+              style: NoteItemSection.style({}),
+              children: [ Html.text(note.content) ]
             }),
-            Html.text(note.content),
-            Html.button({
-              attrs: {
-                onclick: _ -> startEditing()
-              },
-              children: [ Html.text('Edit') ]
+            Html.div({
+              style: NoteItemSection.style({}),
+              children: [ 
+                NoteTags.node({ note: note })
+              ]
             }),
-            NoteTags.node({ note: note })
+            ButtonGroup.node({
+              style: NoteItemSection.style({}),
+              buttons: [
+                Button.node({
+                  onClick: _ -> NoteRepository.from(context).removeNote(note),
+                  child: Html.text('Remove')
+                }),
+                Button.node({
+                  onClick: _ -> startEditing(),
+                  child: Html.text('Edit')
+                })
+              ]
+            })
           ] else [
             NoteEditor.node({
               note: note.copy(),
@@ -57,5 +73,15 @@ class NoteItem extends Component {
         })
       ]
     }));
+  }
+}
+
+class NoteItemSection extends Style {
+  override function render():Array<VStyleExpr> {
+    return [
+      Box.export({
+        spacing: EdgeInsets.bottom(Config.mediumGap)
+      })
+    ];
   }
 }

@@ -3,6 +3,7 @@ package noted.ui;
 import blok.ui.style.*;
 import noted.state.Note;
 import noted.state.NoteRepository;
+import noted.ui.style.Root;
 
 using Blok;
 
@@ -13,7 +14,8 @@ class App extends Component {
         Flex.style({
           direction: Row,
           justifyContent: Content(Center)
-        }, 'root')
+        }, 'root'),
+        Root.style({})
       ],
       children: [
         Html.div({

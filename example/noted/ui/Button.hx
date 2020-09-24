@@ -1,5 +1,6 @@
 package noted.ui;
 
+import noted.ui.style.Config;
 import blok.ui.style.Color;
 import blok.ui.style.Display;
 import noted.ui.style.Pill;
@@ -21,9 +22,9 @@ class Button extends Component {
       style: [
         Display.style({ kind: Block }),
         Pill.style({
-          backgroundColor: switch type {
-            case Normal: Color.hex(0xffffff).withKey('normal');
-            case Important: Color.hex(0x666666).withKey('important');
+          color: switch type {
+            case Normal: Config.lightColor;
+            case Important: Config.darkColor;
           }
         })
       ],
