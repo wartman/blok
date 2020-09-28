@@ -28,14 +28,24 @@ class NoteList extends Component {
       ].concat([
         Html.li({
           children: [
-            if (editing) NoteEditor.node({
-              note: new Note({ title: '', status: Draft, content: '', tags: [] }),
-              onSave: note -> {
-                state.addNote(note);
-                stopEditing();
-              },
-              requestClose: stopEditing
-            }) else Button.node({
+            if (editing) Modal.node({
+              title: 'Create Note',
+              requestClose: stopEditing,
+              child: NoteEditor.node({
+                note: new Note({ 
+                  title: '', 
+                  status: Draft, 
+                  content: '', 
+                  tags: [] 
+                }),
+                onSave: note -> {
+                  state.addNote(note);
+                  stopEditing();
+                },
+                requestClose: stopEditing
+              }) 
+            }) else null,
+            Button.node({
               type: Important,
               onClick: _ -> startEditing(),
               child: Html.text('Add Note')

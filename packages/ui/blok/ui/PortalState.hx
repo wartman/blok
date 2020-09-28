@@ -9,13 +9,17 @@ class PortalState implements State {
 
   @update
   public function addPortal(key:String, vnode:VNode) {
-    if (portals.exists(entry -> entry.key == key)) return null;
-    return { portals: portals.concat([ { key: key, vnode: vnode } ]) };
+    if (portals.exists(entry -> entry.key == key)) return None;
+    return UpdateState({ 
+      portals: portals.concat([ { key: key, vnode: vnode } ]) 
+    });
   }
 
   @update
   public function removePortal(key:String) {
-    if (!portals.exists(entry -> entry.key == key)) return null;
-    return { portals: portals.filter(entry -> entry.key != key) }
+    if (!portals.exists(entry -> entry.key == key)) return None;
+    return UpdateState({ 
+      portals: portals.filter(entry -> entry.key != key) 
+    });
   }
 }

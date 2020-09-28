@@ -55,9 +55,14 @@ class CssEngine {
           }
         }
 
-        registerStyle(style);
-        
-        for (name in el.classList) {
+        if (style.length > 0) registerStyle(style);
+
+        // @todo: For some baffling reason, classList does not seem to be 
+        //        zero-indexed. It's possible this is different on other
+        //        browsers, so I'll need to test this on Things that are
+        //        Not Firefox.
+        for (i in 1...el.classList.length) {
+          var name = el.classList.item(i);
           if (definedClassNames.contains(name) && !classNames.contains(name)) el.classList.remove(name);
         }
         for (name in classNames) {

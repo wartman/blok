@@ -149,14 +149,14 @@ class Differ {
               case None:
                 var node = type.create(props, context);
                 render(node, children, parent, context);
-                if (styles != null) context.engine.applyStyles(node, styles);
+                context.engine.applyStyles(node, styles == null ? [] : styles);
                 if (ref != null) context.addEffect(() -> ref(node));
                 add(key, type, RNative(node, props));
               case Some(r): switch r {
                 case RNative(node, lastProps):
                   type.update(node, lastProps, props, context);
                   render(node, children, parent, context);
-                  if (styles != null) context.engine.applyStyles(node, styles);
+                  context.engine.applyStyles(node, styles == null ? [] : styles);
                   add(key, type, RNative(node, props));
                 default: throw 'assert';
               }

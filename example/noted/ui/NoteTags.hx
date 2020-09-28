@@ -85,33 +85,19 @@ class NoteTags extends Component {
         })
       ].concat([ 
         Html.li({
+          // key: 'edit',
           children: [
-            if (adding) Html.input({
+            if (adding) Input.node({
               style: [
-                Pill.style({
-                  outlined: true,
-                  color: Config.darkColor,
-                  centered: false,
-                  padding: Em(.5)
-                }),
                 Box.style({ width: Pct(100) }),
               ],
-              attrs: {
-                placeholder: 'add tag',
-                onblur: _ -> stopAdding(),
-                onkeydown: e -> {
-                  var ev:js.html.KeyboardEvent = cast e;
-                  var input:js.html.InputElement = cast ev.target;
-                  if (ev.key == 'Enter') {
-                    stopAdding();
-                    NoteRepository
-                      .from(context)
-                      .addTagsToNote(note, [ input.value ]);
-                  } else if (ev.key == 'Escape') {
-                    stopAdding();
-                  }
-                }
-              }
+              onSave: value -> {
+                stopAdding();
+                NoteRepository
+                  .from(context)
+                  .addTagsToNote(note, [ value ]);
+              },
+              onCancel: stopAdding
             }) else Html.button({
               style: [
                 Display.style({ kind: Block }),

@@ -1,6 +1,6 @@
 package blok.core;
 
-@:forward(contains, iterator)
+@:forward(contains, iterator, length)
 abstract StyleList(Array<VStyle>) from Array<VStyle> to Array<VStyle> {
   @:from public inline static function ofStyleType(style:VStyle):StyleList {
     return [style];
