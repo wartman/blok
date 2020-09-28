@@ -30,7 +30,7 @@ class NoteItem extends Component {
         Html.div({
           children: if (!editing) [
             Html.header({
-              style: NoteItemSection.style({}),
+              style: NoteItemSection.style(),
               children: [
                 Html.h2({
                   children: [ Html.text(note.title) ]
@@ -38,17 +38,17 @@ class NoteItem extends Component {
               ]
             }),
             Html.div({
-              style: NoteItemSection.style({}),
+              style: NoteItemSection.style(),
               children: [ Html.text(note.content) ]
             }),
             Html.div({
-              style: NoteItemSection.style({}),
+              style: NoteItemSection.style(),
               children: [ 
                 NoteTags.node({ note: note })
               ]
             }),
             ButtonGroup.node({
-              style: NoteItemSection.style({}),
+              style: NoteItemSection.style(),
               buttons: [
                 Button.node({
                   onClick: _ -> NoteRepository.from(context).removeNote(note),
@@ -67,6 +67,7 @@ class NoteItem extends Component {
                 note.setContent(update.title, update.content, update.tags);
                 stopEditing();
               },
+              requestRemove: () -> NoteRepository.from(context).removeNote(note),
               requestClose: stopEditing
             })
           ]

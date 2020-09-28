@@ -29,10 +29,18 @@ class NoteTags extends Component {
         Grid.style({
           columns: GridDefinition.repeat(5, Fr(1)),
           gap: Config.mediumGap
-        })
+        }),
+        Style.define([
+          MediaQuery.maxWidth(Config.mobileWidth, [
+            Grid.export({
+              columns: GridDefinition.repeat(3, Fr(1))
+            })
+          ])
+        ])
       ],
       children: [
         for (tag in note.tags) Html.li({
+          key: tag,
           style: [
             Flex.style({
               direction: Row
@@ -72,7 +80,10 @@ class NoteTags extends Component {
                   type: Absolute, 
                   right: Em(.5), 
                   top: None
-                })
+                }),
+                Style.define([
+                  Style.property('cursor', 'pointer')
+                ])
               ],
               attrs: {
                 onclick: _ -> NoteRepository
@@ -85,7 +96,7 @@ class NoteTags extends Component {
         })
       ].concat([ 
         Html.li({
-          // key: 'edit',
+          key: 'add-tag',
           children: [
             if (adding) Input.node({
               style: [
@@ -103,9 +114,13 @@ class NoteTags extends Component {
                 Display.style({ kind: Block }),
                 Box.style({ width: Pct(100) }),
                 Pill.style({
-                  color: Config.lightColor,
-                  padding: Em(.5)
-                })
+                  color: Config.midColor,
+                  padding: Em(.5),
+                  outlined: true
+                }),
+                Style.define([
+                  Style.property('cursor', 'pointer')
+                ])
               ],
               attrs: {
                 onclick: _ -> startAdding()

@@ -33,19 +33,21 @@ class Modal extends Component {
   override function render(context:Context) {
     return Portal.node({
       child: Html.div({
-        style: Overlay.style({}),
+        style: Overlay.style(),
         attrs: {
           onclick: _ -> requestClose()
         },
         children: [
           Html.div({
             style: [
-              Card.style({ color: Config.whiteColor  }),
+              Card.style({ 
+                color: Config.whiteColor  
+              }),
               Box.style({
-                width: Px(900)
+                width: Config.mobileWidth
               }),
               Style.define([
-                MediaQuery.maxWidth(Px(900), [
+                MediaQuery.maxWidth(Config.mobileWidth, [
                   Box.export({
                     width: Pct(100)
                   })
@@ -60,11 +62,7 @@ class Modal extends Component {
                 style: [
                   Position.style({ type: Relative }),
                   Box.style({
-                    width: Pct(100),
-                    height: Em(3)
-                  }),
-                  Font.style({
-                    lineHeight: Em(3)
+                    spacing: EdgeInsets.bottom(Config.mediumGap)
                   })
                 ],
                 children: [
@@ -78,8 +76,8 @@ class Modal extends Component {
                       }),
                       Position.style({
                         type: Absolute,
-                        top: Em(0),
-                        right: Em(0)
+                        top: Em(-.5),
+                        right: Em(-.5)
                       })
                     ],
                     attrs: {

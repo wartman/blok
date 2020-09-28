@@ -21,13 +21,13 @@ class ExampleStyle extends Style {
   }
 }
 
-class ExampleTheme extends State {
+class ExampleTheme implements State {
   @prop var color:Value;
   @prop var font:Font;
 
   @update
   public function setColor(color:Value) {
-    return { color: color };
+    return UpdateState({ color: color });
   }
 }
 
@@ -37,17 +37,17 @@ class ExampleComponent extends Component {
 
   @update
   public function makeTaller(by:Int) {
-    return { height: height + by };
+    return UpdateState({ height: height + by });
   }
 
   @update
   public function makeShorter(by:Int) {
-    if (height - by <= 50) return null;
-    return { height: height - by };
+    if (height - by <= 50) return None;
+    return UpdateState({ height: height - by });
   }
 
   override function render(context:Context):VNode {
-    return ExampleTheme.subscribe(context, state -> Ui.flow({
+    return ExampleTheme.observe(context, state -> Ui.flow({
       props: {
         verticalAlign: Top,
         layout: Horizontal,
@@ -55,7 +55,7 @@ class ExampleComponent extends Component {
       },
       // style: ExampleStyle.style({
       //   height: Num(100),
-      //   color: 0xFFCCCCCC
+      //   color: 0xFF666666
       // }),
       children: [
         Ui.flow({
@@ -140,7 +140,7 @@ class Run extends App {
     hxd.Res.initEmbed();
     Platform.mount(
       s2d,
-      context -> ExampleTheme.provide(context, {
+      context -> ExampleTheme.provide({
         color: blok.ui.style.Color.hex(0xCCC),
         font: hxd.res.DefaultFont.get()
       }, ctx -> ExampleComponent.node({

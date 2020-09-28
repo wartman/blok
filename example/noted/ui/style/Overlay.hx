@@ -23,7 +23,12 @@ class Overlay extends Style {
         wrap: Wrap,
         justifyContent: Content(Center),
         alignItems: Position(Center)
-      })
+      }),
+      MediaQuery.maxWidth(Config.mobileWidth, [
+        Box.export({
+          padding: EdgeInsets.all(Config.smallGap)
+        })
+      ])
     ];
   }
 }

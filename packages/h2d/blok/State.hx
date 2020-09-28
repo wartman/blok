@@ -1,4 +1,4 @@
 package blok;
 
-@:autoBuild(blok.core.State.build('h2d.Object'))
-class State extends blok.core.State {}
+@:autoBuild(blok.core.StateBuilder.build('h2d.Object'))
+interface State {}

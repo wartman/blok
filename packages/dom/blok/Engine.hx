@@ -16,8 +16,7 @@ class Engine implements blok.core.Engine<Node, Event> {
 
   public function new(useBaseStyle = true) {
     if (useBaseStyle) {
-      var base = new BaseStyle({});
-      @:privateAccess css.addCss(null, base.render());
+      @:privateAccess css.addCss(null, BaseStyle.__inst.render());
     }
   }
 

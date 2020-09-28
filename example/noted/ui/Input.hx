@@ -3,6 +3,7 @@ package noted.ui;
 import js.html.InputElement;
 import noted.ui.style.*;
 
+using StringTools;
 using Blok;
 
 class Input extends Component {
@@ -34,7 +35,13 @@ class Input extends Component {
       attrs: {
         placeholder: placeholder,
         value: initialValue,
-        onblur: _ ->  onCancel(),
+        onblur: _ -> {
+          if (ref.value.trim().length > 0) {
+            onSave(ref.value);
+          } else {
+            onCancel();
+          }
+        },
         onkeydown: e -> {
           var ev:js.html.KeyboardEvent = cast e;
           var input:js.html.InputElement = cast ev.target;

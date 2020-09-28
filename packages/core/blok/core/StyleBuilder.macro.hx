@@ -83,6 +83,12 @@ class StyleBuilder {
       else
         macro  '--' + [ $a{nameBuilder} ].join('-')});
 
+      if (props.length == 0) {
+        builder.add((macro class {
+          static final __inst = new $clsTp({});
+        }).fields);
+      }
+
       return [
         {
           name: 'style',
@@ -94,11 +100,19 @@ class StyleBuilder {
             params: cls.params.length > 0
               ? [ for (p in cls.params) { name: p.name, constraints: [] } ]
               : [],
-            args: [
-              { name: 'props', type: macro:$propType },
-              { name: 'suffix', type: macro:Null<String>, opt: true }
-            ],
-            expr: macro return VStyleDef($p{cls.pack.concat([ cls.name ])}, props, suffix)
+            args: switch props.length {
+              case 0: [
+                { name: 'suffix', type: macro:Null<String>, opt: true }
+              ];
+              default: [
+                { name: 'props', type: macro:$propType },
+                { name: 'suffix', type: macro:Null<String>, opt: true }
+              ];
+            },
+            expr: switch props.length {
+              case 0: macro return VStyleDef($p{cls.pack.concat([ cls.name ])}, {}, suffix);
+              default: macro return VStyleDef($p{cls.pack.concat([ cls.name ])}, props, suffix);
+            }
           })
         },
 
@@ -112,11 +126,15 @@ class StyleBuilder {
             params: cls.params.length > 0
               ? [ for (p in cls.params) { name: p.name, constraints: [] } ]
               : [],
-            args: [
-              { name: 'props', type: macro:$propType }
-            ],
+            args: switch props.length {
+              case 0: [];
+              default: [ { name: 'props', type: macro:$propType } ];
+            },
             expr: macro {
-              var style = new $clsTp(props);
+              var style = ${ switch props.length { 
+                case 0: macro new $clsTp({});
+                default: macro new $clsTp(props);
+              } }
               return EChildren(style.render());
             }
           })
@@ -134,10 +152,11 @@ class StyleBuilder {
             params: cls.params.length > 0
               ? [ for (p in cls.params) { name: p.name, constraints: [] } ]
               : [],
-            args: [
-              { name: 'props', type: macro:$propType },
-            ],
-            expr: macro return new $clsTp(props)
+            args: [ { name: 'props', type: macro:$propType } ],
+            expr: switch props.length {
+              case 0: macro return __inst;
+              default: macro return new $clsTp(props);
+            } 
           })
         }
       ].concat((macro class {

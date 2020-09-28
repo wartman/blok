@@ -15,7 +15,19 @@ class AutoColor extends Style {
         case 'mid' | 'dark': Config.lightColor;
         case _: Config.darkColor; 
       }),
-      Background.export({ color: color })
+      Background.export({ color: color }),
+      Style.modifier(':disabled', [
+        Style.property('color', switch color.getKey() {
+          case 'white' | 'light': Config.midColor;
+          case 'mid' | 'dark': Config.lightColor;
+          case _: Config.midColor; 
+        }),
+        Background.export({ color: switch color.getKey() {
+          case 'white' | 'light': color;
+          case 'dark': Config.midColor;
+          default: color;
+        } }),
+      ])
     ];
   }
 }

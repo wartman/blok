@@ -7,7 +7,7 @@ using Blok;
 class Card extends Style {
   @prop var color:Color = Config.whiteColor;
   @prop var height:Unit = null;
-  @prop var padding:EdgeInsets = EdgeInsets.symmetric(Config.smallGap, Config.mediumGap);
+  @prop var padding:EdgeInsets = EdgeInsets.all(Config.mediumGap);
   @prop var outlined:Bool = false;
 
   override function render():Array<VStyleExpr> {

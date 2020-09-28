@@ -10,11 +10,13 @@ using Blok;
 enum ButtonType {
   Normal;
   Important;
+  Custom(color:Color);
 }
 
 class Button extends Component {
   @prop var child:VNode;
   @prop var type:ButtonType = Normal;
+  @prop var disabled:Bool = false;
   @prop var onClick:(e:js.html.Event)->Void = null;
 
   override function render(context:Context):VNode {
@@ -25,11 +27,16 @@ class Button extends Component {
           color: switch type {
             case Normal: Config.lightColor;
             case Important: Config.darkColor;
+            case Custom(color): color;
           }
-        })
+        }),
+        Style.define([
+          Style.property('cursor', 'pointer')
+        ])
       ],
       attrs: {
-        onclick: onClick
+        disabled: disabled,
+        onclick: if (disabled) null else onClick
       },
       children: [ child ]
     });

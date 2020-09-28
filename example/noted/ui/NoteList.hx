@@ -1,5 +1,6 @@
 package noted.ui;
 
+import noted.ui.style.Config;
 import noted.state.Note;
 import noted.state.NoteRepository;
 import noted.ui.style.List;
@@ -21,7 +22,7 @@ class NoteList extends Component {
 
   override function render(context:Context):VNode {
     return NoteRepository.observe(context, state -> Html.ul({
-      style: List.style({}),
+      style: List.style(),
       children: [ 
         for (note in state.filteredNotes) 
           NoteItem.node({ note: note }) 
@@ -46,7 +47,7 @@ class NoteList extends Component {
               }) 
             }) else null,
             Button.node({
-              type: Important,
+              type: Custom(Config.whiteColor),
               onClick: _ -> startEditing(),
               child: Html.text('Add Note')
             })
