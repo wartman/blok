@@ -1,6 +1,7 @@
 package noted.ui;
 
 import js.html.InputElement;
+import blok.ui.style.Box;
 import noted.ui.style.*;
 
 using StringTools;
@@ -13,25 +14,24 @@ class Input extends Component {
       color: Config.darkColor,
       centered: false,
       padding: Em(.5)
-    })
+    }),
+    Box.style({ width: Pct(100) })
   ];
 
-  @prop var style:StyleList = null;
+  @prop var style:StyleList = [];
   @prop var initialValue:String = null;
   @prop var placeholder:String = null;
   @prop var onSave:(value:String)->Void;
   @prop var onCancel:()->Void;
   var ref:InputElement;
 
-  @effect
-  function focus() {
-    ref.focus();
-  }
-
   override function render(context:Context) {
     return Html.input({
       style: baseStyle.add(style),
-      ref: el -> ref = cast el,
+      ref: el -> {
+        ref = cast el;
+        ref.focus();
+      },
       attrs: {
         placeholder: placeholder,
         value: initialValue,

@@ -8,6 +8,8 @@ class Box extends Style {
   @prop var spacing:EdgeInsets = null;
   @prop var height:Unit = null;
   @prop var width:Unit = null;
+  @prop var minHeight:Unit = null;
+  @prop var minWidth:Unit = null;
 
   override function render():Array<VStyleExpr> {
     var props:Array<VStyleExpr> = [];
@@ -15,6 +17,8 @@ class Box extends Style {
     if (padding != null) props.push(Style.property('padding', padding));
     if (height != null) props.push(Style.property('height', height));
     if (width != null) props.push(Style.property('width', width));
+    if (minHeight != null) props.push(Style.property('minHeight', minHeight));
+    if (minWidth != null) props.push(Style.property('minWidth', minWidth));
     
     if (spacing != null) {
       // this is bleh -- we should be checking for vertical or 

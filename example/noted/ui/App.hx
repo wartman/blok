@@ -10,45 +10,19 @@ import noted.ui.style.Root;
 using Blok;
 
 class App extends Component {
+  @prop var notes:NoteRepository;
+
   override function render(context:Context):VNode {
-    return NoteRepository.provide({
-      notes: [
-        new Note({
-          id: 1,
-          title: 'Test',
-          status: Published,
-          content: 'Foo',
-          tags: [ 'foo' ]
-        })
-      ]
-    }, ctx -> PortalManager.node({
+    return ObservableProvider.provide([
+      notes
+    ], ctx -> PortalManager.node({
       children: [
         Html.div({
           style: [
-            Flex.style({
-              direction: Row,
-              justifyContent: Content(Center)
-            }, 'root'),
             Root.style()
           ],
           children: [
-            Html.div({
-              style: [
-                Box.style({
-                  width: Config.mobileWidth,
-                  padding: EdgeInsets.symmetric(Em(1), None)
-                }),
-                Style.define([
-                  MediaQuery.maxWidth(Config.mobileWidth, [
-                    Box.export({
-                      width: Pct(100),
-                      padding: EdgeInsets.all(Config.smallGap)
-                    })
-                  ])
-                ])
-              ],
-              children: [NoteList.node({}) ]
-            })
+            NoteList.node({})
           ]
         })
       ]

@@ -5,6 +5,7 @@ import noted.state.Note;
 using Blok;
 
 enum NoteFilter {
+  None;
   All;
   AllWithTag(tag:String);
   Status(status:NoteStatus);
@@ -16,6 +17,7 @@ class NoteRepository implements State {
   @prop var notes:Array<Note>;
   @prop var filter:NoteFilter = All;
   @computed var filteredNotes:Array<Note> = switch filter {
+    case None: [];
     case All: notes;
     case AllWithTag(tag): notes.filter(note -> note.tags.contains(tag));
     case Status(status): notes.filter(note -> note.status.equals(status));
@@ -52,5 +54,10 @@ class NoteRepository implements State {
     note.removeTags(tags);
     if (!notes.contains(note)) return None;
     return Update;
+  }
+
+  @update
+  public function setFilter(filter:NoteFilter) {
+    return UpdateState({ filter: filter });
   }
 }

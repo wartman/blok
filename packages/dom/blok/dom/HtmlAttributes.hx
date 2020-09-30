@@ -157,10 +157,9 @@ private typedef MediaAttr = GlobalAttr & {
   @:optional final volume:Float;
 }
 
-typedef AudioAttr = {>MediaAttr,
-}
+typedef AudioAttr = MediaAttr & {};
 
-typedef VideoAttr = {>MediaAttr,
+typedef VideoAttr = MediaAttr & {
   @:optional final height:Int;
   @:optional final poster:String;
   @:optional final width:Int;

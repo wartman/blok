@@ -8,14 +8,13 @@ import blok.ui.style.Grid;
 class CardGrid extends Style {
   override function render():Array<VStyleExpr> {
     return [
-      Box.export({ padding: EdgeInsets.symmetric(Config.mediumGap, None) }),
       Grid.export({ gap: Config.mediumGap }),
-      MediaQuery.minWidth(Px(900), [
+      MediaQuery.minWidth(Config.mobileWidth, [
         Grid.export({
           columns: GridDefinition.repeat(4, Fr(1))
         })
       ]),
-      MediaQuery.maxWidth(Px(900), [
+      MediaQuery.maxWidth(Config.mobileWidth, [
         Grid.export({
           columns: GridDefinition.repeat(2, Fr(1))
         })

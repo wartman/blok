@@ -5,6 +5,7 @@ package todomvc;
 //
 // https://github.com/evancz/elm-todomvc/blob/master/src/Main.elm
 
+import haxe.Json;
 using StringTools;
 using Lambda;
 using Blok;
@@ -13,8 +14,39 @@ class Main {
   static function main() {
     Platform.mountNoBaseStyle(
       js.Browser.document.getElementById('root'),
-      ctx -> Root.node({})
+      ctx -> Root.node({
+        model: TodoStore.load()
+      })
     );
+  }
+}
+
+// Local storage implementation
+class TodoStore {
+  static inline final BLOK_TODO_STORE = 'blok-todo-store';
+
+  public static function load():Model {
+    var stored = js.Browser.window.localStorage.getItem(BLOK_TODO_STORE);
+    var model = if (stored == null) 
+      new Model({
+        uid: 0,
+        visibility: All,
+        entries: []
+      })
+    else 
+      new Model(cast Json.parse(stored));
+
+    model.getObservable().observe(save);
+    
+    return model;
+  }
+
+  public static function save(model:Model) {
+    js.Browser.window.localStorage.setItem(BLOK_TODO_STORE, Json.stringify({
+      uid: model.uid,
+      visibility: model.visibility,
+      entries: model.entries
+    }));
   }
 }
 
@@ -27,14 +59,20 @@ typedef Entry = {
   public var editing:Bool;
 }
 
+enum abstract Visibility(String) to String {
+  var All;
+  var Completed;
+  var Active;
+}
+
 // A `State` is like a mix of the Model and Updates in the Elm architecture.
 //
 // Think of each `@update` method as a message in elm.
 class Model implements State {
   @prop var entries:Array<Entry>;
-  @prop var field:String;
+  @prop var field:String = '';
   @prop var uid:Int;
-  @prop var visibility:String;
+  @prop var visibility:Visibility;
 
   @update
   public function add() {
@@ -110,7 +148,7 @@ class Model implements State {
   }
 
   @update
-  public function changeVisibility(visibility:String) {
+  public function changeVisibility(visibility:Visibility) {
     if (this.visibility == visibility) return None;
     return UpdateState({
       visibility: visibility
@@ -119,9 +157,11 @@ class Model implements State {
 }
 
 class Root extends Component {
+  @prop var model:Model;
+
   override function render(context:Context):VNode {
     return Html.div({
-      style: TodoMvcStyle.style({}),
+      style: TodoMvcStyle.style(),
       attrs: {
         className: 'todomvc-wrapper',
         // style: 'visibility: hidden'
@@ -132,12 +172,7 @@ class Root extends Component {
             className: 'todoapp'
           },
           children: [
-            Model.provide({
-              visibility: 'All',
-              entries: [],
-              field: '',
-              uid: 0
-            }, ctx -> Html.fragment([
+            ObservableProvider.provide([ model ], ctx -> Html.fragment([
               ViewInput.node({ task: Model.from(ctx).field }),
               ViewEntries.node({}),
               ViewControls.node({})
@@ -190,9 +225,9 @@ class ViewEntries extends Component {
       var allCompleted = model.entries.filter(e -> !e.completed).length == 0;
       function isVisible(entry:Entry) {
         return switch model.visibility {
-          case 'Completed': entry.completed;
-          case 'Active': !entry.completed;
-          default: true;
+          case Completed: entry.completed;
+          case Active: !entry.completed;
+          case All: true;
         }
       }
 
@@ -324,9 +359,9 @@ class ViewControls extends Component {
               className: 'filters'
             },
             children: [
-              visibilityControl('#/', 'All', model.visibility, model),
-              visibilityControl('#/active', 'Active', model.visibility, model),
-              visibilityControl('#/completed', 'Completed', model.visibility, model)
+              visibilityControl('#/', All, model.visibility, model),
+              visibilityControl('#/active', Active, model.visibility, model),
+              visibilityControl('#/completed', Completed, model.visibility, model)
             ]
           }),
           Html.button({
@@ -344,8 +379,8 @@ class ViewControls extends Component {
 
   function visibilityControl(
     url:String,
-    visibility:String,
-    actualVisibility:String,
+    visibility:Visibility,
+    actualVisibility:Visibility,
     model:Model
   ) {
     return Html.li({

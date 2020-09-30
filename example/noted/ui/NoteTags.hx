@@ -9,6 +9,8 @@ import noted.state.NoteRepository;
 
 using Blok;
 
+// @todo: make generic -- we can use this same component to filter
+//        tags in the control system.
 class NoteTags extends Component {
   @prop var note:Note;
   @prop var adding:Bool = false;

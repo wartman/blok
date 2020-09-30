@@ -1,5 +1,8 @@
 package noted.ui;
 
+import noted.ui.style.Card;
+import blok.ui.style.Box;
+import noted.ui.style.CardGrid;
 import noted.ui.style.Config;
 import noted.state.Note;
 import noted.state.NoteRepository;
@@ -9,6 +12,7 @@ using Blok;
 
 class NoteList extends Component {
   @prop var editing:Bool = false;
+  @prop var asGrid:Bool = false;
 
   @update
   function startEditing() {
@@ -20,14 +24,50 @@ class NoteList extends Component {
     return UpdateState({ editing: false });
   }
 
+  @update
+  function toggleDisplay() {
+    return UpdateState({ asGrid: !asGrid });
+  }
+
   override function render(context:Context):VNode {
-    return NoteRepository.observe(context, state -> Html.ul({
-      style: List.style(),
-      children: [ 
-        for (note in state.filteredNotes) 
-          NoteItem.node({ note: note }) 
-      ].concat([
-        Html.li({
+    return NoteRepository.observe(context, state -> Html.div({
+      style: [
+        Box.style({
+          width: Pct(100)
+        }),
+        List.style()
+      ],
+      children: [
+        Html.div({
+          style: List.style(),
+          children: [
+            NoteFilterControls.node({}),
+            ButtonGroup.node({
+              buttons: [
+                Button.node({
+                  type: Custom(Config.whiteColor),
+                  onClick: _ -> toggleDisplay(),
+                  child: if (asGrid) Html.text('As List') else Html.text('As Grid')
+                })
+              ]
+            })
+          ]
+        }),
+        Html.ul({
+          style: if (asGrid) CardGrid.style() else List.style(),
+          children: if (state.filteredNotes.length == 0) [
+            Html.li({
+              style: Card.style({
+                color: Config.midColor
+              }),
+              children: [ Html.text('No notes yet!') ]
+            })
+          ] else [
+            for (note in state.filteredNotes) 
+              NoteItem.node({ note: note, asGrid: asGrid }) 
+          ]
+        }),
+        Html.div({
           children: [
             if (editing) Modal.node({
               title: 'Create Note',
@@ -53,7 +93,7 @@ class NoteList extends Component {
             })
           ]
         })
-      ])
+      ]
     }));
   }
 }
