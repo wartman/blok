@@ -6,6 +6,7 @@ package todomvc;
 // https://github.com/evancz/elm-todomvc/blob/master/src/Main.elm
 
 import haxe.Json;
+
 using StringTools;
 using Lambda;
 using Blok;
@@ -15,38 +16,9 @@ class Main {
     Platform.mountNoBaseStyle(
       js.Browser.document.getElementById('root'),
       ctx -> Root.node({
-        model: TodoStore.load()
+        model: Model.load()
       })
     );
-  }
-}
-
-// Local storage implementation
-class TodoStore {
-  static inline final BLOK_TODO_STORE = 'blok-todo-store';
-
-  public static function load():Model {
-    var stored = js.Browser.window.localStorage.getItem(BLOK_TODO_STORE);
-    var model = if (stored == null) 
-      new Model({
-        uid: 0,
-        visibility: All,
-        entries: []
-      })
-    else 
-      new Model(cast Json.parse(stored));
-
-    model.getObservable().observe(save);
-    
-    return model;
-  }
-
-  public static function save(model:Model) {
-    js.Browser.window.localStorage.setItem(BLOK_TODO_STORE, Json.stringify({
-      uid: model.uid,
-      visibility: model.visibility,
-      entries: model.entries
-    }));
   }
 }
 
@@ -69,6 +41,32 @@ enum abstract Visibility(String) to String {
 //
 // Think of each `@update` method as a message in elm.
 class Model implements State {
+  static inline final BLOK_TODO_MODEL = 'blok-todo-model';
+
+  public static function load():Model {
+    var stored = js.Browser.window.localStorage.getItem(BLOK_TODO_MODEL);
+    var model = if (stored == null) 
+      new Model({
+        uid: 0,
+        visibility: All,
+        entries: []
+      })
+    else 
+      new Model(cast Json.parse(stored));
+
+    model.getObservable().observe(save);
+    
+    return model;
+  }
+
+  static function save(model:Model) {
+    js.Browser.window.localStorage.setItem(BLOK_TODO_MODEL, Json.stringify({
+      uid: model.uid,
+      visibility: model.visibility,
+      entries: model.entries
+    }));
+  }
+
   @prop var entries:Array<Entry>;
   @prop var field:String = '';
   @prop var uid:Int;
