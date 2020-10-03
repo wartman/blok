@@ -4,15 +4,17 @@ import blok.ui.style.Grid;
 import blok.ui.style.*;
 import noted.ui.style.Pill;
 import noted.ui.style.Config;
-import noted.state.Note;
-import noted.state.NoteRepository;
+import noted.data.Tag;
+import noted.data.Id;
 
 using Blok;
 
 // @todo: make generic -- we can use this same component to filter
 //        tags in the control system.
 class NoteTags extends Component {
-  @prop var note:Note;
+  @prop var tags:Array<Tag>;
+  @prop var addTag:(name:String)->Void;
+  @prop var removeTag:(id:Id<Tag>)->Void;
   @prop var adding:Bool = false;
 
   @update
@@ -41,18 +43,26 @@ class NoteTags extends Component {
         ])
       ],
       children: [
-        for (tag in note.tags) Html.li({
+        for (tag in tags) Html.li({
           key: tag,
           style: [
             Flex.style({
               direction: Row
             }),
-            Pill.style({
-              outlined: true,
-              color: Config.darkColor,
-              centered: false,
-              padding: Em(.5)
-            }),
+            if (tag.id.isInvalid())
+              Pill.style({
+                outlined: true,
+                color: Config.midColor,
+                centered: false,
+                padding: Em(.5)
+              })
+            else 
+              Pill.style({
+                outlined: true,
+                color: Config.darkColor,
+                centered: false,
+                padding: Em(.5)
+              }),
             Position.style({ type: Relative })
           ],
           children: [
@@ -64,7 +74,7 @@ class NoteTags extends Component {
                   padding: EdgeInsets.right(Em(1)) 
                 })
               ],
-              children: [ Html.text(tag) ]
+              children: [ Html.text(tag.name) ]
             }),
             Html.button({
               style: [
@@ -88,9 +98,7 @@ class NoteTags extends Component {
                 ])
               ],
               attrs: {
-                onclick: _ -> NoteRepository
-                  .from(context)
-                  .removeTagsFromNote(note, [ tag ]),
+                onclick: _ -> removeTag(tag.id)
               },
               children: [ Html.text('X') ]
             })
@@ -105,10 +113,8 @@ class NoteTags extends Component {
                 Box.style({ width: Pct(100) }),
               ],
               onSave: value -> {
+                addTag(value);
                 stopAdding();
-                NoteRepository
-                  .from(context)
-                  .addTagsToNote(note, [ value ]);
               },
               onCancel: stopAdding
             }) else Html.button({

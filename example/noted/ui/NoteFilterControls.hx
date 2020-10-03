@@ -1,8 +1,9 @@
 package noted.ui;
 
-import blok.ui.style.*;
 import noted.ui.style.*;
-import noted.state.NoteRepository;
+import noted.data.Store;
+import noted.data.Id;
+import noted.data.Tag;
 
 using Blok;
 
@@ -33,7 +34,7 @@ class NoteFilterControls extends Component {
               type: Normal,
               onClick: _ -> {
                 setMode(All);
-                NoteRepository.from(context).setFilter(All);
+                Store.from(context).setFilter(FilterAll);
               },
               child: Html.text('All Notes')
             }),
@@ -41,7 +42,7 @@ class NoteFilterControls extends Component {
               type: Normal,
               onClick: _ -> {
                 setMode(ByTag);
-                NoteRepository.from(context).setFilter(None);
+                Store.from(context).setFilter(None);
               },
               child: Html.text('Filter by Tag')
             })
@@ -51,12 +52,47 @@ class NoteFilterControls extends Component {
           case All: null;
           case ByTag: Html.div({
             children: [
-              Input.node({
-                placeholder: 'Filter Tags',
-                onSave: value -> NoteRepository
+              NoteTags.node({
+                tags: switch Store.from(context).filter {
+                  case FilterByTags(tags): 
+                    var store =  Store.from(context);
+                    tags.map(id -> switch store.getTag(id) {
+                      case Some(v): v;
+                      case None: ({
+                        id: Id.invalid(),
+                        name: 'Not Found',
+                        notes: []
+                      }:Tag);
+                    });
+                  default: [];
+                },
+                addTag: name -> {
+                  var store = Store.from(context);
+                  switch store.findTagByName(name) {
+                    case None: 
+                      store.setFilter(switch store.filter {
+                        case FilterByTags(tags): 
+                          FilterByTags(tags.concat([ Id.invalid() ]));
+                        default: 
+                          FilterByTags([ Id.invalid() ]);
+                      });
+                    case Some(tag):
+                      store.setFilter(switch store.filter {
+                        case FilterByTags(tags): 
+                          if (tags.contains(tag.id)) store.filter;
+                          else FilterByTags(tags.concat([ tag.id ]));
+                        default: FilterByTags([ tag.id ]);
+                      });
+                  }
+                },
+                removeTag: id -> Store
                   .from(context)
-                  .setFilter(AllWithTag(value.toLowerCase())),
-                onCancel: () -> setMode(ByTag)
+                  .setFilter(switch Store.from(context).filter {
+                    case FilterByTags(tags):
+                      FilterByTags(tags.filter(tag -> tag != id));
+                    default: 
+                      FilterByTags([]);
+                  })
               })
             ]
           });

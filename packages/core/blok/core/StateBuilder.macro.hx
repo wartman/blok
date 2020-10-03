@@ -10,7 +10,7 @@ class StateBuilder {
   static final PROPS = '__props';
   static final INCOMING_PROPS = '__incomingProps';
   static final OPTIONAL_META =  { name: ':optional', pos: (macro null).pos };
-  
+
   public static function build(nodeTypeName:String) {
     var fields = Context.getBuildFields();
     var cls = Context.getLocalClass().get();
@@ -151,6 +151,7 @@ class StateBuilder {
             f.access.push(APublic);
           }
 
+          // @todo: this kills completion.
           builder.add((macro class {
             var $backingName:$t = null;
   
@@ -252,8 +253,10 @@ class StateBuilder {
             ],
             expr: macro {
               var state = new $clsTp(props);
-              return VComponent(blok.core.ObservableProvider, {
-                observable: state,
+              return VComponent(blok.core.Provider, {
+                // observable: state,
+                key: $v{id},
+                value: state,
                 build: build
               });
             }
@@ -321,6 +324,7 @@ If you want to re-render whenever the state changes, use
       ]:Array<Field>).concat((macro class {
         var $PROPS:$propType;
         final __observable:blok.core.Observable<$ct>;
+        public final __id:String = $v{id};
 
         public function new($INCOMING_PROPS:$propType) {
           __observable = new blok.core.Observable(this, $v{id});

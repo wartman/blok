@@ -1,5 +1,5 @@
 import noted.ui.App;
-import noted.state.*;
+import noted.data.*;
 
 using Blok;
 
@@ -8,20 +8,31 @@ class Noted {
     Platform.mount(
       js.Browser.document.getElementById('root'),
       context -> App.node({
-        notes: new NoteRepository({
+        store: new Store({
+          uid: 3,
+          filter: FilterAll,
           notes: [
-            new Note({
-              title: 'Test',
+            {
+              id: 0,
+              name: 'Test',
               status: Published,
               content: 'Foo',
-              tags: [ 'foo' ]
-            }),
-            new Note({
-              title: 'Other Test',
+              tags: [ 2 ]
+            },
+            {
+              id: 1,
+              name: 'Other Test',
               status: Published,
               content: 'Foo bar',
-              tags: [ 'foo', 'bar' ]
-            })
+              tags: [ 2 ]
+            }
+          ],
+          tags: [
+            {
+              id: 2,
+              name: 'foo',
+              notes: [ 0, 1 ]
+            }
           ]
         })
       })

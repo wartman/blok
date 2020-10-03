@@ -10,9 +10,15 @@ abstract StyleList(Array<VStyle>) from Array<VStyle> to Array<VStyle> {
     this = styles;
   }
 
-  public inline function add(style:VStyle) {
+  /**
+    Combine styles.
+
+    Note: this does not modify the current StyleList -- instead, it will
+    return a new one.
+  **/
+  public inline function add(style:VStyle):StyleList {
     if (style != null && !this.contains(style))
-      this.push(style);
+      return this.concat([ style ]);
     return this;
   }
 

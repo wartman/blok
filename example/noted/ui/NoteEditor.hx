@@ -1,47 +1,85 @@
 package noted.ui;
 
+import noted.data.Id;
 import blok.ui.style.*;
-import noted.state.Note;
 import noted.ui.style.*;
+import noted.data.Store;
+import noted.data.Note;
+import noted.data.Tag;
 
 using StringTools;
 using Blok;
 
+// @todo: rethink the way this editor works
 class NoteEditor extends Component {
+  static final noteEditorSection = Box.style({
+    spacing: EdgeInsets.bottom(Config.mediumGap)
+  });
+  
   @prop var note:Note;
   @prop var requestClose:()->Void;
   @prop var requestRemove:()->Void = null;
   @prop var onSave:(note:Note)->Void;
+  @prop var tags:Array<Tag>;
   var isValid:Observable<Bool>;
 
   @init
   function setup() {
-    isValid = new Observable(note.title.length > 0 && note.content.length > 0);
+    isValid = new Observable(note.name.length > 0 && note.content.length > 0);
+  }
+
+  // @todo: this is pretty hacky
+  @update
+  function addTag(context:Context, name:String) {
+    var store = Store.from(context);
+    return UpdateState({
+      tags: tags.concat([
+        switch store.findTagByName(name) {
+          case Some(tag):
+            if (!note.tags.contains(tag.id)) note.tags.push(tag.id);
+            tag;
+          case None: 
+            note.tags.push(store.uid);
+            var ret:Tag = { id: store.uid, name: name, notes: [] };
+            store.addTagSilent(name, []); // this seems dicy.
+            ret;
+        }
+      ])
+    });
+  }
+
+  // @todo: this is pretty hacky
+  @update
+  function removeTag(id:Id<Tag>) {
+    note.tags = note.tags.filter(i -> i != id);
+    return UpdateState({
+      tags: tags.filter(tag -> tag.id != id)
+    });
   }
 
   override function render(context:Context):VNode {
     return Html.div({
       children: [
         Html.div({
-          style: NoteEditorSection.style(),
+          style: noteEditorSection,
           children: [
             NoteEditorInput.node({
               name: 'title',
               message: 'A title is required',
               autoFocus: true,
-              initialValue: note.title,
+              initialValue: note.name,
               placeholder: 'Title',
               validate: text -> {
                 var v = text.trim().length > 0;
                 isValid.notify(v);
                 return v;
               },
-              onInput: value -> note.setContent(value, note.content)
+              onInput: value -> note.name = value
             })
           ]
         }),
         Html.div({
-          style: NoteEditorSection.style(),
+          style: noteEditorSection,
           children: [
             NoteEditorInput.node({
               type: TextArea,
@@ -54,15 +92,17 @@ class NoteEditor extends Component {
                 isValid.notify(v);
                 return v;
               },
-              onInput: value -> note.setContent(note.title, value)
+              onInput: value -> note.content = value
             })
           ]
         }),
         Html.div({
-          style: NoteEditorSection.style(),
+          style: noteEditorSection,
           children: [
             NoteTags.node({
-              note: note
+              tags: tags,
+              addTag: addTag.bind(context),
+              removeTag: removeTag
             })
           ]
         }),
@@ -91,12 +131,3 @@ class NoteEditor extends Component {
   }
 }
 
-class NoteEditorSection extends Style {
-  override function render():Array<VStyleExpr> {
-    return [
-      Box.export({
-        spacing: EdgeInsets.bottom(Config.mediumGap)
-      })
-    ];
-  }
-}

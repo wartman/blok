@@ -4,8 +4,8 @@ import noted.ui.style.Card;
 import blok.ui.style.Box;
 import noted.ui.style.CardGrid;
 import noted.ui.style.Config;
-import noted.state.Note;
-import noted.state.NoteRepository;
+import noted.data.Note;
+import noted.data.Store;
 import noted.ui.style.List;
 
 using Blok;
@@ -30,7 +30,7 @@ class NoteList extends Component {
   }
 
   override function render(context:Context):VNode {
-    return NoteRepository.observe(context, state -> Html.div({
+    return Store.observe(context, state -> Html.div({
       style: [
         Box.style({
           width: Pct(100)
@@ -73,14 +73,10 @@ class NoteList extends Component {
               title: 'Create Note',
               requestClose: stopEditing,
               child: NoteEditor.node({
-                note: new Note({ 
-                  title: '', 
-                  status: Draft, 
-                  content: '', 
-                  tags: [] 
-                }),
+                note: Note.empty(),
+                tags: [],
                 onSave: note -> {
-                  state.addNote(note);
+                  state.addNote(note.name, note.content, note.tags);
                   stopEditing();
                 },
                 requestClose: stopEditing
