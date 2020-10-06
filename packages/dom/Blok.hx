@@ -1,5 +1,3 @@
-import blok.core.Provider;
-
 @:noUsing @:noDoc typedef Context = blok.Context;
 @:noUsing @:noDoc typedef Platform = blok.dom.Platform;
 @:noUsing @:noDoc typedef Component = blok.Component;
@@ -18,5 +16,5 @@ import blok.core.Provider;
 @:noUsing @:noDoc typedef Unit = blok.core.VStyle.Unit;
 @:noUsing @:noDoc typedef Value = blok.core.VStyle.Value;
 
-@:noUsing @:noDoc typedef Html = blok.dom.Html;
-@:noUsing @:noDoc typedef Css = blok.dom.Css;
+@:noUsing @:noDoc typedef Html = blok.html.Html;
+@:noUsing @:noDoc typedef Css = blok.html.Css;

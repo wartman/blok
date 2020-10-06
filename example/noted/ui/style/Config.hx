@@ -5,6 +5,7 @@ import blok.ui.style.*;
 using Blok;
 
 class Config {
+  static public final errorColor = Color.rgb(206, 105, 105).withKey('error');
   static public final whiteColor = Color.hex(0xFFFFFF).withKey('white');
   static public final lightColor = Color.hex(0xCCCCCC).withKey('light');
   static public final midColor = Color.rgb(150, 150, 150).withKey('mid');

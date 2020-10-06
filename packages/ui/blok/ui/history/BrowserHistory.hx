@@ -3,7 +3,6 @@ package blok.ui.history;
 import js.Browser;
 import haxe.io.Path;
 import blok.core.Observable;
-import blok.core.ObservableState;
 
 using StringTools;
 
@@ -13,7 +12,7 @@ class BrowserHistory implements History {
 
   public function new(?root) {
     this.root = root;
-    location = new ObservableState(getLocation(), Type.getClassName(BrowserHistory));
+    location = new Observable(getLocation(), Type.getClassName(BrowserHistory));
     Browser.window.addEventListener('popstate', (e) -> {
       location.notify(getLocation());
     });

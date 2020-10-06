@@ -18,7 +18,7 @@ class Card extends Style {
           color: Color.name('transparent')
         }),
         Border.export({
-          radius: Em(.5),
+          radius: Em(.75),
           width: Px(1),
           type: Solid,
           color: color
@@ -28,7 +28,7 @@ class Card extends Style {
         Border.export({ 
           type: None,
           width: Px(0),
-          radius: Em(.5) 
+          radius: Em(.75) 
         })
       ]),
       Box.export({

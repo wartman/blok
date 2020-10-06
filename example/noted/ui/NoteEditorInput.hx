@@ -88,9 +88,9 @@ class NoteEditorInput extends Component {
               spacing: EdgeInsets.top(Em(1))
             }),
             Pill.style({ 
-              color: Config.midColor, 
+              color: Config.errorColor, 
               padding: Em(.5),
-              outlined: true,
+              // outlined: true,
               centered: false
             })
           ],

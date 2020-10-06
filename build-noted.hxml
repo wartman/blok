@@ -1,5 +1,7 @@
 -cp packages/core
 -cp packages/dom
+# -cp packages/static
+-cp packages/html
 -cp packages/ui
 -cp example
 

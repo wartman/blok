@@ -1,4 +1,4 @@
-package blok.dom;
+package blok.html;
 
 import js.html.Event;
 

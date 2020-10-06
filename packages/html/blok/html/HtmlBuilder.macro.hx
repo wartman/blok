@@ -1,4 +1,4 @@
-package blok.dom;
+package blok.html;
 
 import haxe.macro.Type;
 import haxe.macro.Context;
@@ -29,7 +29,7 @@ class HtmlBuilder {
         fields = fields.concat((macro class {
           
           public static inline function $name(
-            props:blok.dom.Html.HtmlChildrenProps<$type & blok.dom.HtmlEvents>
+            props:blok.html.Html.HtmlChildrenProps<$type & blok.html.HtmlEvents>
           ):VNode<Node> {
             return VNative(
               NodeType.get($v{name}),
@@ -48,7 +48,7 @@ class HtmlBuilder {
         fields = fields.concat((macro class {
           
           public static inline function $name(
-            props:blok.dom.Html.HtmlBaseProps<$type & blok.dom.HtmlEvents>
+            props:blok.html.Html.HtmlBaseProps<$type & blok.html.HtmlEvents>
           ):VNode<Node> {
             return VNative(
               NodeType.get($v{name}),
@@ -68,7 +68,7 @@ class HtmlBuilder {
 
   static function getTags():Array<TagInfo> {
     var tags:Array<TagInfo> = [];
-    var t = Context.getType('blok.dom.HtmlTags');
+    var t = Context.getType('blok.html.HtmlTags');
     var groups = switch t {
       case TType(t, params): switch (t.get().type) {
         case TAnonymous(a): a.get().fields;

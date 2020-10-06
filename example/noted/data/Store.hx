@@ -1,6 +1,7 @@
 package noted.data;
 
 import haxe.ds.Option;
+import haxe.ds.ReadOnlyArray;
 
 using Lambda;
 using Blok;
@@ -13,10 +14,10 @@ enum NoteFilter {
 
 class Store implements State {
   @prop var uid:Int;
-  @prop var notes:Array<Note>;
-  @prop var tags:Array<Tag>;
+  @prop var notes:ReadOnlyArray<Note>;
+  @prop var tags:ReadOnlyArray<Tag>;
   @prop var filter:NoteFilter = None;
-  @computed var filteredNotes:Array<Note> = switch filter {
+  @computed var filteredNotes:ReadOnlyArray<Note> = switch filter {
     case None: [];
     case FilterAll: notes;
     case FilterByTags(tags): 

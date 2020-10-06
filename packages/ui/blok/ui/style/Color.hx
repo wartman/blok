@@ -20,6 +20,10 @@ abstract Color(Value) to Value {
     return new Color(name);
   }
 
+  public static function inherit() {
+    return new Color('inherit');
+  }
+
   public inline function new(wrapped:Value) {
     this = wrapped;
   }

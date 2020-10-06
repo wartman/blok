@@ -8,6 +8,7 @@ class Overlay extends Style {
   override function render():Array<VStyleExpr> {
     return [
       Style.property('z-index', 99999),
+      Style.property('overflow-y', 'scroll'),
       Background.export({
         color: Config.scrimColor
       }),

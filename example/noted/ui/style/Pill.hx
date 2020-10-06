@@ -8,7 +8,7 @@ class Pill extends Style {
   @prop var color:Color = Config.lightColor;
   @prop var outlined:Bool = false;
   @prop var centered:Bool = true;
-  @prop var padding:Unit = None;
+  @prop var padding:Unit = Em(.5);
 
   override function render():Array<VStyleExpr> {
     var radius = switch padding {
@@ -48,8 +48,8 @@ class Pill extends Style {
         padding: switch padding {
           case None: EdgeInsets.symmetric(None, Em(1));
           default: EdgeInsets.symmetric(padding, switch padding {
-            default: padding;
             case Em(value): Em(value * 2);
+            default: padding;
           });
         }
       })

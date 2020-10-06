@@ -13,6 +13,7 @@ class AutoColor extends Style {
       Style.property('color', switch color.getKey() {
         case 'white' | 'light': Config.darkColor;
         case 'mid' | 'dark': Config.lightColor;
+        case 'error': Config.whiteColor;
         case _: Config.darkColor; 
       }),
       Background.export({ color: color }),

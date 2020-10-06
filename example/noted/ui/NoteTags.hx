@@ -9,8 +9,6 @@ import noted.data.Id;
 
 using Blok;
 
-// @todo: make generic -- we can use this same component to filter
-//        tags in the control system.
 class NoteTags extends Component {
   @prop var tags:Array<Tag>;
   @prop var addTag:(name:String)->Void;
@@ -51,17 +49,15 @@ class NoteTags extends Component {
             }),
             if (tag.id.isInvalid())
               Pill.style({
-                outlined: true,
-                color: Config.midColor,
-                centered: false,
-                padding: Em(.5)
+                // outlined: true,
+                color: Config.errorColor,
+                centered: false
               })
             else 
               Pill.style({
                 outlined: true,
                 color: Config.darkColor,
-                centered: false,
-                padding: Em(.5)
+                centered: false
               }),
             Position.style({ type: Relative })
           ],
@@ -86,7 +82,8 @@ class NoteTags extends Component {
                   color: Color.name('transparent')
                 }),
                 Font.style({
-                  lineHeight: Em(2.5)
+                  lineHeight: Em(2.5),
+                  color: Color.inherit()
                 }),
                 Position.style({ 
                   type: Absolute, 

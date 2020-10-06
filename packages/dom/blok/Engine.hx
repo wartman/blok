@@ -4,8 +4,8 @@ import js.html.Node;
 import js.html.Event;
 import blok.core.Rendered;
 import blok.core.StyleList;
-import blok.dom.Html;
-import blok.ui.style.BaseStyle;
+import blok.core.Style;
+import blok.html.Html;
 
 using StringTools;
 
@@ -15,9 +15,7 @@ class Engine implements blok.core.Engine<Node, Event> {
   final css = new CssEngine();
 
   public function new(useBaseStyle = true) {
-    if (useBaseStyle) {
-      @:privateAccess css.addCss(null, BaseStyle.__inst.render());
-    }
+    if (useBaseStyle) registerBaseStyle();
   }
 
   public function traverseSiblings(first:Node):Cursor {
@@ -40,34 +38,39 @@ class Engine implements blok.core.Engine<Node, Event> {
     css.apply(node, style);
   }
 
-  public function createContainer(props:{
-    ?style:StyleList,
-    ?children:Array<VNode>
-  }):VNode {
-    return Html.div({
-      style: props.style,
-      children: props.children
-    });
-  }
-
-  public function createButton(props:{
-    ?style:StyleList,
-    ?onClick:(e:Event)->Void,
-    // etc
-    ?children:Array<VNode>
-  }):VNode {
-    return Html.button({
-      style: props.style,
-      attrs: {
-        onclick: props.onClick
-      },
-      children: props.children
-    });
-  }
-
   public function createPlaceholder(props:{
     component:blok.core.Component<Node>
   }):VNode {
     return Html.text('');
+  }
+
+  inline function registerBaseStyle() {
+    @:privateAccess css.addCss(null, [
+      Style.global([
+        Style.raw('
+          body, html {
+            padding: 0;
+            margin: 0;
+          }
+          
+          html {
+            box-sizing: border-box;
+          }
+          
+          *, *:before, *:after {
+            box-sizing: inherit;
+          }
+          
+          ul, ol, li {
+            margin: 0;
+            padding: 0;
+          }
+          
+          ul, ol {
+            list-style: none;
+          }
+        ')
+      ])
+    ]);
   }
 }
