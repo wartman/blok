@@ -1,4 +1,4 @@
-package blok.core;
+package blok.style;
 
 @:forward(contains, iterator, length)
 abstract StyleList(Array<VStyle>) from Array<VStyle> to Array<VStyle> {

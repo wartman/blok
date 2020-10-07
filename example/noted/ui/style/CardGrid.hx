@@ -1,7 +1,7 @@
 package noted.ui.style;
 
-import blok.core.Style;
-import blok.core.VStyle;
+import blok.style.Style;
+import blok.style.VStyle;
 import blok.ui.style.*;
 import blok.ui.style.Grid;
 

@@ -1,7 +1,7 @@
 package blok.ui.style;
 
-import blok.core.VStyle.Unit;
-import blok.core.VStyle.Value;
+import blok.style.VStyle.Unit;
+import blok.style.VStyle.Value;
 
 @:forward
 abstract EdgeInsets(Value) to Value {

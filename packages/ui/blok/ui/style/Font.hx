@@ -1,7 +1,7 @@
 package blok.ui.style;
 
-import blok.core.VStyle;
-import blok.core.Style;
+import blok.style.VStyle;
+import blok.style.Style;
 
 enum FontWeight {
   Normal;

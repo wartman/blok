@@ -1,8 +1,6 @@
 package blok;
 
 import blok.core.Rendered;
-import blok.core.StyleList;
-import blok.core.Style;
 import blok.html.Html;
 
 class Engine implements blok.core.Engine<Node, Dynamic> {
@@ -22,10 +20,6 @@ class Engine implements blok.core.Engine<Node, Dynamic> {
 
   public function setRendered(node:Node, rendered:Null<Rendered<Node>>):Void {
     node.rendered = rendered;
-  }
-
-  public function applyStyles(node:Node, style:StyleList):Void {
-    // css.apply(node, style);
   }
 
   public function createPlaceholder(props:{

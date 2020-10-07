@@ -147,16 +147,18 @@ class Differ {
           switch n {
             case VNative(type, props, styles, ref, key, children): switch previous(type, key) {
               case None:
+                context.onCreateVNode(n);
                 var node = type.create(props, context);
                 render(node, children, parent, context);
-                context.engine.applyStyles(node, styles == null ? [] : styles);
+                // context.engine.applyStyles(node, styles == null ? [] : styles);
                 if (ref != null) context.addEffect(() -> ref(node));
                 add(key, type, RNative(node, props));
               case Some(r): switch r {
                 case RNative(node, lastProps):
+                  context.onUpdateVNode(n);
                   type.update(node, lastProps, props, context);
                   render(node, children, parent, context);
-                  context.engine.applyStyles(node, styles == null ? [] : styles);
+                  // context.engine.applyStyles(node, styles == null ? [] : styles);
                   add(key, type, RNative(node, props));
                 default: throw 'assert';
               }
@@ -165,10 +167,12 @@ class Differ {
             
             case VComponent(type, attrs, key): switch previous(type, key) {
               case None:
+                context.onCreateVNode(n);
                 var component = type.__create(attrs, context, parent);
                 add(key, type, RComponent(component));
               case Some(r): switch r {
                 case RComponent(component):
+                  context.onUpdateVNode(n);
                   component.__update(attrs, context, parent);
                   add(key, type, RComponent(component));
                 default:

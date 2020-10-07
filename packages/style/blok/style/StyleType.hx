@@ -1,4 +1,4 @@
-package blok.core;
+package blok.style;
 
 typedef StyleType<Props:{}> = {
   public function __generateName(props:Props, suffix:Null<String>):String;

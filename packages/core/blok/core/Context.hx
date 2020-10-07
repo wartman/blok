@@ -9,13 +9,27 @@ class Context<Node> {
   public final engine:Engine<Node, Dynamic>;
 
   final data:Map<String, Dynamic> = [];
+  final plugins:Array<Plugin<Node>>;
   final parent:Context<Node>;
 
   var effectQueue:Array<()->Void> = [];
 
-  public function new(engine, ?parent) {
+  public function new(engine, ?parent, ?plugins) {
     this.engine = engine;
     this.parent = parent;
+    this.plugins = plugins != null ? plugins : [];
+  }
+
+  public function addPlugin(plugin:Plugin<Node>) {
+    if (!plugins.contains(plugin)) plugins.push(plugin);
+  }
+
+  public function onCreateVNode(vnode:VNode<Node>) {
+    for (plugin in plugins) plugin.onCreate(this, vnode);
+  }
+
+  public function onUpdateVNode(vnode:VNode<Node>) {
+    for (plugin in plugins) plugin.onUpdate(this, vnode);
   }
 
   /**
@@ -59,7 +73,7 @@ class Context<Node> {
   }
 
   public function getChild() {
-    return new Context(engine, this);
+    return new Context(engine, this, plugins.copy());
   }
 
   public function addEffect(effect:()->Void) {

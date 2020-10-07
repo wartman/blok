@@ -1,6 +1,6 @@
 package blok.html;
 
-import blok.core.VStyle;
+import blok.style.VStyle;
 
 using Lambda;
 using StringTools;
@@ -18,13 +18,13 @@ class CssGenerator {
         var className = escapeClassName(name);
         return {
           classes: [ className ],
-          rules: [ generateExprs(className, type.__create(props).render()) ]
+          rules: [ generateExprs('.$className', type.__create(props).render()) ]
         };
       case VStyleInline(name, def):
         var className = escapeClassName(name);
         return {
           classes: [ className ],
-          rules: [ generateExprs(className, def()) ]
+          rules: [ generateExprs('.$className', def()) ]
         };
       case VStyleList(styles):
         var out = styles.map(generate);
@@ -96,7 +96,7 @@ class CssGenerator {
     return out.join(' ');
   }
 
-  static function escapeClassName(name:String) {
+  public static function escapeClassName(name:String) {
     return name
       .replace('.', '_')
       .replace(' ', '_')

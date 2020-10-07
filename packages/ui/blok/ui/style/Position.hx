@@ -1,7 +1,7 @@
 package blok.ui.style;
 
-import blok.core.Style;
-import blok.core.VStyle;
+import blok.style.Style;
+import blok.style.VStyle;
 
 enum abstract PositionType(String) to String {
   var Absolute = 'absolute';

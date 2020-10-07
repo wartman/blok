@@ -1,7 +1,7 @@
 package blok.ui.style;
 
-import blok.core.Style;
-import blok.core.VStyle;
+import blok.style.Style;
+import blok.style.VStyle;
 
 class Box extends Style {
   @prop var padding:EdgeInsets = null;

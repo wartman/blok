@@ -1,7 +1,8 @@
-package blok.core;
+package blok.style;
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
+import blok.core.ClassBuilder;
 
 using haxe.macro.Tools;
 
@@ -30,9 +31,9 @@ class StyleBuilder {
       });
       if (skip != true) nameBuilder.push(
         macro $i{PROPS}.$name != null 
-          ? ${ Context.unify(type.toType(), Context.getType('blok.core.VStyle.Unit')) 
+          ? ${ Context.unify(type.toType(), Context.getType('blok.style.VStyle.Unit')) 
               ? macro $i{PROPS}.$name.toString()
-              : Context.unify(type.toType(), Context.getType('blok.core.VStyle.ValueDef'))
+              : Context.unify(type.toType(), Context.getType('blok.style.VStyle.ValueDef'))
                 ? macro $i{PROPS}.$name.forIdentifier()
                 : macro Std.string($i{PROPS}.$name)
             }
@@ -96,7 +97,7 @@ class StyleBuilder {
           pos: cls.pos,
           meta: [],
           kind: FFun({
-            ret: macro:blok.core.VStyle,
+            ret: macro:blok.style.VStyle,
             params: cls.params.length > 0
               ? [ for (p in cls.params) { name: p.name, constraints: [] } ]
               : [],
@@ -122,7 +123,7 @@ class StyleBuilder {
           pos: cls.pos,
           meta: [],
           kind: FFun({
-            ret: macro:blok.core.VStyle.VStyleExpr,
+            ret: macro:blok.style.VStyle.VStyleExpr,
             params: cls.params.length > 0
               ? [ for (p in cls.params) { name: p.name, constraints: [] } ]
               : [],
@@ -148,7 +149,7 @@ class StyleBuilder {
             { name: ':noCompletion', pos: (macro null).pos }
           ],
           kind: FFun({
-            ret: macro:blok.core.Style,
+            ret: macro:blok.style.Style,
             params: cls.params.length > 0
               ? [ for (p in cls.params) { name: p.name, constraints: [] } ]
               : [],

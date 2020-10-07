@@ -4,52 +4,52 @@ package blok.html;
 
 // From https://github.com/haxetink/tink_domspec/blob/master/src/tink/domspec/Attributes.hx
 typedef GlobalAttr = {
-  @:html('class') @:optional final className:String;
-  @:optional final id:String;
-  @:optional final title:String;
-  @:optional final lang:String;
-  @:optional final dir:String;
-  @:optional final contentEditable:Bool;
-  @:optional final inputmode:Bool;
+  @:html('class') @:optional var className:String;
+  @:optional var id:String;
+  @:optional var title:String;
+  @:optional var lang:String;
+  @:optional var dir:String;
+  @:optional var contentEditable:Bool;
+  @:optional var inputmode:Bool;
 
-  @:optional final hidden:Bool;
-  @:optional final tabIndex:Int;
-  @:optional final accessKey:String;
-  @:optional final draggable:Bool;
-  @:optional final spellcheck:Bool;
-  @:optional final style:String;
-  @:optional final role:String;
+  @:optional var hidden:Bool;
+  @:optional var tabIndex:Int;
+  @:optional var accessKey:String;
+  @:optional var draggable:Bool;
+  @:optional var spellcheck:Bool;
+  @:optional var style:String;
+  @:optional var role:String;
 }
 
 typedef DetailsAttr = GlobalAttr & {
-  @:optional final open:Bool;
+  @:optional var open:Bool;
 }
 
 typedef FieldSetAttr = GlobalAttr & {
-  @:optional final disabled:Bool;
-  @:optional final name:String;
+  @:optional var disabled:Bool;
+  @:optional var name:String;
 }
 
 typedef ObjectAttr = GlobalAttr & {
-  @:optional final type:String;
-  @:optional final data:String;
-  @:optional final width:Int;
-  @:optional final height:Int;
+  @:optional var type:String;
+  @:optional var data:String;
+  @:optional var width:Int;
+  @:optional var height:Int;
 }
 
 typedef ParamAttr = GlobalAttr & {
-  final name:String;
-  final value:String;
+  var name:String;
+  var value:String;
 }
 
 
 typedef TableCellAttr = GlobalAttr & {
-  @:optional final abbr:String;
-  @:optional final colSpan:Int;
-  @:optional final headers:String;
-  @:optional final rowSpan:Int;
-  @:optional final scope:String;
-  @:optional final sorted:String;
+  @:optional var abbr:String;
+  @:optional var colSpan:Int;
+  @:optional var headers:String;
+  @:optional var rowSpan:Int;
+  @:optional var scope:String;
+  @:optional var sorted:String;
 }
 
 enum abstract InputType(String) to String {
@@ -78,58 +78,58 @@ enum abstract InputType(String) to String {
 }
 
 typedef InputAttr = GlobalAttr & {
-  @:optional final checked:Bool;
-  @:optional final disabled:Bool;
-  @:optional final required:Bool;
-  @:optional final autofocus:Bool;
-  @:optional final autocomplete:String;
-  @:optional final value:String;
-  @:optional final readOnly:Bool;
-  @:html('value') @:optional final defaultValue:String;
-  @:optional final type:InputType;
-  @:optional final name:String;
-  @:optional final placeholder:String;
-  @:optional final max:String;
-  @:optional final min:String;
-  @:optional final step:String;
-  @:optional final maxLength:Int;
-  @:optional final pattern:String;
-  @:optional final accept:String;
-  @:optional final multiple:Bool;
+  @:optional var checked:Bool;
+  @:optional var disabled:Bool;
+  @:optional var required:Bool;
+  @:optional var autofocus:Bool;
+  @:optional var autocomplete:String;
+  @:optional var value:String;
+  @:optional var readOnly:Bool;
+  @:html('value') @:optional var defaultValue:String;
+  @:optional var type:InputType;
+  @:optional var name:String;
+  @:optional var placeholder:String;
+  @:optional var max:String;
+  @:optional var min:String;
+  @:optional var step:String;
+  @:optional var maxLength:Int;
+  @:optional var pattern:String;
+  @:optional var accept:String;
+  @:optional var multiple:Bool;
 }
 
 typedef ButtonAttr = GlobalAttr & {
-  @:optional final disabled:Bool;
-  @:optional final autofocus:Bool;
-  @:optional final type:String;
-  @:optional final name:String;
+  @:optional var disabled:Bool;
+  @:optional var autofocus:Bool;
+  @:optional var type:String;
+  @:optional var name:String;
 }
 
 typedef TextAreaAttr = GlobalAttr & {
-  @:optional final autofocus:Bool;
-  @:optional final cols:Int;
-  @:optional final dirname:String;
-  @:optional final disabled:Bool;
-  @:optional final form:String;
-  @:optional final maxlength:Int;
-  @:optional final name:String;
-  @:optional final placeholder:String;
-  @:optional final readOnly:Bool;
-  @:optional final required:Bool;
-  @:optional final rows:Int;
-  @:optional final value:String;
-  @:optional final defaultValue:String;
-  @:optional final wrap:String;
+  @:optional var autofocus:Bool;
+  @:optional var cols:Int;
+  @:optional var dirname:String;
+  @:optional var disabled:Bool;
+  @:optional var form:String;
+  @:optional var maxlength:Int;
+  @:optional var name:String;
+  @:optional var placeholder:String;
+  @:optional var readOnly:Bool;
+  @:optional var required:Bool;
+  @:optional var rows:Int;
+  @:optional var value:String;
+  @:optional var defaultValue:String;
+  @:optional var wrap:String;
 }
 
 typedef IFrameAttr = GlobalAttr & {
-  @:optional final sandbox:String;
-  @:optional final width:Int;
-  @:optional final height:Int;
-  @:optional final src:String;
-  @:optional final srcdoc:String;
-  @:optional final allowFullscreen:Bool;
-  @:deprecated @:optional final scrolling:IframeScrolling;
+  @:optional var sandbox:String;
+  @:optional var width:Int;
+  @:optional var height:Int;
+  @:optional var src:String;
+  @:optional var srcdoc:String;
+  @:optional var allowFullscreen:Bool;
+  @:deprecated @:optional var scrolling:IframeScrolling;
 }
 
 enum abstract IframeScrolling(String) {
@@ -139,81 +139,81 @@ enum abstract IframeScrolling(String) {
 }
 
 typedef ImageAttr = GlobalAttr & {
-  @:optional final src:String;
-  @:optional final width:Int;
-  @:optional final height:Int;
-  @:optional final alt:String;
-  @:optional final srcset:String;
-  @:optional final sizes:String;
+  @:optional var src:String;
+  @:optional var width:Int;
+  @:optional var height:Int;
+  @:optional var alt:String;
+  @:optional var srcset:String;
+  @:optional var sizes:String;
 }
 
 private typedef MediaAttr = GlobalAttr & {
-  @:optional final src:String;
-  @:optional final autoplay:Bool;
-  @:optional final controls:Bool;
-  @:optional final loop:Bool;
-  @:optional final muted:Bool;
-  @:optional final preload:String;
-  @:optional final volume:Float;
+  @:optional var src:String;
+  @:optional var autoplay:Bool;
+  @:optional var controls:Bool;
+  @:optional var loop:Bool;
+  @:optional var muted:Bool;
+  @:optional var preload:String;
+  @:optional var volume:Float;
 }
 
 typedef AudioAttr = MediaAttr & {};
 
 typedef VideoAttr = MediaAttr & {
-  @:optional final height:Int;
-  @:optional final poster:String;
-  @:optional final width:Int;
-  @:optional final playsInline:Bool;
+  @:optional var height:Int;
+  @:optional var poster:String;
+  @:optional var width:Int;
+  @:optional var playsInline:Bool;
 }
 
 typedef SourceAttr = GlobalAttr & {
-  @:optional final src:String;
-  @:optional final srcset:String;
-  @:optional final media:String;
-  @:optional final sizes:String;
-  @:optional final type:String;
+  @:optional var src:String;
+  @:optional var srcset:String;
+  @:optional var media:String;
+  @:optional var sizes:String;
+  @:optional var type:String;
 }
 
 typedef LabelAttr = GlobalAttr & {
-  @:html('for') @:optional final htmlFor:String;
+  @:html('for') @:optional var htmlFor:String;
 }
 
 typedef SelectAttr = GlobalAttr & {
-  @:optional final autofocus:Bool;
-  @:optional final disabled:Bool;
-  @:optional final multiple:Bool;
-  @:optional final name:String;
-  @:optional final required:Bool;
-  @:optional final size:Int;
+  @:optional var autofocus:Bool;
+  @:optional var disabled:Bool;
+  @:optional var multiple:Bool;
+  @:optional var name:String;
+  @:optional var required:Bool;
+  @:optional var size:Int;
 }
 
 typedef FormAttr = GlobalAttr & {
-  @:optional final method:String;
-  @:optional final action:String;
+  @:optional var method:String;
+  @:optional var action:String;
 }
 
 typedef AnchorAttr = GlobalAttr & {
-  @:optional final href:String;
-  @:optional final target:String;
-  @:optional final type:String;
-  @:optional final rel:AnchorRel;
+  @:optional var href:String;
+  @:optional var target:String;
+  @:optional var type:String;
+  @:optional var rel:AnchorRel;
 }
 
 typedef OptionAttr = GlobalAttr & {
   @:optional var disabled:Bool;
-  @:optional final label:String;
-  @:jsOnly @:optional final defaultSelected:Bool;
-  @:optional final selected:Bool;
-  @:optional final value:String;
-  @:optional final text:String;
-  @:optional final index:Int;
+  @:optional var label:String;
+  @:jsOnly @:optional var defaultSelected:Bool;
+  @:optional var selected:Bool;
+  @:optional var value:String;
+  @:optional var text:String;
+  @:optional var index:Int;
 }
 
 typedef MetaAttr = GlobalAttr & {
-  @:optional final content:String;
-  @:optional final name:String;
-  @:optional final charset:String;
-  @:optional final httpEquiv:MetaHttpEquiv;
+  @:optional var content:String;
+  @:optional var name:String;
+  @:optional var charset:String;
+  @:optional var httpEquiv:MetaHttpEquiv;
 }
 
 enum abstract MetaHttpEquiv(String) to String from String {
@@ -223,13 +223,13 @@ enum abstract MetaHttpEquiv(String) to String from String {
 }
 
 typedef LinkAttr = GlobalAttr & {
-  final rel:LinkRel;
-  @:optional final crossorigin:LinkCrossOrigin;
-  @:optional final href:String;
-  @:optional final hreflang:String;
-  @:optional final media:String;
-  @:optional final sizes:String;
-  @:optional final type:String;
+  var rel:LinkRel;
+  @:optional var crossorigin:LinkCrossOrigin;
+  @:optional var href:String;
+  @:optional var hreflang:String;
+  @:optional var media:String;
+  @:optional var sizes:String;
+  @:optional var type:String;
 }
 
 enum abstract LinkRel(String) to String from String {
@@ -272,29 +272,29 @@ enum abstract LinkCrossOrigin(String) to String from String {
 }
 
 typedef ScriptAttr = GlobalAttr & {
-  @:optional final async:Bool;
-  @:optional final charset:String;
-  @:optional final defer:Bool;
-  @:optional final src:String;
-  @:optional final type:String;
+  @:optional var async:Bool;
+  @:optional var charset:String;
+  @:optional var defer:Bool;
+  @:optional var src:String;
+  @:optional var type:String;
 }
 
 typedef StyleAttr = GlobalAttr & {
-  @:optional final type:String;
-  @:optional final media:String;
-  @:optional final nonce:String;
+  @:optional var type:String;
+  @:optional var media:String;
+  @:optional var nonce:String;
 }
 
 typedef CanvasAttr = GlobalAttr & {
-  @:optional final width:String;
-  @:optional final height:String;
+  @:optional var width:String;
+  @:optional var height:String;
 }
 
 typedef TrackAttr = {
-  final src:String;
-  @:optional final kind:TrackKind;
-  @:optional final label:String;
-  @:optional final srclang:String;
+  var src:String;
+  @:optional var kind:TrackKind;
+  @:optional var label:String;
+  @:optional var srclang:String;
 }
 
 enum abstract TrackKind(String) to String from String {
@@ -306,18 +306,18 @@ enum abstract TrackKind(String) to String from String {
 }
 
 typedef EmbedAttr = {
-  final height:Int;
-  final width:Int;
-  final src:String;
-  final typed:String;
+  var height:Int;
+  var width:Int;
+  var src:String;
+  var typed:String;
 }
 
 // svg attr reference: https://github.com/dumistoklus/svg-xsd-schema/blob/master/svg.xsd
 typedef SvgAttr = GlobalAttr & {
-  @:optional final width:String;
-  @:optional final height:String;
-  @:optional final viewBox:String;// TODO: consider validating constant strings via typedef with @:fromHxx
-  @:optional final xmlns:String;// has no effect, but since most svgs come with this set, better to support it I guess
+  @:optional var width:String;
+  @:optional var height:String;
+  @:optional var viewBox:String;// TODO: consider validating constant strings via typedef with @:fromHxx
+  @:optional var xmlns:String;// has no effect, but since most svgs come with this set, better to support it I guess
 }
 
 // typedef PathAttr = {

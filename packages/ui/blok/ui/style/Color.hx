@@ -1,6 +1,6 @@
 package blok.ui.style;
 
-import blok.core.VStyle;
+import blok.style.VStyle;
 
 @:forward(forIdentifier, toString, getKey)
 abstract Color(Value) to Value {

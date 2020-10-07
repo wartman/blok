@@ -3,7 +3,7 @@ package blok.html;
 import blok.Node;
 import blok.core.Key;
 import blok.core.VNode;
-import blok.core.StyleList;
+import blok.style.StyleList;
 
 typedef HtmlBaseProps<Attrs:{}> = {
   // `blok.Node` differs depending on if this is `static` or `dom`.

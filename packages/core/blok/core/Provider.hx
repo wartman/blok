@@ -5,6 +5,8 @@ using Reflect;
 /**
   Any object that has an `__id` may be used as a Provideable (this
   includes all states).
+
+  @todo: maybe make this an abstract type to allow for easier casting?
 **/
 typedef Provideable = {
   public final __id:String;

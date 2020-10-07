@@ -1,6 +1,6 @@
-package blok.core;
+package blok.style;
 
-import blok.core.StyleType;
+import blok.style.StyleType;
 
 enum VStyle {
   VStyleDef<Props:{}>(type:StyleType<Props>, ?props:Props, ?suffix:String);
@@ -122,7 +122,7 @@ abstract Value(ValueDef) to ValueDef from ValueDef {
   }
 }
 
-@:using(blok.core.VStyle.UnitTools)
+@:using(blok.style.VStyle.UnitTools)
 enum Unit {
   None;
   Auto;

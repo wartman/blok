@@ -1,6 +1,6 @@
 package blok.ui.style;
 
-import blok.core.VStyle;
+import blok.style.VStyle;
 
 // Todo: this is perhaps too focused on CSS?
 @:forward

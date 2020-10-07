@@ -31,7 +31,6 @@ class Store implements State {
 
   public function getNote(id:Id<Note>):Option<Note> {
     var note = notes.find(note -> note.id == id);
-    trace(note);
     return if (note == null)
       None;
     else

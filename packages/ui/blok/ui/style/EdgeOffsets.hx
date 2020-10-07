@@ -1,6 +1,6 @@
 package blok.ui.style;
 
-import blok.core.VStyle;
+import blok.style.VStyle;
 
 enum abstract RelativePosition(String) to String {
   var Top = 'top';
