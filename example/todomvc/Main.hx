@@ -5,6 +5,7 @@ package todomvc;
 //
 // https://github.com/evancz/elm-todomvc/blob/master/src/Main.elm
 
+import blok.dom.StylePlugin;
 import haxe.Json;
 
 using StringTools;
@@ -13,11 +14,10 @@ using Blok;
 
 class Main {
   static function main() {
-    Platform.mountNoBaseStyle(
+    Platform.mountWithPlugins(
       js.Browser.document.getElementById('root'),
-      ctx -> Root.node({
-        model: Model.load()
-      })
+      ctx -> Root.node({ model: Model.load() }),
+      [ new StylePlugin([], false) ]
     );
   }
 }

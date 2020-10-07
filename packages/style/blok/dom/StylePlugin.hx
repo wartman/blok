@@ -1,4 +1,4 @@
-package blok;
+package blok.dom;
 
 import js.Browser;
 import js.html.Node;
@@ -48,7 +48,9 @@ class StylePlugin implements Plugin<Node> {
             var styles:StyleList = plugables
               .filter(p -> p.key == Style.pluginKey)
               .flatMap(p -> p.value);
+
             if (styles.length == 0) return;
+            
             var classNames = processClasses(styles);
             if (attrs.className == null)
               attrs.className = classNames.join(' ');
@@ -106,7 +108,7 @@ class StylePlugin implements Plugin<Node> {
   
 
   inline function registerBaseStyle() {
-    insertRule('ROOT', '
+    insertRule('BLOK_ROOT_STYLE', '
       body, html {
         padding: 0;
         margin: 0;

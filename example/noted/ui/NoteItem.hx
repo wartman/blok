@@ -16,7 +16,6 @@ class NoteItem extends Component {
 
   @prop var note:Note;
   @prop var editing:Bool = false;
-  @prop var asGrid:Bool = false;
 
   @update
   function startEditing() {
@@ -33,15 +32,7 @@ class NoteItem extends Component {
       style: Card.style({}),
       key: note.id,
       children: 
-        if (asGrid)
-          display(context).concat([
-            if (editing) Modal.node({
-              title: 'Edit Note',
-              requestClose: stopEditing,
-              child: edit(context)
-            }) else null
-          ]) 
-        else if (!editing) 
+        if (!editing) 
           display(context) 
         else 
           [ edit(context) ]

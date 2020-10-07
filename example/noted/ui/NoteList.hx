@@ -1,5 +1,7 @@
 package noted.ui;
 
+import blok.ui.style.Color;
+import blok.ui.style.Shadow;
 import noted.ui.style.Card;
 import blok.ui.style.Box;
 import noted.ui.style.CardGrid;
@@ -12,7 +14,6 @@ using Blok;
 
 class NoteList extends Component {
   @prop var editing:Bool = false;
-  @prop var asGrid:Bool = false;
 
   @update
   function startEditing() {
@@ -24,11 +25,6 @@ class NoteList extends Component {
     return UpdateState({ editing: false });
   }
 
-  @update
-  function toggleDisplay() {
-    return UpdateState({ asGrid: !asGrid });
-  }
-
   override function render(context:Context):VNode {
     return Store.observe(context, state -> Html.div({
       style: [
@@ -38,33 +34,27 @@ class NoteList extends Component {
         List.style()
       ],
       children: [
-        Html.div({
-          style: List.style(),
-          children: [
-            NoteFilterControls.node({}),
-            ButtonGroup.node({
-              buttons: [
-                Button.node({
-                  type: Custom(Config.whiteColor),
-                  onClick: _ -> toggleDisplay(),
-                  child: if (asGrid) Html.text('As List') else Html.text('As Grid')
-                })
-              ]
-            })
-          ]
-        }),
+        NoteFilterControls.node({}),
         Html.ul({
-          style: if (asGrid) CardGrid.style() else List.style(),
+          style: List.style(),
           children: if (state.filteredNotes.length == 0) [
             Html.li({
               style: Card.style({
-                color: Config.midColor
+                color: switch Store.from(context).filter {
+                  case FilterAll | FilterByTags([]): Config.whiteColor;
+                  default: Config.errorColor;
+                }
               }),
-              children: [ Html.text('No notes yet!') ]
+              children: [ switch Store.from(context).filter {
+                case FilterAll: Html.text('No notes yet!');
+                case FilterByTags(tags) if (tags.length == 0): Html.text('Enter tags to filter by above'); 
+                case FilterByTags(tags) if (tags.length > 0): Html.text('No notes found');
+                default: Html.text('No notes found');
+              } ]
             })
           ] else [
             for (note in state.filteredNotes) 
-              NoteItem.node({ note: note, asGrid: asGrid }) 
+              NoteItem.node({ note: note }) 
           ]
         }),
         Html.div({
@@ -83,6 +73,12 @@ class NoteList extends Component {
               }) 
             }) else null,
             Button.node({
+              style: Shadow.style({
+                offsetX: None,
+                offsetY: None,
+                radius: Em(1),
+                color: Color.rgba(0, 0, 0, 0.1)
+              }),
               type: Custom(Config.whiteColor),
               onClick: _ -> startEditing(),
               child: Html.text('Add Note')

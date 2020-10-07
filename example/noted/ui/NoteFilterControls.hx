@@ -31,7 +31,10 @@ class NoteFilterControls extends Component {
         ButtonGroup.node({
           buttons: [
             Button.node({
-              type: Normal,
+              type: switch Store.from(context).filter {
+                case FilterAll: Selected;
+                default: Normal;
+              },
               onClick: _ -> {
                 setMode(All);
                 Store.from(context).setFilter(FilterAll);
@@ -39,10 +42,13 @@ class NoteFilterControls extends Component {
               child: Html.text('All Notes')
             }),
             Button.node({
-              type: Normal,
+              type: switch Store.from(context).filter {
+                case FilterByTags(_): Selected;
+                default: Normal;
+              },
               onClick: _ -> {
                 setMode(ByTag);
-                Store.from(context).setFilter(None);
+                Store.from(context).setFilter(FilterByTags([]));
               },
               child: Html.text('Filter by Tag')
             })

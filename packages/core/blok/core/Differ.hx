@@ -150,7 +150,6 @@ class Differ {
                 context.onCreateVNode(n);
                 var node = type.create(props, context);
                 render(node, children, parent, context);
-                // context.engine.applyStyles(node, styles == null ? [] : styles);
                 if (ref != null) context.addEffect(() -> ref(node));
                 add(key, type, RNative(node, props));
               case Some(r): switch r {
@@ -158,7 +157,6 @@ class Differ {
                   context.onUpdateVNode(n);
                   type.update(node, lastProps, props, context);
                   render(node, children, parent, context);
-                  // context.engine.applyStyles(node, styles == null ? [] : styles);
                   add(key, type, RNative(node, props));
                 default: throw 'assert';
               }

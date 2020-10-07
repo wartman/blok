@@ -55,8 +55,8 @@ class NoteTags extends Component {
               })
             else 
               Pill.style({
-                outlined: true,
-                color: Config.darkColor,
+                // outlined: true,
+                color: Config.lightColor,
                 centered: false
               }),
             Position.style({ type: Relative })

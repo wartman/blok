@@ -29,6 +29,12 @@ class Card extends Style {
           type: None,
           width: Px(0),
           radius: Em(.75) 
+        }),
+        Shadow.export({
+          offsetY: None,
+          offsetX: None,
+          radius: Em(1),
+          color: Color.rgba(0, 0, 0, 0.1)
         })
       ]),
       Box.export({
