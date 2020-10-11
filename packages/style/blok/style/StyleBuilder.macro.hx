@@ -142,34 +142,31 @@ class StyleBuilder {
         },
 
         {
-          name: '__create',
+          name: 'renderStyle',
           access: [ AStatic, APublic, AInline ],
           pos: cls.pos,
-          meta: [
-            { name: ':noCompletion', pos: (macro null).pos }
-          ],
+          meta: [],
           kind: FFun({
-            ret: macro:blok.style.Style,
+            ret: macro:Array<blok.style.VStyle.VStyleExpr>,
             params: cls.params.length > 0
               ? [ for (p in cls.params) { name: p.name, constraints: [] } ]
               : [],
             args: [ { name: 'props', type: macro:$propType } ],
             expr: switch props.length {
-              case 0: macro return __inst;
-              default: macro return new $clsTp(props);
+              case 0: macro return __inst.render();
+              default: macro return new $clsTp(props).render();
             } 
           })
         }
       ].concat((macro class {
         var $PROPS:$propType;
 
-        @:noCompletion
-        public static function __generateName($PROPS:$propType, $SUFFIX:Null<String>):String {
+        public static function getStyleName($PROPS:$propType, ?$SUFFIX:Null<String>):String {
           return ${name};
         }
 
         override function getName(?$SUFFIX:Null<String>):String {
-          return __generateName(this.$PROPS, $i{SUFFIX});
+          return getStyleName(this.$PROPS, $i{SUFFIX});
         }
 
         public function new($INCOMING_PROPS:$propType) {

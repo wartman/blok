@@ -3,11 +3,12 @@ package blok.style;
 @:forward(contains, iterator, length)
 abstract StyleList(Array<VStyle>) from Array<VStyle> to Array<VStyle> {
   @:from public inline static function ofStyleType(style:VStyle):StyleList {
+    if (style == null) return [];
     return [style];
   }
 
   public inline function new(styles) {
-    this = styles;
+    this = styles.filter(s -> s != null);
   }
 
   /**
@@ -23,7 +24,9 @@ abstract StyleList(Array<VStyle>) from Array<VStyle> to Array<VStyle> {
   }
 
   @:to public function toVStyle():VStyle {
-    return if (this.length == 1) 
+    return if (this == null)
+      null;
+    else if (this.length == 1) 
       this[0];
     else
       VStyleList(this);
@@ -36,7 +39,7 @@ abstract StyleList(Array<VStyle>) from Array<VStyle> to Array<VStyle> {
   public function getNames() {
     return this.map(style -> switch style {
       case VStyleDef(type, props, suffix): 
-        type.__generateName(props, suffix);
+        type.getStyleName(props, suffix);
       case VStyleInline(name, def):
         name;
       case VStyleList(styles): 

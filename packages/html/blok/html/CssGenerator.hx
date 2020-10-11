@@ -14,11 +14,11 @@ class CssGenerator {
   public static function generate(style:VStyle):CssResult {
     return switch style {
       case VStyleDef(type, props, suffix):
-        var name = type.__generateName(props, suffix);
+        var name = type.getStyleName(props, suffix);
         var className = escapeClassName(name);
         return {
           classes: [ className ],
-          rules: [ generateExprs('.$className', type.__create(props).render()) ]
+          rules: [ generateExprs('.$className', type.renderStyle(props)) ]
         };
       case VStyleInline(name, def):
         var className = escapeClassName(name);

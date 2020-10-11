@@ -1,6 +1,8 @@
 package blok.style;
 
+import blok.style.VStyle;
+
 typedef StyleType<Props:{}> = {
-  public function __generateName(props:Props, suffix:Null<String>):String;
-  public function __create(props:Props):Style;
+  public function getStyleName(props:Props, suffix:Null<String>):String;
+  public function renderStyle(props:Props):Array<VStyleExpr>;
 }

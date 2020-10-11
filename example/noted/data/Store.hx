@@ -2,6 +2,7 @@ package noted.data;
 
 import haxe.ds.Option;
 import haxe.ds.ReadOnlyArray;
+import noted.data.Note;
 
 using Lambda;
 using Blok;
@@ -10,6 +11,7 @@ enum NoteFilter {
   None;
   FilterAll;
   FilterByTags(tags:Array<Id<Tag>>);
+  FilterByStatus(status:NoteStatus);
 }
 
 class Store implements State {
@@ -27,6 +29,8 @@ class Store implements State {
         for (note in tagNotes) if (!notes.contains(note)) notes.push(note);
       }
       notes;
+    case FilterByStatus(status):
+      notes.filter(n -> n.status.equals(status));
   }
 
   public function getNote(id:Id<Note>):Option<Note> {
@@ -55,14 +59,14 @@ class Store implements State {
   }
 
   @update
-  public function addNote(name:String, content:String, noteTags:Array<Id<Tag>>) {
+  public function addNote(name:String, content:String, noteTags:Array<Id<Tag>>, status:NoteStatus = Draft) {
     return UpdateState({
       uid: uid + 1,
       notes: notes.concat([ {
         id: uid,
         name: name,
         content: content,
-        status: Draft,
+        status: status,
         tags: noteTags
       } ]),
       tags: tags.map(tag -> {
@@ -73,7 +77,7 @@ class Store implements State {
   }
 
   @update
-  public function updateNote(id:Id<Note>, name:String, content:String, noteTags:Array<Id<Tag>>) {
+  public function updateNote(id:Id<Note>, name:String, content:String, noteTags:Array<Id<Tag>>, status:NoteStatus) {
     if (id.isInvalid()) return None;
     return switch getNote(id) {
       case None: None;
@@ -81,6 +85,7 @@ class Store implements State {
         note.name = name;
         note.content = content;
         note.tags = noteTags;
+        note.status = status;
 
         UpdateState({
           tags: tags.map(tag -> {
@@ -163,6 +168,32 @@ class Store implements State {
         if (tagNotes.contains(note.id)) note.tags.push(uid);
         note;
       })
+    });
+  }
+
+  /**
+    Create a new tag and update the `FilterByTags` filter.
+
+    This is used when a non-existant tag is added to the filter,
+    to ensure that if any note is created later with a matching tag
+    it will show up.
+
+    If the current filter is not `FilterByTags(...)`, this will
+    _not_ change the current filter.
+  **/
+  @update
+  public function addTagToFilter(name:String) {
+    return UpdateState({
+      uid: uid + 1,
+      tags: tags.concat([ {
+        id: uid,
+        name: name,
+        notes: []
+      } ]),
+      filter: switch filter {
+        case FilterByTags(tags): FilterByTags(tags.concat([ uid ]));
+        default: filter;
+      }
     });
   }
 

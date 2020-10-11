@@ -1,9 +1,11 @@
 package noted.ui;
 
-import blok.ui.style.Grid;
 import blok.ui.style.*;
+import noted.ui.style.Circle;
 import noted.ui.style.Pill;
 import noted.ui.style.Config;
+import noted.ui.style.BaseGrid;
+import noted.data.Store;
 import noted.data.Tag;
 import noted.data.Id;
 
@@ -13,6 +15,7 @@ class NoteTags extends Component {
   @prop var tags:Array<Tag>;
   @prop var addTag:(name:String)->Void;
   @prop var removeTag:(id:Id<Tag>)->Void;
+  @prop var showError:Bool = false;
   @prop var adding:Bool = false;
 
   @update
@@ -28,38 +31,23 @@ class NoteTags extends Component {
   override function render(context:Context):VNode {
     return Html.ul({
       style: [
-        Grid.style({
-          columns: GridDefinition.repeat(5, Fr(1)),
-          gap: Config.mediumGap
-        }),
-        Style.define([
-          MediaQuery.maxWidth(Config.mobileWidth, [
-            Grid.export({
-              columns: GridDefinition.repeat(3, Fr(1))
-            })
-          ])
-        ])
+        BaseGrid.style({})
       ],
       children: [
         for (tag in tags) Html.li({
           key: tag,
           style: [
-            Flex.style({
-              direction: Row
-            }),
-            if (tag.id.isInvalid())
+            Position.style({ type: Relative }),
+            if (showError && (tag.id.isInvalid() || tag.notes.length == 0))
               Pill.style({
-                // outlined: true,
                 color: Config.errorColor,
                 centered: false
               })
             else 
               Pill.style({
-                // outlined: true,
                 color: Config.lightColor,
                 centered: false
-              }),
-            Position.style({ type: Relative })
+              })
           ],
           children: [
             Html.span({
@@ -72,32 +60,50 @@ class NoteTags extends Component {
               ],
               children: [ Html.text(tag.name) ]
             }),
-            Html.button({
+
+            // This is rough:
+            ButtonGroup.node({
+              perRow: 2,
+              gap: Em(.5),
               style: [
-                Border.style({
-                  width: None,
-                  type: None
-                }),
-                Background.style({
-                  color: Color.name('transparent')
-                }),
-                Font.style({
-                  lineHeight: Em(2.5),
-                  color: Color.inherit()
-                }),
                 Position.style({ 
                   type: Absolute, 
-                  right: Em(.5), 
-                  top: None
-                }),
-                Style.define([
-                  Style.property('cursor', 'pointer')
-                ])
+                  right: Em(.75), 
+                  top: Em(.75)
+                })
               ],
-              attrs: {
-                onclick: _ -> removeTag(tag.id)
-              },
-              children: [ Html.text('X') ]
+              buttons: [
+                Html.button({
+                  style: [
+                    Circle.style({
+                      color: Config.whiteColor,
+                      radius: Em(1.5)
+                    }),
+                    Style.define([
+                      Style.property('cursor', 'pointer')
+                    ])
+                  ],
+                  attrs: {
+                    onclick: _ -> Store.from(context).setFilter(FilterByTags([ tag.id ]))
+                  },
+                  children: [ Html.text('?') ]
+                }),
+                Html.button({
+                  style: [
+                    Circle.style({
+                      color: Config.whiteColor,
+                      radius: Em(1.5)
+                    }),
+                    Style.define([
+                      Style.property('cursor', 'pointer')
+                    ])
+                  ],
+                  attrs: {
+                    onclick: _ -> removeTag(tag.id)
+                  },
+                  children: [ Html.text('X') ]
+                })
+              ]
             })
           ]
         })

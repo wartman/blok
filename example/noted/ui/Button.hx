@@ -29,7 +29,7 @@ class Button extends Component {
           outlined: type.equals(Selected),
           color: switch type {
             case Normal: Config.lightColor;
-            case Important: Config.darkColor;
+            case Important: Config.accentColor;
             case Selected: Config.midColor;
             case Custom(color): color;
           }

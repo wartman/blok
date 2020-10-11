@@ -4,7 +4,6 @@ import blok.ui.style.Color;
 import blok.ui.style.Shadow;
 import noted.ui.style.Card;
 import blok.ui.style.Box;
-import noted.ui.style.CardGrid;
 import noted.ui.style.Config;
 import noted.data.Note;
 import noted.data.Store;
@@ -26,26 +25,24 @@ class NoteList extends Component {
   }
 
   override function render(context:Context):VNode {
-    return Store.observe(context, state -> Html.div({
+    return Store.observe(context, store -> Html.div({
       style: [
-        Box.style({
-          width: Pct(100)
-        }),
+        Box.style({ width: Pct(100) }),
         List.style()
       ],
       children: [
         NoteFilterControls.node({}),
         Html.ul({
           style: List.style(),
-          children: if (state.filteredNotes.length == 0) [
+          children: if (store.filteredNotes.length == 0) [
             Html.li({
               style: Card.style({
-                color: switch Store.from(context).filter {
+                color: switch store.filter {
                   case FilterAll | FilterByTags([]): Config.whiteColor;
                   default: Config.errorColor;
                 }
               }),
-              children: [ switch Store.from(context).filter {
+              children: [ switch store.filter {
                 case FilterAll: Html.text('No notes yet!');
                 case FilterByTags(tags) if (tags.length == 0): Html.text('Enter tags to filter by above'); 
                 case FilterByTags(tags) if (tags.length > 0): Html.text('No notes found');
@@ -53,25 +50,12 @@ class NoteList extends Component {
               } ]
             })
           ] else [
-            for (note in state.filteredNotes) 
+            for (note in store.filteredNotes) 
               NoteItem.node({ note: note }) 
           ]
         }),
         Html.div({
           children: [
-            if (editing) Modal.node({
-              title: 'Create Note',
-              requestClose: stopEditing,
-              child: NoteEditor.node({
-                note: Note.empty(),
-                tags: [],
-                onSave: note -> {
-                  state.addNote(note.name, note.content, note.tags);
-                  stopEditing();
-                },
-                requestClose: stopEditing
-              }) 
-            }) else null,
             Button.node({
               style: Shadow.style({
                 offsetX: None,
@@ -84,7 +68,20 @@ class NoteList extends Component {
               child: Html.text('Add Note')
             })
           ]
-        })
+        }),
+        if (editing) Modal.node({
+          title: 'Create Note',
+          requestClose: stopEditing,
+          child: NoteEditor.node({
+            note: Note.empty(),
+            tags: [],
+            onSave: note -> {
+              stopEditing();
+              store.addNote(note.name, note.content, note.tags, note.status);
+            },
+            requestClose: stopEditing
+          }) 
+        }) else null,
       ]
     }));
   }

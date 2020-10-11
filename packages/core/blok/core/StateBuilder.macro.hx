@@ -114,6 +114,7 @@ class StateBuilder {
                   case [ a, b ] if (a == b):
                     // noop
                   case [ current, value ]:
+                    this.__dirty = true;
                     this.$PROPS.$name = value;
                 }
               }
@@ -214,7 +215,10 @@ class StateBuilder {
                 __notify();
               case UpdateState(data): 
                 __updateProps(data);
-                __notify();
+                if (__dirty) {
+                  __dirty = false;
+                  __notify();
+                }
               case UpdateStateSilent(data):
                 __updateProps(data);
             }
@@ -294,6 +298,33 @@ If you just want access to the current state, use
         },
 
         {
+          name: 'select',
+          pos: (macro null).pos,
+          doc: '
+Subscribe to this state\'s instance in the current context.
+
+Only update when the selected value is changed.
+          ',
+          access: [ APublic, AStatic ],
+          kind: FFun({
+            params: createParams.concat([ { name: 'R', constraints: [] } ]),
+            ret: macro:blok.core.VNode<$nodeType>,
+            args: [
+              { name: 'context', type: macro:blok.core.Context<$nodeType> },
+              { name: 'selector', type: macro:(state:$ct)->R },
+              { name: 'build', type: macro:(data:R)->blok.core.VNode<$nodeType> }
+            ],
+            expr: macro {
+              var state = from(context);
+              return VComponent(blok.core.ObservableSubscriber, {
+                observable: state.getObservable().select(selector),
+                build: build
+              });
+            }
+          })
+        },
+
+        {
           name: 'from',
           pos: (macro null).pos,
           access: [ APublic, AStatic ],
@@ -323,6 +354,7 @@ If you want to re-render whenever the state changes, use
 
       ]:Array<Field>).concat((macro class {
         var $PROPS:$propType;
+        var __dirty:Bool = false;
         final __observable:blok.core.Observable<$ct>;
         public final __id:String = $v{id};
 

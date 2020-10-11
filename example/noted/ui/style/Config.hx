@@ -5,6 +5,7 @@ import blok.ui.style.*;
 using Blok;
 
 class Config {
+  static public final accentColor = Color.rgb(187, 185, 230).withKey('accent');
   static public final errorColor = Color.rgb(206, 105, 105).withKey('error');
   static public final whiteColor = Color.hex(0xFFFFFF).withKey('white');
   static public final lightColor = Color.hex(0xCCCCCC).withKey('light');
@@ -14,4 +15,6 @@ class Config {
   static public final smallGap:Unit = Em(1);
   static public final mediumGap:Unit = Em(1.5);
   static public final mobileWidth:Unit = Px(900);
+  static public final defaultItemsPerRow = 5;
+  static public final defaultItemsPerRowMobile = 3;
 }

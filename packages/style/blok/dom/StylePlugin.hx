@@ -47,7 +47,8 @@ class StylePlugin implements Plugin<Node> {
             var attrs:GlobalAttr = cast props;
             var styles:StyleList = plugables
               .filter(p -> p.key == Style.pluginKey)
-              .flatMap(p -> p.value);
+              .flatMap(p -> p.value)
+              .filter(p -> p != null); // nullability screws everything up huh
 
             if (styles.length == 0) return;
             
@@ -74,7 +75,7 @@ class StylePlugin implements Plugin<Node> {
 
     for (s in style) switch s {
       case VStyleDef(type, props, suffix):
-        var name = type.__generateName(props, suffix);
+        var name = type.getStyleName(props, suffix);
         if (defined.contains(name)) {
           classNames.push(name.escapeClassName());
         } else {
@@ -104,8 +105,6 @@ class StylePlugin implements Plugin<Node> {
       }
     );
   }
-
-  
 
   inline function registerBaseStyle() {
     insertRule('BLOK_ROOT_STYLE', '

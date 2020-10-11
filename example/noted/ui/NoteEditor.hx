@@ -1,8 +1,8 @@
 package noted.ui;
 
-import noted.data.Id;
 import blok.ui.style.*;
 import noted.ui.style.*;
+import noted.data.Id;
 import noted.data.Store;
 import noted.data.Note;
 import noted.data.Tag;
@@ -97,7 +97,7 @@ class NoteEditor extends Component {
           ]
         }),
         Html.div({
-          style: noteEditorSection,
+          style: LineBreak.style({}),
           children: [
             NoteTags.node({
               tags: tags,
@@ -108,13 +108,25 @@ class NoteEditor extends Component {
         }),
         ButtonGroup.node({
           buttons: [
-            isValid.mapToNode(valid -> Button.node({
+            isValid.mapToVNode(valid -> Button.node({
               disabled: !valid,
               onClick: _ -> {
+                note.status = Published;
                 onSave(note);
                 requestClose();
               },
-              child: Html.text('Save')
+              type: Important,
+              child: Html.text('Publish')
+            })),
+            isValid.mapToVNode(valid -> Button.node({
+              disabled: !valid,
+              onClick: _ -> {
+                note.status = Draft;
+                onSave(note);
+                requestClose();
+              },
+              type: Important,
+              child: Html.text('Save as Draft')
             })),
             if (requestRemove != null) Button.node({
               onClick: _ -> requestRemove(),

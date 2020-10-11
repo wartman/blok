@@ -1,5 +1,6 @@
 package noted.ui;
 
+import blok.ui.style.*;
 import noted.ui.style.*;
 import noted.data.Store;
 import noted.data.Id;
@@ -7,20 +8,7 @@ import noted.data.Tag;
 
 using Blok;
 
-enum NoteFilterControlsMode {
-  All;
-  ByTag;
-}
-
 class NoteFilterControls extends Component {
-  @prop var mode:NoteFilterControlsMode = All;
-  
-  @update
-  function setMode(mode:NoteFilterControlsMode) {
-    if (this.mode.equals(mode)) return None;
-    return UpdateState({ mode: mode });
-  }
-
   override function render(context:Context) {
     return Html.div({
       style: [
@@ -28,17 +16,27 @@ class NoteFilterControls extends Component {
         List.style()
       ],
       children: [
+        Html.header({
+          children: [
+            Html.h1({
+              style: Font.style({ size: Em(3), color: Config.accentColor }),
+              children: [ Html.text('noted') ]
+            })
+          ]
+        }), 
         ButtonGroup.node({
+          perRow: 3,
+          style: switch Store.from(context).filter {
+            case FilterAll: null;
+            default: LineBreak.style({ spacing: None });
+          },
           buttons: [
             Button.node({
               type: switch Store.from(context).filter {
                 case FilterAll: Selected;
                 default: Normal;
               },
-              onClick: _ -> {
-                setMode(All);
-                Store.from(context).setFilter(FilterAll);
-              },
+              onClick: _ -> Store.from(context).setFilter(FilterAll),
               child: Html.text('All Notes')
             }),
             Button.node({
@@ -46,62 +44,95 @@ class NoteFilterControls extends Component {
                 case FilterByTags(_): Selected;
                 default: Normal;
               },
-              onClick: _ -> {
-                setMode(ByTag);
-                Store.from(context).setFilter(FilterByTags([]));
-              },
+              onClick: _ -> Store.from(context).setFilter(FilterByTags([])),
               child: Html.text('Filter by Tag')
+            }),
+            Button.node({
+              type: switch Store.from(context).filter {
+                case FilterByStatus(_): Selected;
+                default: Normal;
+              },
+              onClick: _ -> Store.from(context).setFilter(FilterByStatus(Published)),
+              child: Html.text('Filter by Status')
             })
           ]
         }),
-        switch mode {
-          case All: null;
-          case ByTag: Html.div({
-            children: [
-              NoteTags.node({
-                tags: switch Store.from(context).filter {
-                  case FilterByTags(tags): 
-                    var store =  Store.from(context);
-                    tags.map(id -> switch store.getTag(id) {
-                      case Some(v): v;
-                      case None: ({
-                        id: Id.invalid(),
-                        name: 'Not Found',
-                        notes: []
-                      }:Tag);
-                    });
-                  default: [];
-                },
-                addTag: name -> {
-                  var store = Store.from(context);
-                  switch store.findTagByName(name) {
-                    case None: 
-                      store.setFilter(switch store.filter {
-                        case FilterByTags(tags): 
-                          FilterByTags(tags.concat([ Id.invalid() ]));
-                        default: 
-                          FilterByTags([ Id.invalid() ]);
+        switch Store.from(context).filter {
+          case FilterAll | None: null;
+          case FilterByTags(_):
+            var store = Store.from(context);
+            Html.div({
+              children: [
+                NoteTags.node({
+                  showError: true,
+                  tags: switch store.filter {
+                    case FilterByTags(tags):
+                      tags.map(id -> switch store.getTag(id) {
+                        case Some(v): v;
+                        case None: ({
+                          id: Id.invalid(),
+                          name: 'Not Found',
+                          notes: []
+                        }:Tag);
                       });
-                    case Some(tag):
-                      store.setFilter(switch store.filter {
-                        case FilterByTags(tags): 
-                          if (tags.contains(tag.id)) store.filter;
-                          else FilterByTags(tags.concat([ tag.id ]));
-                        default: FilterByTags([ tag.id ]);
-                      });
-                  }
-                },
-                removeTag: id -> Store
-                  .from(context)
-                  .setFilter(switch Store.from(context).filter {
+                    default: [];
+                  },
+                  addTag: name -> {
+                    switch store.findTagByName(name) {
+                      case None:
+                        store.addTagToFilter(name);
+                      case Some(tag):
+                        store.setFilter(switch store.filter {
+                          case FilterByTags(tags): 
+                            if (tags.contains(tag.id)) store.filter;
+                            else FilterByTags(tags.concat([ tag.id ]));
+                          default: FilterByTags([ tag.id ]);
+                        });
+                    }
+                  },
+                  removeTag: id -> store.setFilter(switch store.filter {
                     case FilterByTags(tags):
                       FilterByTags(tags.filter(tag -> tag != id));
                     default: 
                       FilterByTags([]);
                   })
-              })
-            ]
-          });
+                })
+              ]
+            });
+          case FilterByStatus(_):
+            var store = Store.from(context);
+            Html.div({
+              children: [
+                ButtonGroup.node({
+                  buttons: [
+                    Button.node({
+                      type: switch store.filter {
+                        case FilterByStatus(status) if (status.equals(Published)): Selected;
+                        default: Normal; 
+                      },
+                      onClick: _ -> store.setFilter(FilterByStatus(Published)),
+                      child: Html.text('Published')
+                    }),
+                    Button.node({
+                      type: switch store.filter {
+                        case FilterByStatus(status) if (status.equals(Draft)): Selected;
+                        default: Normal; 
+                      },
+                      onClick: _ -> store.setFilter(FilterByStatus(Draft)),
+                      child: Html.text('Drafts')
+                    }),
+                    Button.node({
+                      type: switch store.filter {
+                        case FilterByStatus(status) if (status.equals(Trashed)): Selected;
+                        default: Normal; 
+                      },
+                      onClick: _ -> store.setFilter(FilterByStatus(Trashed)),
+                      child: Html.text('Trashed')
+                    })
+                  ]
+                })
+              ]
+            });
         }
       ]
     });

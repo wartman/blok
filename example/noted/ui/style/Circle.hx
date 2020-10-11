@@ -7,6 +7,7 @@ using Blok;
 class Circle extends Style {
   @prop var color:Color = Config.lightColor;
   @prop var outlined:Bool = false;
+  @prop var radius:Unit = Em(2);
 
   override function render():Array<VStyleExpr> {
     return [
@@ -30,12 +31,13 @@ class Circle extends Style {
         }),
       ]),
       Box.export({
-        padding: EdgeInsets.symmetric(None, Em(.5)),
-        height: Em(2),
-        width: Em(2)
+        padding: EdgeInsets.all(None),
+        height: radius,
+        width: radius
       }),
       Font.export({
-        lineHeight: Em(2)
+        lineHeight: radius,
+        align: Center
       })
     ];
   }

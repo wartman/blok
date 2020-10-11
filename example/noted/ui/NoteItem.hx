@@ -1,9 +1,9 @@
 package noted.ui;
 
+import noted.ui.style.Layout;
 import blok.Children;
 import blok.ui.style.*;
-import noted.ui.style.Config;
-import noted.ui.style.Card;
+import noted.ui.style.*;
 import noted.data.Note;
 import noted.data.Store;
 
@@ -42,10 +42,22 @@ class NoteItem extends Component {
   inline function display(context:Context):Children {
     return [
       Html.header({
-        style: sectionStyle,
+        style: [
+          LineBreak.style({}),
+          Layout.style()
+        ],
         children: [
           Html.h2({
+            style: Font.style({ lineHeight: Em(2) }),
             children: [ Html.text(note.name) ]
+          }),
+          Badge.node({
+            style: Alignment.end(),
+            label: switch note.status {
+              case Draft: 'Draft';
+              case Published: 'Published';
+              case Trashed: 'Trashed';
+            }
           })
         ]
       }),
@@ -54,7 +66,7 @@ class NoteItem extends Component {
         children: [ Html.text(note.content) ]
       }),
       Html.div({
-        style: sectionStyle,
+        style: LineBreak.style({}),
         children: [ 
           NoteTags.node({
             tags: Store.from(context).getTagsForNote(note.id),
@@ -72,15 +84,19 @@ class NoteItem extends Component {
         ]
       }),
       ButtonGroup.node({
-        style: sectionStyle,
+        style: [
+          sectionStyle,
+          Alignment.end()
+        ],
         buttons: [
+          Button.node({
+            onClick: _ -> startEditing(),
+            type: Important,
+            child: Html.text('Edit')
+          }),
           Button.node({
             onClick: _ -> Store.from(context).removeNote(note.id),
             child: Html.text('Remove')
-          }),
-          Button.node({
-            onClick: _ -> startEditing(),
-            child: Html.text('Edit')
           })
         ]
       })
@@ -92,7 +108,7 @@ class NoteItem extends Component {
       note: note.copy(),
       tags: Store.from(context).getTagsForNote(note.id),
       onSave: update -> {
-        Store.from(context).updateNote(note.id, update.name, update.content, update.tags);
+        Store.from(context).updateNote(note.id, update.name, update.content, update.tags, update.status);
         stopEditing();
       },
       requestRemove: () -> Store.from(context).removeNote(note.id),

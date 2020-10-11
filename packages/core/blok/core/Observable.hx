@@ -97,7 +97,7 @@ class Observable<T> {
   }
 
   public function notify(value:T):Void {
-    if (comparator != null && comparator(this.value, value)) return;
+    if (comparator != null && !comparator(this.value, value)) return;
     
     notifying = true;
 
@@ -167,6 +167,18 @@ class Observable<T> {
     toAddHead = null;
   }
 
+  /**
+    Select a value from the Observable and only update when that value changes.
+
+    Otherwise works the same as `map`.
+  **/
+  public function select<R>(selector:(value:T)->R, ?key) {
+    return new LinkedObservable(this, selector, key, (a, b) -> a != b);
+  }
+
+  /**
+    Map this Observable into another.
+  **/
   public inline function map<R>(transform:(value:T)->R, ?key):Observable<R> {
     return new LinkedObservable(this, transform, key);
   }
@@ -175,7 +187,7 @@ class Observable<T> {
     return new DependencyObservable([ this, b ]);
   }
 
-  public inline function mapToNode<Node>(build) {
+  public inline function mapToVNode<Node>(build) {
     return ObservableSubscriber.observe(this, build);
   }
 }
@@ -183,8 +195,8 @@ class Observable<T> {
 final class LinkedObservable<T, R> extends Observable<R> {
   var link:Observer<T>;
 
-  public function new(parent:Observable<T>, transform:(value:T)->R, ?key) {
-    super(transform(parent.value), key);
+  public function new(parent:Observable<T>, transform:(value:T)->R, ?key, ?comparator) {
+    super(transform(parent.value), key, comparator);
     link = parent.observe(value -> notify(transform(value)), { defer: true });
   }
 

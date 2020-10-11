@@ -5,18 +5,22 @@ import blok.style.VStyle;
 import blok.ui.style.*;
 import blok.ui.style.Grid;
 
-class CardGrid extends Style {
+class BaseGrid extends Style {
+  @prop var perRow:Int = Config.defaultItemsPerRow;
+  @prop var perRowMobile:Int = Config.defaultItemsPerRowMobile;
+  @prop var gap:Unit = Config.mediumGap;
+
   override function render():Array<VStyleExpr> {
     return [
-      Grid.export({ gap: Config.mediumGap }),
+      Grid.export({ gap: gap }),
       MediaQuery.minWidth(Config.mobileWidth, [
         Grid.export({
-          columns: GridDefinition.repeat(4, Fr(1))
+          columns: GridDefinition.repeat(perRow, Fr(1))
         })
       ]),
       MediaQuery.maxWidth(Config.mobileWidth, [
         Grid.export({
-          columns: GridDefinition.repeat(2, Fr(1))
+          columns: GridDefinition.repeat(perRowMobile, Fr(1))
         })
       ])
     ];
