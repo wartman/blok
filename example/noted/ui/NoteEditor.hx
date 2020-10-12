@@ -1,11 +1,12 @@
 package noted.ui;
 
 import blok.ui.style.*;
-import noted.ui.style.*;
 import noted.data.Id;
 import noted.data.Store;
 import noted.data.Note;
 import noted.data.Tag;
+import noted.ui.style.*;
+import noted.ui.tag.TagList;
 
 using StringTools;
 using Blok;
@@ -99,10 +100,11 @@ class NoteEditor extends Component {
         Html.div({
           style: LineBreak.style({}),
           children: [
-            NoteTags.node({
+            TagList.node({
               tags: tags,
               addTag: addTag.bind(context),
-              removeTag: removeTag
+              removeTag: removeTag,
+              requestSearch: null
             })
           ]
         }),

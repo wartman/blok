@@ -26,10 +26,12 @@ class Context<Node> {
 
   public function onCreateVNode(vnode:VNode<Node>) {
     for (plugin in plugins) plugin.onCreate(this, vnode);
+    if (parent != null) parent.onCreateVNode(vnode);
   }
 
   public function onUpdateVNode(vnode:VNode<Node>) {
     for (plugin in plugins) plugin.onUpdate(this, vnode);
+    if (parent != null) parent.onUpdateVNode(vnode);
   }
 
   /**
@@ -73,7 +75,7 @@ class Context<Node> {
   }
 
   public function getChild() {
-    return new Context(engine, this, plugins.copy());
+    return new Context(engine, this, []);
   }
 
   public function addEffect(effect:()->Void) {

@@ -11,17 +11,20 @@ typedef CssResult = {
 }
 
 class CssGenerator {
+  static var uid:Int = 0;
+  static final classNames:Map<String, String> = [];
+
   public static function generate(style:VStyle):CssResult {
     return switch style {
       case VStyleDef(type, props, suffix):
         var name = type.getStyleName(props, suffix);
-        var className = escapeClassName(name);
+        var className = getUniqueClassName(name);
         return {
           classes: [ className ],
           rules: [ generateExprs('.$className', type.renderStyle(props)) ]
         };
       case VStyleInline(name, def):
-        var className = escapeClassName(name);
+        var className = getUniqueClassName(name);
         return {
           classes: [ className ],
           rules: [ generateExprs('.$className', def()) ]
@@ -96,14 +99,18 @@ class CssGenerator {
     return out.join(' ');
   }
 
-  public static function escapeClassName(name:String) {
-    return name
-      .replace('.', '_')
-      .replace(' ', '_')
-      .replace('#', '_')
-      .replace('(', '_')
-      .replace(')', '_')
-      .replace('%', 'pct');
-    // etc
+  public static function getUniqueClassName(name:String) {
+    if (!classNames.exists(name)) {
+      classNames.set(name, '_b_${uid++}');
+    }
+    return classNames.get(name);
   }
+
+  // static function randomName() {
+  //   function rand(from:Int, to:Int):Int {
+  //     return from + Math.floor((to - from) * Math.random());
+  //   }
+  //   var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  //   return '_b_' + [ for (i in 0...10) chars.charAt(rand(0, chars.length - 1)) ].join('');
+  // }
 }

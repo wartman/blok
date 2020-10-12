@@ -131,10 +131,10 @@ class Component<Node> {
     
     __pendingChildren.push(child);
 
-    if (__parent != null) {
-      __parent.__enqueuePendingChild(this);
-    } else {
+    if (__parent == null) {
       Delay.add(() -> __context.scope(__dequeuePendingChildren));
+    } else {
+      __parent.__enqueuePendingChild(this);
     }
   }
 

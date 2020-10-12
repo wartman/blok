@@ -1,5 +1,6 @@
 package noted.ui;
 
+import noted.ui.tag.TagList;
 import blok.ui.style.*;
 import noted.ui.style.*;
 import noted.data.Store;
@@ -63,7 +64,7 @@ class NoteFilterControls extends Component {
             var store = Store.from(context);
             Html.div({
               children: [
-                NoteTags.node({
+                TagList.node({
                   showError: true,
                   tags: switch store.filter {
                     case FilterByTags(tags):
@@ -95,7 +96,8 @@ class NoteFilterControls extends Component {
                       FilterByTags(tags.filter(tag -> tag != id));
                     default: 
                       FilterByTags([]);
-                  })
+                  }),
+                  requestSearch: null
                 })
               ]
             });

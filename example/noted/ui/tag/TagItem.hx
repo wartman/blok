@@ -10,22 +10,22 @@ using Blok;
 class TagItem extends Component {
   @prop var tag:Tag;
   @prop var requestRemove:(id:Id<Tag>)->Void;
+  @prop var requestSearch:Null<(id:Id<Tag>)->Void>;
+  @prop var showError:Bool = false;
 
   override function render(context:Context):VNode {
     return Html.li({
       key: tag,
       style: [
-        Flex.style({ direction: Row }),
         Position.style({ type: Relative }),
-        if (tag.id.isInvalid())
+        if (showError && (tag.id.isInvalid() || tag.notes.length == 0))
           Pill.style({
             color: Config.errorColor,
             centered: false
           })
-        else
+        else 
           Pill.style({
-            outlined: true,
-            color: Config.darkColor,
+            color: Config.lightColor,
             centered: false
           })
       ],
@@ -40,29 +40,40 @@ class TagItem extends Component {
           ],
           children: [ Html.text(tag.name) ]
         }),
-        Html.button({
+        ButtonGroup.node({
+          perRow: if (requestSearch == null) 1 else 2,
+          gap: Em(.5),
           style: [
-            Border.style({ type: None }),
-            Background.style({ color: Color.name('transparent') }),
-            Font.style({
-              lineHeight: Em(2),
-              color: Color.inherit()
-            }),
-            Position.style({
-              type: Absolute,
-              right: Em(.5),
-              top: None
-            }),
-            Style.define([
-              Style.property('cursor', 'pointer')
-            ])
+            Position.style({ 
+              type: Absolute, 
+              right: Em(.75), 
+              top: Em(.75)
+            })
           ],
-          attrs: {
-            onclick: _ -> requestRemove(tag.id)
-          },
-          children: [ Html.text('X') ]
+          buttons: [
+            if (requestSearch != null) button(requestSearch, '?') else null,
+            button(requestRemove, 'X')
+          ]
         })
       ]
+    });
+  }
+
+  inline function button(action:(id:Id<Tag>)->Void, label:String) {
+    return Html.button({
+      style: [
+        Circle.style({
+          color: Config.whiteColor,
+          radius: Em(1.5)
+        }),
+        Style.define([
+          Style.property('cursor', 'pointer')
+        ])
+      ],
+      attrs: {
+        onclick: _ -> action(tag.id)
+      },
+      children: [ Html.text(label) ]
     });
   }
 }

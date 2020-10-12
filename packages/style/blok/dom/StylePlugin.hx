@@ -5,10 +5,10 @@ import js.html.Node;
 import js.html.CSSStyleSheet;
 import blok.core.Plugin;
 import blok.core.PluginProvider;
-import blok.html.HtmlAttributes;
 import blok.style.StyleList;
 import blok.style.Style;
 import blok.style.VStyle;
+import blok.html.HtmlAttributes;
 
 using blok.html.CssGenerator;
 using Lambda;
@@ -46,9 +46,15 @@ class StylePlugin implements Plugin<Node> {
           case _:
             var attrs:GlobalAttr = cast props;
             var styles:StyleList = plugables
-              .filter(p -> p.key == Style.pluginKey)
-              .flatMap(p -> p.value)
-              .filter(p -> p != null); // nullability screws everything up huh
+              .filter(p -> 
+                p.key == Style.pluginKey 
+                && !p.handled
+                && p.value != null
+              ).flatMap(p -> {
+                p.handled = true; // Make sure this won't be reused.
+                p.value;
+              })
+              .filter(p -> p != null);
 
             if (styles.length == 0) return;
             
@@ -77,14 +83,14 @@ class StylePlugin implements Plugin<Node> {
       case VStyleDef(type, props, suffix):
         var name = type.getStyleName(props, suffix);
         if (defined.contains(name)) {
-          classNames.push(name.escapeClassName());
+          classNames.push(name.getUniqueClassName());
         } else {
           defined.push(name);
           addCss(s);
         }
       case VStyleInline(name, def):
         if (defined.contains(name)) {
-          classNames.push(name.escapeClassName());
+          classNames.push(name.getUniqueClassName());
         } else {
           defined.push(name);
           addCss(s);

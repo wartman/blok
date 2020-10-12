@@ -1,8 +1,9 @@
 package noted.ui;
 
-import noted.ui.style.Layout;
 import blok.Children;
 import blok.ui.style.*;
+import noted.ui.tag.TagList;
+import noted.ui.style.Layout;
 import noted.ui.style.*;
 import noted.data.Note;
 import noted.data.Store;
@@ -67,8 +68,9 @@ class NoteItem extends Component {
       }),
       Html.div({
         style: LineBreak.style({}),
-        children: [ 
-          NoteTags.node({
+        children: [
+          TagList.node({
+            showError: false,
             tags: Store.from(context).getTagsForNote(note.id),
             addTag: (value) -> {
               var store = Store.from(context);
@@ -79,7 +81,8 @@ class NoteItem extends Component {
                   store.addTag(value, [ note.id ]);
               }
             },
-            removeTag: id -> Store.from(context).removeTagFromNote(note.id, id)
+            removeTag: id -> Store.from(context).removeTagFromNote(note.id, id),
+            requestSearch: id -> Store.from(context).setFilter(FilterByTags([ id ]))
           })
         ]
       }),
