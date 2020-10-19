@@ -45,7 +45,7 @@ class ComponentBuilder {
       name: 'prop',
       hook: Normal,
       options: [],
-      build: function(_, builder, f) switch f.kind {
+      build: function (_, builder, f) switch f.kind {
         case FVar(t, e):
           if (t == null) {
             Context.error('Types cannot be inferred for @prop vars', f.pos);

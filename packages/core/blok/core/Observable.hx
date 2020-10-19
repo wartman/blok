@@ -37,9 +37,9 @@ class Observer<T> {
   var observable:Null<Observable<T>>;
   var next:Null<Observer<T>>;
 
-  public function new(observable, listener) {
-    this.observable = observable;
+  public function new(observable:Observable<T>, listener) {
     this.listener = listener;
+    this.observable = observable;
   }
 
   public inline function handle(value:T) {
@@ -52,15 +52,41 @@ class Observer<T> {
       observable = null;
     }
   }
+
+  public function dispose() {
+    // noop
+    // Note: We intentionally do not clear `next` or anything here.
+    //       This is just for other behavior (see LinkedObserver
+    //       for an example).
+  }
+}
+
+@:nullSafety
+@:allow(blok.core.Observable)
+class LinkedObserver<T, R> extends Observer<T> {
+  final linkedObservable:Observable<R>;
+
+  public function new(
+    parent:Observable<T>,
+    linked:Observable<R>,
+    transform:(value:T)->R
+  ) {
+    linkedObservable = linked;
+    super(parent, function (value) linkedObservable.notify(transform(value)));
+  }
+
+  public function getObservable():Observable<R> {
+    return linkedObservable;
+  }
+  
+  override function dispose() {
+    linkedObservable.dispose();
+  }
 }
 
 @:nullSafety
 class Observable<T> {
   static var uid:Int = 0;
-
-  public static inline function ofMany<T>(observables, ?key) {
-    return new DependencyObservable(observables, key);
-  }
 
   @:allow(blok.core.ObservableProvider) final key:String;
   final comparator:Null<ObservableComparitor<T>>;
@@ -82,7 +108,22 @@ class Observable<T> {
     if (options == null) options = { defer: false };
     
     var observer = new Observer(this, listener);
+    addObserver(observer, options);
+
+    // if (notifying) {
+    //   observer.next = toAddHead;
+    //   toAddHead = observer;
+    // } else {
+    //   observer.next = head;
+    //   head = observer;
+    // }
     
+    // if (!options.defer) observer.handle(value);
+
+    return observer;
+  }
+  
+  function addObserver(observer:Observer<T>, options:ObservableOptions) {
     if (notifying) {
       observer.next = toAddHead;
       toAddHead = observer;
@@ -90,10 +131,7 @@ class Observable<T> {
       observer.next = head;
       head = observer;
     }
-    
     if (!options.defer) observer.handle(value);
-
-    return observer;
   }
 
   public function notify(value:T):Void {
@@ -122,6 +160,8 @@ class Observable<T> {
   }
   
   public function remove(observer:Observer<T>):Void {
+    observer.dispose();
+
     inline function clearObserver() {
       observer.next = null;
       observer.observable = null;
@@ -156,6 +196,7 @@ class Observable<T> {
         var next = current.next;
         current.observable = null;
         current.next = null;
+        current.dispose();
         current = next;
       }
     }
@@ -173,81 +214,29 @@ class Observable<T> {
     Otherwise works the same as `map`.
   **/
   public function select<R>(selector:(value:T)->R, ?key) {
-    return new LinkedObservable(this, selector, key, (a, b) -> a != b);
+    var observer = new LinkedObserver(
+      this, 
+      new Observable(selector(value), key, (a, b) -> a != b),
+      selector
+    );
+    addObserver(observer, { defer: false });
+    return observer.getObservable();
   }
 
   /**
     Map this Observable into another.
   **/
   public inline function map<R>(transform:(value:T)->R, ?key):Observable<R> {
-    return new LinkedObservable(this, transform, key);
-  }
-
-  public inline function join(b:Observable<T>):Observable<Array<T>> {
-    return new DependencyObservable([ this, b ]);
+    var observer = new LinkedObserver(
+      this, 
+      new Observable(transform(value), key),
+      transform
+    );
+    addObserver(observer, { defer: false });
+    return observer.getObservable();
   }
 
   public inline function mapToVNode<Node>(build) {
     return ObservableSubscriber.observe(this, build);
-  }
-}
-
-final class LinkedObservable<T, R> extends Observable<R> {
-  var link:Observer<T>;
-
-  public function new(parent:Observable<T>, transform:(value:T)->R, ?key, ?comparator) {
-    super(transform(parent.value), key, comparator);
-    link = parent.observe(value -> notify(transform(value)), { defer: true });
-  }
-
-  override function dispose() {
-    link.cancel();
-    link = null;
-    super.dispose();
-  }
-}
-
-// @todo: Unsure if this is a good idea.
-//        We should make Observable as simple and flexable as possible --
-//        if someone wants to use reactive programming, they should
-//        *not* use this.
-final class DependencyObservable<T> extends Observable<Array<T>> {
-  var links:Array<Observer<T>>;
-  
-  public function new(observables:Array<Observable<T>>, ?key) {
-    var value:Array<T> = [];
-    for (i in 0...observables.length) {
-      value[i] = observables[i].value;
-      links[i] = observables[i].observe(value -> {
-        this.value[i] = value;
-        notify(this.value);
-      }, { defer: true });
-    }
-    super(value, key);
-  }
-
-  public function addDependency(observable:Observable<T>) {
-    var i = value.length;
-    value[i] = observable.value;
-    links[i] = observable.observe(value -> {
-      this.value[i] = value;
-      notify(this.value);
-    }, { defer: true });
-  }
-
-  public function removeDependency(observable:Observable<T>) {
-    var i = this.value.indexOf(observable.value);
-    if (i > -1) {
-      var link = links[i];
-      link.cancel();
-      value.remove(value[i]);
-      links.remove(link);
-    }
-  }
-
-  override function dispose() {
-    value = null;
-    for (l in links) l.cancel();
-    super.dispose();
   }
 }

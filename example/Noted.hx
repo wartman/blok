@@ -1,13 +1,12 @@
 import blok.core.Plugin;
 import noted.ui.App;
 import noted.data.*;
-import blok.dom.StylePlugin;
 
 using Blok;
 
 class Noted {
   static function main() {
-    Platform.mountWithPlugins(
+    Platform.mount(
       js.Browser.document.getElementById('root'),
       context -> App.node({
         store: new Store({
@@ -37,24 +36,7 @@ class Noted {
             }
           ]
         })
-      }),
-      [
-        new StylePlugin([], true),
-        // new Inspector()
-      ]
+      })
     );
-  }
-}
-
-// A terrible plugin, but they're pretty simple:
-class Inspector implements Plugin<js.html.Node> {
-  public function new() {}
-
-  public function onCreate(content:Context, vnode:VNode):Void {
-    trace(vnode);
-  }
-
-  public function onUpdate(content:Context, vnode:VNode):Void {
-    trace(vnode);
   }
 }

@@ -2,16 +2,6 @@ package blok.core;
 
 using Reflect;
 
-/**
-  Any object that has an `__id` may be used as a Provideable (this
-  includes all states).
-
-  @todo: maybe make this an abstract type to allow for easier casting?
-**/
-typedef Provideable = {
-  public final __id:String;
-};
-
 class Provider<T, Node> extends Component<Node> {
   public static function __create<T, Node>(props:{
     key:String,
@@ -23,7 +13,7 @@ class Provider<T, Node> extends Component<Node> {
     return provider;
   }
 
-  public static function provide<Node>(data:Array<Provideable>, build):VNode<Node> {
+  public static function provide<Node>(data:Array<Providable>, build):VNode<Node> {
     var node:VNode<Node> = null;
     for (item in data) {
       var prev = node;

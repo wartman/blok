@@ -17,7 +17,7 @@ class Main {
     Platform.mountWithPlugins(
       js.Browser.document.getElementById('root'),
       ctx -> Root.node({ model: Model.load() }),
-      [ new StylePlugin([], false) ]
+      [ new StylePlugin({ skipBaseStyles: true }) ]
     );
   }
 }
@@ -221,13 +221,11 @@ class ViewEntries extends Component {
   override function render(context:Context):VNode {
     return Model.observe(context, model -> {
       var allCompleted = model.entries.filter(e -> !e.completed).length == 0;
-      function isVisible(entry:Entry) {
-        return switch model.visibility {
-          case Completed: entry.completed;
-          case Active: !entry.completed;
-          case All: true;
-        }
-      }
+      var isVisible = (entry:Entry) -> switch model.visibility {
+        case Completed: entry.completed;
+        case Active: !entry.completed;
+        case All: true;
+      };
 
       Html.section({
         attrs: {

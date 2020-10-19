@@ -13,21 +13,38 @@ import blok.html.HtmlAttributes;
 using blok.html.CssGenerator;
 using Lambda;
 
+// @todo: allow the user to provide their own StyleSheet or
+//        style element here.
+typedef StylePluginOptions = {
+  /**
+    Predefined style IDs. For use in isomorphic apps (potentially).
+  **/
+  @:optional public final defined:Array<String>;
+  /**
+    If true, default styles will be skipped. These provide some
+    resets that make the Style system a bit easier to use, so this
+    should only be turned off if it interferes with an existing
+    stylesheet.
+  **/
+  @:optional public final skipBaseStyles:Bool;
+}
+
 class StylePlugin implements Plugin<Node> {
-  public static function provide(build):VNode {
-    return PluginProvider.provide(() -> new StylePlugin(), build);
+  public static function provide(?options, build):VNode {
+    return PluginProvider.provide(() -> new StylePlugin(options), build);
   }
 
   final sheet:CSSStyleSheet;
   final defined:Array<String>;
   final indices:Map<String, Int> = [];
 
-  public function new(?defined, useBaseStyle = false) {
+  public function new(?options:StylePluginOptions) {
+    if (options == null) options = {};
     var el = Browser.document.createStyleElement();
     Browser.document.head.appendChild(el);
     sheet = cast el.sheet;
-    this.defined = defined != null ? defined : [];
-    if (useBaseStyle) registerBaseStyle();
+    this.defined = options.defined != null ? options.defined : [];
+    if (options.skipBaseStyles != true) registerBaseStyle();
   }
 
   public function onCreate(content:Context, vnode:VNode):Void {
