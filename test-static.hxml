@@ -1,6 +1,6 @@
 -cp packages/core
 -cp packages/html
--cp packages/css
+-cp packages/style
 -cp packages/static
 -cp packages/ui
 -cp test

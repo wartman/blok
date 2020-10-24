@@ -1,6 +1,8 @@
 -cp packages/core
 -cp packages/h2d
 -cp packages/ui
+-cp packages/style
+
 -cp test
 
 -dce full
@@ -14,4 +16,4 @@
 
 -lib heaps
 
--js dist/test.js
+-js dist/h2d/index.js

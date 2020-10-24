@@ -102,12 +102,19 @@ class UiBuilder {
         });
         public static function $fnName(props:{
           props:$props,
-          ?style:blok.core.StyleList,
+          ?style:blok.style.StyleList,
           ?ref:(obj:h2d.Object)->Void,
           ?key:blok.core.Key,
           ?children:Array<blok.core.VNode<h2d.Object>>
         }):blok.core.VNode<h2d.Object> {
-          return VNative($i{objectTypeName}, props.props, props.style, props.ref, props.key, props.children);
+          return VNative(
+            $i{objectTypeName}, 
+            props.props,
+            if (props.style != null) [new blok.core.PluginPayload(blok.style.Style.pluginKey, props.style)] else null,
+            props.ref,
+            props.key,
+            props.children
+          );
         }
       }).fields);
     }

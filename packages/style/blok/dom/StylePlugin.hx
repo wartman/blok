@@ -10,8 +10,8 @@ import blok.style.Style;
 import blok.style.VStyle;
 import blok.html.HtmlAttributes;
 
-using blok.html.CssGenerator;
 using Lambda;
+using blok.html.CssGenerator;
 
 // @todo: allow the user to provide their own StyleSheet or
 //        style element here.

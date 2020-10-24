@@ -13,11 +13,11 @@ class Provider<T, Node> extends Component<Node> {
     return provider;
   }
 
-  public static function provide<Node>(data:Array<Providable>, build):VNode<Node> {
+  public static function provide<Node, T>(data:Array<Providable<T>>, build):VNode<Node> {
     var node:VNode<Node> = null;
     for (item in data) {
       var prev = node;
-      node = provideValue(item.__id, item, prev != null ? _ -> prev : build);
+      node = provideValue(item.__id, item.__provide(), prev != null ? _ -> prev : build);
     }
     return node;
   }

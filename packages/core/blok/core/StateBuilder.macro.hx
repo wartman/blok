@@ -359,12 +359,17 @@ If you want to re-render whenever the state changes, use
         public final __id:String = $v{id};
 
         public function new($INCOMING_PROPS:$propType) {
-          __observable = new blok.core.Observable(this, $v{id});
+          __observable = new blok.core.Observable(this);
           this.$PROPS = ${ {
             expr: EObjectDecl(initializers),
             pos: (macro null).pos
           } };
           $b{initHooks};
+        }
+
+        @:noCompletion
+        public function __provide() {
+          return this;
         }
 
         public function getObservable():blok.core.Observable<$ct> {

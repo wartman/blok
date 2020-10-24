@@ -1,11 +1,15 @@
 package blok.core;
 
 /**
-  Any object that has an `__id` may be used as a Providable (this
-  includes all states).
+  A type that can be passed to a Provider.
 
-  @todo: Maybe make this an abstract type to allow for easier casting?
+  All States will statisfy this.
+
+  Note that this is a typedef, not an interface, to allow more
+  flexability in defining provideables (as a static class, for 
+  example).
 **/
-typedef Providable = {
+typedef Providable<T> = {
   public final __id:String;
+  public function __provide():T;
 };

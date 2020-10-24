@@ -88,7 +88,6 @@ class LinkedObserver<T, R> extends Observer<T> {
 class Observable<T> {
   static var uid:Int = 0;
 
-  @:allow(blok.core.ObservableProvider) final key:String;
   final comparator:Null<ObservableComparitor<T>>;
 
   var notifying:Bool = false;
@@ -96,30 +95,17 @@ class Observable<T> {
   var head:Null<Observer<T>>;
   var toAddHead:Null<Observer<T>>;
 
-  public function new(value, ?key, ?comparator) {
+  public function new(value, ?comparator) {
     this.value = value;
-    this.key = if (key == null) 'observe_${uid++}' else key;
     this.comparator = comparator;
   }
 
-  // @todo: we need to check that this singly-linked list actually
-  //        works right if we add a listener while dispatching.
   public function observe(listener:(value:T)->Void, ?options:ObservableOptions):Observer<T> {
     if (options == null) options = { defer: false };
-    
+
     var observer = new Observer(this, listener);
     addObserver(observer, options);
-
-    // if (notifying) {
-    //   observer.next = toAddHead;
-    //   toAddHead = observer;
-    // } else {
-    //   observer.next = head;
-    //   head = observer;
-    // }
     
-    // if (!options.defer) observer.handle(value);
-
     return observer;
   }
   
@@ -131,6 +117,7 @@ class Observable<T> {
       observer.next = head;
       head = observer;
     }
+
     if (!options.defer) observer.handle(value);
   }
 
@@ -142,6 +129,7 @@ class Observable<T> {
     this.value = value;
     
     var current = head;
+    
     while (current != null) {
       current.handle(this.value);
       current = current.next;
@@ -213,10 +201,10 @@ class Observable<T> {
 
     Otherwise works the same as `map`.
   **/
-  public function select<R>(selector:(value:T)->R, ?key) {
+  public function select<R>(selector:(value:T)->R) {
     var observer = new LinkedObserver(
       this, 
-      new Observable(selector(value), key, (a, b) -> a != b),
+      new Observable(selector(value), (a, b) -> a != b),
       selector
     );
     addObserver(observer, { defer: false });
@@ -226,10 +214,10 @@ class Observable<T> {
   /**
     Map this Observable into another.
   **/
-  public inline function map<R>(transform:(value:T)->R, ?key):Observable<R> {
+  public inline function map<R>(transform:(value:T)->R):Observable<R> {
     var observer = new LinkedObserver(
       this, 
-      new Observable(transform(value), key),
+      new Observable(transform(value)),
       transform
     );
     addObserver(observer, { defer: false });
