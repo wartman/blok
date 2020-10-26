@@ -47,7 +47,10 @@ class CssBuilder {
   static function prepareKey(key:String) {
     return [ for (i in 0...key.length)
       if (ucase.match(key.charAt(i))) {
-        '-' + key.charAt(i).toLowerCase();
+        if (i == 0)
+          key.charAt(i).toLowerCase()
+        else 
+          '-' + key.charAt(i).toLowerCase();
       } else {
         key.charAt(i);
       } 

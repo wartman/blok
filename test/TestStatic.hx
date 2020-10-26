@@ -1,5 +1,5 @@
 class TestStatic {
   static function main() {
-    // woop
+    // woo
   }  
 }

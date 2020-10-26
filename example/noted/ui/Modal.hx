@@ -41,7 +41,7 @@ class Modal extends Component {
           Html.div({
             style: [
               Card.style({ 
-                color: Config.whiteColor  
+                color: Config.whiteColor
               }),
               Box.style({
                 width: Config.mobileWidth

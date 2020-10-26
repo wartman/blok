@@ -1,4 +1,3 @@
-import blok.core.Plugin;
 import noted.ui.App;
 import noted.data.*;
 

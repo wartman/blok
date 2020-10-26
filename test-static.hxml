@@ -1,7 +1,7 @@
 -cp packages/core
--cp packages/html
--cp packages/style
--cp packages/static
+-cp packages/core.html
+-cp packages/core.style
+-cp packages/platform.static
 -cp packages/ui
 -cp test
 

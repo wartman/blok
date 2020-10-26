@@ -1,7 +1,7 @@
 -cp packages/core
--cp packages/dom
--cp packages/style
--cp packages/html
+-cp packages/core.style
+-cp packages/core.html
+-cp packages/platform.dom
 -cp packages/ui
 -cp example
 

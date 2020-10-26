@@ -1,7 +1,7 @@
 -cp packages/core
--cp packages/h2d
 -cp packages/ui
--cp packages/style
+-cp packages/core.style
+-cp packages/platform.h2d
 
 -cp test
 
