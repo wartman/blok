@@ -1,9 +1,6 @@
--cp packages/core
--cp packages/core.html
--cp packages/core.style
--cp packages/platform.static
--cp packages/ui
 -cp test
+
+-lib blok.platform.static
 
 -dce full
 

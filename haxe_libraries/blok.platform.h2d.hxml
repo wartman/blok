@@ -1,0 +1,6 @@
+-cp packages/platform.h2d
+
+-lib heaps
+-lib blok.core
+
+-D blok.platform.h2d=0.0.1

@@ -1,0 +1,3 @@
+-cp packages/core.style
+
+-D blok.core.style=0.0.1

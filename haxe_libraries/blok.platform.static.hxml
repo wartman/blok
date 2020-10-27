@@ -1,0 +1,6 @@
+-cp packages/platform.static
+
+-lib blok.core
+-lib blok.core.html
+
+-D blok.platform.static=0.0.1

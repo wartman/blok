@@ -1,5 +1,7 @@
 package blok.html;
 
+#if blok.core.style
+
 import blok.style.VStyle;
 
 using Lambda;
@@ -76,6 +78,8 @@ class CssGenerator {
           if (selector == null) {
           #if debug
             throw 'Cannot use a modifier without a selector';
+          #else
+            return;
           #end
           } else {
             generateExprs('${selector}${modifier}', [ expr ]);
@@ -114,3 +118,7 @@ class CssGenerator {
   //   return '_b_' + [ for (i in 0...10) chars.charAt(rand(0, chars.length - 1)) ].join('');
   // }
 }
+
+#else
+  #error "Cannot use blok.html.CssGenerator without blok.core.style"
+#end

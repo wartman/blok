@@ -1,0 +1,6 @@
+-cp packages/platform.dom
+
+-lib blok.core
+-lib blok.core.html
+
+-D blok.platform.dom=0.0.1

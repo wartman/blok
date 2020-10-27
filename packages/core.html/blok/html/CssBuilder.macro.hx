@@ -12,7 +12,7 @@ class CssBuilder {
   public static function define(e:Expr):Expr {
     return switch e.expr {
       case EObjectDecl(decls) if (decls.length >= 0):
-        return macro @:pos(e.pos) blok.core.Style.define([ $a{parse(decls)} ]);
+        return macro @:pos(e.pos) blok.style.Style.define([ $a{parse(decls)} ]);
       case EBlock(_) | EObjectDecl(_):
         macro null;
       default:
@@ -23,7 +23,7 @@ class CssBuilder {
   public static function export(e:Expr):Expr {
     return switch e.expr {
       case EObjectDecl(decls) if (decls.length >= 0):
-        return macro blok.core.Style.properties([ $a{parse(decls)} ]);
+        return macro blok.style.Style.properties([ $a{parse(decls)} ]);
       case EBlock(_) | EObjectDecl(_):
         macro null;
       default:
@@ -35,11 +35,11 @@ class CssBuilder {
     var exprs:Array<Expr> = [];
     for (rule in rules) switch rule.expr.expr {
       case EObjectDecl(fields):
-        exprs.push(macro blok.core.Style.child($v{rule.field}, [ $a{parse(fields)} ]));
+        exprs.push(macro blok.style.Style.child($v{rule.field}, [ $a{parse(fields)} ]));
       default:
         var key = prepareKey(rule.field);
         var e = rule.expr;
-        exprs.push(macro @:pos(e.pos) blok.core.Style.property($v{key}, $e));
+        exprs.push(macro @:pos(e.pos) blok.style.Style.property($v{key}, ${e}));
     }
     return exprs;
   }

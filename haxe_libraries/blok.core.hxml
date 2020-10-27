@@ -1,0 +1,3 @@
+-cp packages/core
+
+-D blok.core=0.0.1

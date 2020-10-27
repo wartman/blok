@@ -1,8 +1,6 @@
 -cp example
 
--lib blok.core.style
 -lib blok.platform.dom
--lib blok.ui
 
 -dce full
 
@@ -10,6 +8,6 @@
 -D debug
 -D js-es=6
 
--main Noted
+-main todomvc.Main
 
--js dist/noted/app.js
+-js dist/todomvc/app.js

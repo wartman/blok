@@ -12,12 +12,14 @@ class Platform {
   /**
     The primary entry point for any app.
   
-    This will include the default StylePlugin.
+    This will include the default StylePlugin if the `blok.core.style` 
+    library is preset.
+
     Use `mountWithPlugins` to provide a StylePlugin (or any other
     Plugin) with your own configuration.
   **/
   public static function mount(el, factory) {
-    mountWithPlugins(el, factory, [ new StylePlugin({}) ]);
+    mountWithPlugins(el, factory, [ #if blok.core.style new StylePlugin({}) #end ]);
   }
 
   public static function mountWithPlugins(el:Element, factory:(context:Context)->VNode<Node>, plugins) {
