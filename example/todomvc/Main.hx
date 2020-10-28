@@ -14,6 +14,7 @@ package todomvc;
 // example in the `example` directory.
 
 import haxe.Json;
+import haxe.ds.ReadOnlyArray;
 
 using StringTools;
 using Lambda;
@@ -46,6 +47,11 @@ enum abstract Visibility(String) to String {
 // A `State` is like a mix of the Model and Updates in the Elm architecture.
 //
 // Think of each `@update` method as a message in elm.
+//
+// Note that we always create a new Entry when an object changes. This isn't
+// required, and is a bit clunky, but (to keep this more elm-like) I've
+// gone for as much immutablity as possible here. This also allows
+// `@lazy` to work correctly on Components (more on that below).
 class Model implements State {
   static inline final BLOK_TODO_MODEL = 'blok-todo-model';
 
@@ -73,7 +79,7 @@ class Model implements State {
     }));
   }
 
-  @prop var entries:Array<Entry>;
+  @prop var entries:ReadOnlyArray<Entry>;
   @prop var field:String = '';
   @prop var uid:Int;
   @prop var visibility:Visibility;
@@ -106,16 +112,28 @@ class Model implements State {
   public function editingEntry(id:Int, isEditing:Bool) {
     var entry = entries.find(e -> e.id == id);
     if (entry == null) return None;
-    entry.editing = isEditing;
-    return Update;
+    return UpdateState({
+      entries: entries.map(e -> if (e.id == entry.id) ({
+        id: e.id,
+        description: e.description,
+        editing: isEditing,
+        completed: e.completed
+      }:Entry) else e)
+    });
   }
 
   @update
   public function updateEntry(id:Int, description:String) {
     var entry = entries.find(e -> e.id == id);
     if (entry == null) return None;
-    entry.description = description;
-    return Update;
+    return UpdateState({
+      entries: entries.map(e -> if (e.id == entry.id) ({
+        id: e.id,
+        description: description,
+        editing: e.editing,
+        completed: e.completed
+      }:Entry) else e)
+    });
   }
 
   @update
@@ -137,17 +155,25 @@ class Model implements State {
   public function check(id:Int, isCompleted:Bool) {
     var entry = entries.find(e -> e.id == id);
     if (entry == null) return None;
-    entry.completed = isCompleted;
-    return Update;
+    return UpdateState({
+      entries: entries.map(e -> if (e.id == entry.id) ({
+        id: e.id,
+        description: e.description,
+        editing: e.editing,
+        completed: isCompleted
+      }:Entry) else e)
+    });
   }
 
   @update
   public function checkAll(isCompleted:Bool) {
     return UpdateState({
-      entries: entries.map(e -> {
-        e.completed = isCompleted;
-        e;
-      })
+      entries: entries.map(e -> ({
+        id: e.id,
+        description: e.description,
+        editing: e.editing,
+        completed: isCompleted
+      }:Entry))
     });
   }
 
@@ -187,6 +213,9 @@ class Root extends Component {
   }
 }
 
+// Components marked with `@lazy` will only update if their 
+// `@prop`s have changed (only `task` in this case).
+@lazy
 class ViewInput extends Component {
   @prop var task:String;
   var ref:js.html.InputElement;
@@ -268,9 +297,27 @@ class ViewEntries extends Component {
   }
 }
 
+// This class is why we were copying objects in our Model, not 
+// mutating them. If we just change a property on `entry` the
+// Component won't detect that anything has changed.
+//
+// Note that this doesn't mean you can't mutate objects in
+// Blok -- it's just a quirk of using `@lazy`, which is
+// completely optional. 
+@lazy
 class ViewEntry extends Component {
   @prop var entry:Entry;
   var ref:js.html.InputElement;
+
+  // Methods with `@effect` meta will run after _every_ render.
+  //
+  // Other available hooks are `@init` (runs once when the 
+  // Component is constructed) and `@dispose` (runs once when
+  // the Component is removed).
+  @effect
+  public function maybeFocus() {
+    if (entry.editing) ref.focus();
+  }
 
   override function render(context:Context):VNode {
     return Html.li({
@@ -378,7 +425,7 @@ class ViewControls extends Component {
     });
   }
 
-  function visibilityControl(
+  inline function visibilityControl(
     url:String,
     visibility:Visibility,
     actualVisibility:Visibility,

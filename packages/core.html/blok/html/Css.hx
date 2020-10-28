@@ -1,6 +1,8 @@
 package blok.html;
 
-#if blok.core.style
+#if !blok.core.style
+  #error "Cannot use blok.html.Css without blok.core.style"
+#end
 
 class Css {
   public static macro function define(e) {
@@ -11,7 +13,3 @@ class Css {
     return blok.html.CssBuilder.export(e);
   }
 }
-
-#else 
-  #error "Cannot use blok.html.Css without blok.core.style"
-#end

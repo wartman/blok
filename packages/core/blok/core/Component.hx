@@ -103,7 +103,6 @@ class Component<Node> {
   }
 
   function __shouldUpdate(_:Dynamic):Bool {
-    // todo: only update if dirty?
     return true;
   }
 

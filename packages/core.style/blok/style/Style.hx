@@ -4,8 +4,6 @@ import blok.style.VStyle;
 
 @:autoBuild(blok.style.StyleBuilder.build())
 class Style {
-  public static inline final pluginKey = 'BLOK_STYLE';
-
   /**
     Define a style inline. This can be handy inside components, but it will NOT
     be updated if properties change.

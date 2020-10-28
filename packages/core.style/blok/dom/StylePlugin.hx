@@ -1,21 +1,31 @@
 package blok.dom;
 
+#if !blok.platform.dom
+  #error "blok.dom.StylePlugin can only be used with the blok.platform.dom package";
+#end
+
 import js.Browser;
 import js.html.Node;
 import js.html.CSSStyleSheet;
 import blok.core.Plugin;
 import blok.core.PluginProvider;
 import blok.style.StyleList;
-import blok.style.Style;
 import blok.style.VStyle;
+import blok.style.StylePluginPayload;
+import blok.style.StyleToCssGenerator;
 import blok.html.HtmlAttributes;
 
 using Lambda;
-using blok.html.CssGenerator;
 
 // @todo: allow the user to provide their own StyleSheet or
 //        style element here.
 typedef StylePluginOptions = {
+  /**
+    A prefix that will be applied to all styles handled by
+    this plugin. If left blank a simple prefix will be 
+    generated.
+  **/
+  @:optional public final prefix:String;
   /**
     Predefined style IDs. For use in isomorphic apps (potentially).
   **/
@@ -30,10 +40,14 @@ typedef StylePluginOptions = {
 }
 
 class StylePlugin implements Plugin<Node> {
+  static var uid:Int = 0;
+
   public static function provide(?options, build):VNode {
     return PluginProvider.provide(() -> new StylePlugin(options), build);
   }
 
+  final id:Int;
+  final generator:StyleToCssGenerator;
   final sheet:CSSStyleSheet;
   final defined:Array<String>;
   final indices:Map<String, Int> = [];
@@ -43,7 +57,9 @@ class StylePlugin implements Plugin<Node> {
     var el = Browser.document.createStyleElement();
     Browser.document.head.appendChild(el);
     sheet = cast el.sheet;
-    this.defined = options.defined != null ? options.defined : [];
+    id = uid++;
+    generator = new StyleToCssGenerator(options.prefix != null ? options.prefix : '_b${id}');
+    defined = options.defined != null ? options.defined : [];
     if (options.skipBaseStyles != true) registerBaseStyle();
   }
 
@@ -62,16 +78,10 @@ class StylePlugin implements Plugin<Node> {
           case null:
           case _:
             var attrs:GlobalAttr = cast props;
-            var styles:StyleList = plugables
-              .filter(p -> 
-                p.key == Style.pluginKey 
-                && !p.handled
-                && p.value != null
-              ).flatMap(p -> {
-                p.handled = true; // Make sure this won't be reused.
-                p.value;
-              })
-              .filter(p -> p != null);
+            var styles:StyleList = plugables.flatMap(p -> switch Std.downcast(p, StylePluginPayload) {
+              case null: [];
+              case plugin: plugin.value.filter(item -> item != null);
+            });
 
             if (styles.length == 0) return;
             
@@ -88,30 +98,30 @@ class StylePlugin implements Plugin<Node> {
   function processClasses(style:StyleList) {
     var classNames:Array<String> = [];
 
-    function addCss(s:VStyle) {
-      var result = s.generate();
-      for (i in 0...result.classes.length) {
-        classNames.push(result.classes[i]);
-        insertRule(result.classes[i], result.rules[i]);
+    function handleCssResult(result:CssResult) switch result {
+      case None:
+      case Definition(className, rules):
+        classNames.push(className);
+        insertRule(className, rules);
+      case Multiple(results):
+        for (result in results) handleCssResult(result);
+    }
+
+    inline function handleStyle(styleName:String, s:VStyle) {
+      if (defined.contains(styleName)) {
+        classNames.push(generator.getClassName(styleName));
+      } else {
+        defined.push(styleName);
+        handleCssResult(generator.generate(s));
       }
     }
 
     for (s in style) switch s {
       case VStyleDef(type, props, suffix):
-        var name = type.getStyleName(props, suffix);
-        if (defined.contains(name)) {
-          classNames.push(name.getUniqueClassName());
-        } else {
-          defined.push(name);
-          addCss(s);
-        }
-      case VStyleInline(name, def):
-        if (defined.contains(name)) {
-          classNames.push(name.getUniqueClassName());
-        } else {
-          defined.push(name);
-          addCss(s);
-        }
+        var styleName = type.getStyleName(props, suffix);
+        handleStyle(styleName, s);
+      case VStyleInline(styleName, _):
+        handleStyle(styleName, s);
       case VStyleList(styles):
         classNames = classNames.concat(processClasses(styles));
     }

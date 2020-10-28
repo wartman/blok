@@ -35,9 +35,9 @@ class HtmlBuilder {
               NodeType.get($v{name}),
               if (props.attrs != null) props.attrs else {},
               #if blok.core.style
-                if (props.style != null) [new blok.core.PluginPayload(blok.style.Style.pluginKey, props.style)] else null,
+                if (props.style != null) [ props.style.toPluginPayload() ] else null,
               #else
-                [],
+                null,
               #end
               props.ref,
               props.key,
@@ -58,9 +58,9 @@ class HtmlBuilder {
               NodeType.get($v{name}),
               if (props.attrs != null) props.attrs else {},
               #if blok.core.style
-                if (props.style != null) [new blok.core.PluginPayload(blok.style.Style.pluginKey, props.style)] else null,
+                if (props.style != null) [ props.style.toPluginPayload() ] else null,
               #else
-                [],
+                null,
               #end
               props.ref,
               props.key,

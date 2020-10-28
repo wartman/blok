@@ -23,6 +23,10 @@ abstract StyleList(Array<VStyle>) from Array<VStyle> to Array<VStyle> {
     return this;
   }
 
+  @:to inline public function toPluginPayload() {
+    return new StylePluginPayload(this);
+  }
+
   @:to public function toVStyle():VStyle {
     return if (this == null)
       null;

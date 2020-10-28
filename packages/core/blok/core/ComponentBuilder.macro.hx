@@ -3,6 +3,7 @@ package blok.core;
 import haxe.macro.Expr;
 import haxe.macro.Context;
 
+using Lambda;
 using haxe.macro.Tools;
 
 class ComponentBuilder {
@@ -40,6 +41,32 @@ class ComponentBuilder {
         pos: (macro null).pos
       });
     }
+
+    builder.addClassMetaHandler({
+      name: 'lazy',
+      hook: After,
+      options: [],
+      build: (options:{}, builder, fields) -> {
+        if (fields.exists(f -> f.name == '__shouldUpdate')) {
+          Context.error(
+            'Cannot use @lazy and a custom __shouldUpdate method',
+            fields.find(f -> f.name == '__shouldUpdate').pos
+          );
+        }
+
+        var checks:Array<Expr> = [ for (prop in updateProps) {
+          var name = prop.name;
+          macro if ($i{PROPS}.$name != $i{INCOMING_PROPS}.$name) return true;
+        } ];
+
+        builder.add((macro class {
+          override function __shouldUpdate($INCOMING_PROPS:Dynamic):Bool {
+            $b{checks};
+            return false;
+          }
+        }).fields);
+      } 
+    });
 
     builder.addFieldMetaHandler({
       name: 'prop',
@@ -247,11 +274,6 @@ class ComponentBuilder {
         @:noCompletion
         override function __updateProps($INCOMING_PROPS:Dynamic) {
           $b{updates};
-        }
-
-        @:noCompletion
-        override function __shouldUpdate($INCOMING_PROPS:Dynamic) {
-          return true;
         }
 
         @:noCompletion

@@ -1,46 +1,60 @@
-package blok.html;
+package blok.style;
 
-#if blok.core.style
+#if !blok.core.style
+  #error "The blok.core.style package is required for blok.core.StyleToCssGenerator";
+#end
 
+import haxe.ds.Map;
 import blok.style.VStyle;
 
 using Lambda;
 using StringTools;
 
-typedef CssResult = {
-  classes:Array<String>,
-  rules:Array<String>
+enum CssResult {
+  None;
+  Definition(className:String, rules:String);
+  Multiple(results:Array<CssResult>);
 }
 
-class CssGenerator {
-  static var uid:Int = 0;
-  static final classNames:Map<String, String> = [];
+class StyleToCssGenerator {
+  var uid:Int = 0;
+  final prefix:String;
+  final styleNameToClassName:Map<String, String> = [];
 
-  public static function generate(style:VStyle):CssResult {
+  public function new(prefix = '_b') {
+    this.prefix = prefix;
+  }
+
+  // @todo: It may be more robust to use a hash that takes the Name as a
+  //        seed and always generates the same result. Might also be 
+  //        slower. Think on it, anyway. 
+  public function getClassName(styleName:String) {
+    if (!styleNameToClassName.exists(styleName)) {
+      #if debug
+        styleNameToClassName.set(styleName, prefix + '--' + styleName.split('--').shift() + '--' + uid++);
+      #else
+        styleNameToClassName.set(styleName, '${prefix}_${uid++}');
+      #end
+    }
+    return styleNameToClassName.get(styleName);
+  }
+
+  public function generate(style:VStyle):CssResult {
     return switch style {
+      case null: None;
       case VStyleDef(type, props, suffix):
         var name = type.getStyleName(props, suffix);
-        var className = getUniqueClassName(name);
-        return {
-          classes: [ className ],
-          rules: [ generateExprs('.$className', type.renderStyle(props)) ]
-        };
+        var className = getClassName(name);
+        return Definition(className, generateExprs('.$className', type.renderStyle(props)));
       case VStyleInline(name, def):
-        var className = getUniqueClassName(name);
-        return {
-          classes: [ className ],
-          rules: [ generateExprs('.$className', def()) ]
-        };
+        var className = getClassName(name);
+        return Definition(className, generateExprs('.$className', def()));
       case VStyleList(styles):
-        var out = styles.map(generate);
-        return {
-          classes: out.flatMap(r -> r.classes),
-          rules: out.flatMap(r -> r.rules)
-        };
+        return Multiple(styles.map(generate));
     }
   }
 
-  public static function generateExprs(selector:String, exprs:Array<VStyleExpr>) {
+  function generateExprs(selector:String, exprs:Array<VStyleExpr>) {
     var out:Array<String> = [];
     var def:Array<String> = [];
     
@@ -102,23 +116,4 @@ class CssGenerator {
 
     return out.join(' ');
   }
-
-  public static function getUniqueClassName(name:String) {
-    if (!classNames.exists(name)) {
-      classNames.set(name, '_b_${uid++}');
-    }
-    return classNames.get(name);
-  }
-
-  // static function randomName() {
-  //   function rand(from:Int, to:Int):Int {
-  //     return from + Math.floor((to - from) * Math.random());
-  //   }
-  //   var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  //   return '_b_' + [ for (i in 0...10) chars.charAt(rand(0, chars.length - 1)) ].join('');
-  // }
 }
-
-#else
-  #error "Cannot use blok.html.CssGenerator without blok.core.style"
-#end
