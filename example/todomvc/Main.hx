@@ -29,13 +29,17 @@ class Main {
   }
 }
 
-// Most data in Blok should be handled with simple classes
-// or typedefs.
-typedef Entry = {
-  public var id:Int;
-  public var description:String;
-  public var completed:Bool;
-  public var editing:Bool;
+// `PureObject` is a simple way to create immutable objects.
+//
+// Instead of being able to mutate fields, you use the `with` method
+// to create a copy of the object with the new fields changed.
+// This is useful if you're using `@lazy` Components (more on that
+// later) or trying to be Elmish. 
+class Entry implements PureObject {
+  @prop var id:Int;
+  @prop var description:String;
+  @prop var completed:Bool;
+  @prop var editing:Bool;
 }
 
 enum abstract Visibility(String) to String {
@@ -47,11 +51,6 @@ enum abstract Visibility(String) to String {
 // A `State` is like a mix of the Model and Updates in the Elm architecture.
 //
 // Think of each `@update` method as a message in elm.
-//
-// Note that we always create a new Entry when an object changes. This isn't
-// required, and is a bit clunky, but (to keep this more elm-like) I've
-// gone for as much immutablity as possible here. This also allows
-// `@lazy` to work correctly on Components (more on that below).
 class Model implements State {
   static inline final BLOK_TODO_MODEL = 'blok-todo-model';
 
@@ -63,8 +62,14 @@ class Model implements State {
         visibility: All,
         entries: []
       })
-    else 
-      new Model(cast Json.parse(stored));
+    else {
+      var raw = Json.parse(stored);
+      var entries = (Reflect.field(raw, 'entries'):Array<Dynamic>).map(e -> {
+        new Entry(cast e);
+      });
+      Reflect.setField(raw, 'entries', entries);
+      new Model(cast raw);
+    }
 
     model.getObservable().observe(save);
     
@@ -91,12 +96,12 @@ class Model implements State {
       field: '',
       uid: uid + 1,
       entries: entries.concat([
-        {
+        new Entry({
           id: uid,
           description: field,
           editing: false,
           completed: false
-        }
+        })
       ])
     });
   }
@@ -113,12 +118,7 @@ class Model implements State {
     var entry = entries.find(e -> e.id == id);
     if (entry == null) return None;
     return UpdateState({
-      entries: entries.map(e -> if (e.id == entry.id) ({
-        id: e.id,
-        description: e.description,
-        editing: isEditing,
-        completed: e.completed
-      }:Entry) else e)
+      entries: entries.map(e -> if (e.id == entry.id) e.with({ editing: isEditing }) else e)
     });
   }
 
@@ -127,12 +127,7 @@ class Model implements State {
     var entry = entries.find(e -> e.id == id);
     if (entry == null) return None;
     return UpdateState({
-      entries: entries.map(e -> if (e.id == entry.id) ({
-        id: e.id,
-        description: description,
-        editing: e.editing,
-        completed: e.completed
-      }:Entry) else e)
+      entries: entries.map(e -> if (e.id == entry.id) e.with({ description: description }) else e)
     });
   }
 
@@ -156,24 +151,14 @@ class Model implements State {
     var entry = entries.find(e -> e.id == id);
     if (entry == null) return None;
     return UpdateState({
-      entries: entries.map(e -> if (e.id == entry.id) ({
-        id: e.id,
-        description: e.description,
-        editing: e.editing,
-        completed: isCompleted
-      }:Entry) else e)
+      entries: entries.map(e -> if (e.id == entry.id) e.with({ completed: isCompleted }) else e)
     });
   }
 
   @update
   public function checkAll(isCompleted:Bool) {
     return UpdateState({
-      entries: entries.map(e -> ({
-        id: e.id,
-        description: e.description,
-        editing: e.editing,
-        completed: isCompleted
-      }:Entry))
+      entries: entries.map(e -> e.with({ completed: isCompleted }))
     });
   }
 
@@ -297,13 +282,14 @@ class ViewEntries extends Component {
   }
 }
 
-// This class is why we were copying objects in our Model, not 
-// mutating them. If we just change a property on `entry` the
-// Component won't detect that anything has changed.
+// An important note here: if we just mutated the fields on
+// our `Entry`, this Component would never update as `@lazy`
+// would never see that `entry` changed. Instead, we
+// use `blok.core.PureObject` to ensure that we're always
+// dealing with a new object.
 //
-// Note that this doesn't mean you can't mutate objects in
-// Blok -- it's just a quirk of using `@lazy`, which is
-// completely optional. 
+// This is an entirely optional way to do things, but it's
+// more in-line with how Elm works.
 @lazy
 class ViewEntry extends Component {
   @prop var entry:Entry;

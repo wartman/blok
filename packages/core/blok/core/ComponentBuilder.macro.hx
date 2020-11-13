@@ -46,7 +46,7 @@ class ComponentBuilder {
       name: 'lazy',
       hook: After,
       options: [],
-      build: (options:{}, builder, fields) -> {
+      build: function (options:{}, builder, fields) {
         if (fields.exists(f -> f.name == '__shouldUpdate')) {
           Context.error(
             'Cannot use @lazy and a custom __shouldUpdate method',
