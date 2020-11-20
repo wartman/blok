@@ -2,15 +2,12 @@ package blok.core;
 
 import haxe.macro.Expr;
 import haxe.macro.Context;
+import blok.core.BuilderHelpers.*;
 
 using haxe.macro.Tools;
 using blok.core.BuilderHelpers;
 
 class StateBuilder {
-  static final PROPS = '__props';
-  static final INCOMING_PROPS = '__incomingProps';
-  static final OPTIONAL_META =  { name: ':optional', pos: (macro null).pos };
-
   public static function build(nodeTypeName:String) {
     var fields = Context.getBuildFields();
     var cls = Context.getLocalClass().get();

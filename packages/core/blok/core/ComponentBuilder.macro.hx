@@ -2,16 +2,12 @@ package blok.core;
 
 import haxe.macro.Expr;
 import haxe.macro.Context;
+import blok.core.BuilderHelpers.*;
 
 using Lambda;
 using haxe.macro.Tools;
 
 class ComponentBuilder {
-  static final PROPS = '__props';
-  static final INCOMING_PROPS = '__incomingProps';
-  static final OPTIONAL_META = {name: ':optional', pos: (macro null).pos};
-
-  // todo: The way I'm handling `nodeTypeName` feels really hacky.
   public static function build(nodeTypeName:String) {
     var fields = Context.getBuildFields();
     var cls = Context.getLocalClass().get();
@@ -116,6 +112,28 @@ class ComponentBuilder {
           Context.error('@prop can only be used on vars', f.pos);
       }
     });
+
+    // builder.addFieldMetaHandler({
+    //   name: 'use',
+    //   hook: Normal,
+    //   options: [],
+    //   build: function (options:{}, builder, filed) switch field.kind {
+    //     case FVar(t, e):
+    //       if (t == null) {
+    //         Context.error('Types cannot be inferred for @prop vars', field.pos);
+    //       }
+
+    //       if (!Context.unify(t.toType(), Context.getType('blok.core.Providable'))) {
+    //         Context.error('@use must be a blok.core.Providable', field.pos);
+    //       }
+
+    //       // Todo: this will become a way to consume State/etc without needing
+    //       // to use `State.from(context)` all the time.
+
+    //     default:
+    //       Context.error('@prop can only be used on vars', field.pos);
+    //   }
+    // });
 
     builder.addFieldMetaHandler({
       name: 'update',

@@ -2,11 +2,9 @@ package blok.core;
 
 import haxe.macro.Expr;
 import haxe.macro.Context;
+import blok.core.BuilderHelpers.*;
 
 class PureObjectBuilder {
-  static final INCOMING_PROPS = '__incomingProps';
-  static final OPTIONAL_META = {name: ':optional', pos: (macro null).pos};
-
   public static function build() {
     var fields = Context.getBuildFields();
     var cls = Context.getLocalClass().get();
@@ -17,7 +15,7 @@ class PureObjectBuilder {
     var initializers:Array<Expr> = [];
     var withBuilder:Array<ObjectField> = [];
 
-    function addProp(name:String, type:ComplexType, isOptional:Bool) {
+    function addProp(name:String, type:ComplexType, isOptional:Bool, isUpdateable:Bool) {
       props.push({
         name: name,
         kind: FVar(type, null),
@@ -25,7 +23,7 @@ class PureObjectBuilder {
         meta: isOptional ? [ OPTIONAL_META ] : [],
         pos: (macro null).pos
       });
-      withProps.push({
+      if (isUpdateable) withProps.push({
         name: name,
         kind: FVar(type, null),
         access: [ APublic ],
@@ -55,7 +53,7 @@ class PureObjectBuilder {
 
           var name = field.name;
 
-          addProp(field.name, t, e != null);
+          addProp(field.name, t, e != null, true);
           initializers.push(e == null
             ? macro this.$name = $i{INCOMING_PROPS}.$name
             : macro this.$name = $i{INCOMING_PROPS}.$name == null ? ${e} : $i{INCOMING_PROPS}.$name 
@@ -66,6 +64,41 @@ class PureObjectBuilder {
           });
         default:
           Context.error('@prop can only be used on vars', field.pos);
+      }
+    });
+
+    builder.addFieldMetaHandler({
+      name: 'constant',
+      hook: Normal,
+      options: [],
+      build: function (options:{}, builder, field) switch field.kind {
+        case FVar(t, e):
+          if (t == null) {
+            Context.error('Types cannot be inferred for @constant vars', field.pos);
+          }
+
+          if (!field.access.contains(APublic)) {
+            field.access.remove(APrivate);
+            field.access.push(APublic);
+          }
+
+          if (!field.access.contains(AFinal)) {
+            field.access.push(AFinal);
+          }
+
+          var name = field.name;
+
+          addProp(field.name, t, e != null, false);
+          initializers.push(e == null
+            ? macro this.$name = $i{INCOMING_PROPS}.$name
+            : macro this.$name = $i{INCOMING_PROPS}.$name == null ? ${e} : $i{INCOMING_PROPS}.$name 
+          );
+          withBuilder.push({
+            field: name,
+            expr: macro this.$name
+          });
+        default:
+          Context.error('@constant can only be used on vars', field.pos);
       }
     });
 

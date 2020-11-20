@@ -36,7 +36,7 @@ class Main {
 // This is useful if you're using `@lazy` Components (more on that
 // later) or trying to be Elmish. 
 class Entry implements PureObject {
-  @prop var id:Int;
+  @constant var id:Int; // @constant props CANNOT be changed via `with`.
   @prop var description:String;
   @prop var completed:Bool;
   @prop var editing:Bool;
