@@ -15,11 +15,11 @@ class RecordBuilder {
     var props:Array<Field> = [];
     var withProps:Array<Field> = [];
     var initializers:Array<Expr> = [];
-    var toStringProps:Array<Expr> = [];
-    var equalsComp:Array<Expr> = [];
+    var nameBuilder:Array<Expr> = [];
     var withBuilder:Array<ObjectField> = [];
 
     function addProp(name:String, type:ComplexType, isOptional:Bool, isUpdateable:Bool) {
+      nameBuilder.push(macro $v{name} + ': ' + Std.string(this.$name));
       props.push({
         name: name,
         kind: FVar(type, null),
@@ -34,14 +34,6 @@ class RecordBuilder {
         meta: [ OPTIONAL_META ],
         pos: (macro null).pos
       });
-    }
-
-    function addToString(name:String) {
-      toStringProps.push(macro $v{name} + ': ' + Std.string(this.$name));
-    }
-
-    function isEqual(name:String) {
-      equalsComp.push(macro if (this.$name != other.$name) return false);
     }
 
     builder.addFieldMetaHandler({
@@ -66,8 +58,7 @@ class RecordBuilder {
           var name = field.name;
 
           addProp(field.name, t, e != null, true);
-          addToString(name);
-          isEqual(name);
+
           initializers.push(e == null
             ? macro this.$name = $i{INCOMING_PROPS}.$name
             : macro this.$name = $i{INCOMING_PROPS}.$name == null ? ${e} : $i{INCOMING_PROPS}.$name 
@@ -103,8 +94,7 @@ class RecordBuilder {
           var name = field.name;
 
           addProp(field.name, t, e != null, false);
-          addToString(name);
-          isEqual(name);
+
           initializers.push(e == null
             ? macro this.$name = $i{INCOMING_PROPS}.$name
             : macro this.$name = $i{INCOMING_PROPS}.$name == null ? ${e} : $i{INCOMING_PROPS}.$name 
@@ -123,8 +113,11 @@ class RecordBuilder {
       var withPropType = TAnonymous(withProps);
       var clsType = Context.getLocalType().toComplexType();
       return (macro class {
+        final __hash:String;
+
         public function new($INCOMING_PROPS:$propType) {
           $b{initializers};
+          __hash = $v{cls.pack.concat([ cls.name ]).join('.')} + ' { ' + [ $a{nameBuilder} ].join(', ') + ' }';
         }
 
         /**
@@ -148,14 +141,12 @@ class RecordBuilder {
         /**
           Check if all the fields of this Record match the other Record.
         **/
-        public function equals(other:$clsType) {
-          $b{equalsComp};
-          return true;
+        public function equals(other:$clsType):Bool {
+          return __hash == other.__hash;
         }
 
-        public function toString() {
-          return $v{cls.pack.concat([ cls.name ]).join('.')}
-            + ' { ' + [ $a{toStringProps} ].join(', ') + ' }';
+        public function toString():String {
+          return __hash;
         }
       }).fields;
     });

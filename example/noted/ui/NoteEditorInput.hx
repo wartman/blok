@@ -36,10 +36,9 @@ class NoteEditorInput extends Component {
 
   @update
   function doValidation() {
-    return if (validate(ref.value)) 
-      UpdateState({ showMessage: false })
-    else
-      UpdateState({ showMessage: true });
+    return UpdateState({
+      showMessage: !validate(ref.value)
+    });
   }
 
   override function render(context:Context) {

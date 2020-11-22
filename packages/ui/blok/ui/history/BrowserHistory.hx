@@ -12,7 +12,7 @@ class BrowserHistory implements History {
 
   public function new(?root) {
     this.root = root;
-    location = new Observable(getLocation(), Type.getClassName(BrowserHistory));
+    location = new Observable(getLocation());
     Browser.window.addEventListener('popstate', (e) -> {
       location.notify(getLocation());
     });

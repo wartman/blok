@@ -38,7 +38,7 @@ class Main {
 // This is useful if you're using `@lazy` Components (more on that
 // later) or trying to be Elmish.
 class Entry implements Record {
-  @constant var id:Int; // @constant vars are always copied and never change.
+  @constant var id:Int; // @constant vars are always coppied and never change.
   @prop var description:String;
   @prop var completed:Bool;
   @prop var editing:Bool;
@@ -292,6 +292,7 @@ class ViewEntries extends Component {
 @lazy
 class ViewEntry extends Component {
   @prop var entry:Entry;
+  @use var model:Model; // @use is a shortcut for `Model.from(context)`.
   var ref:js.html.InputElement;
 
   // Methods with `@effect` meta will run after _every_ render.
@@ -324,19 +325,19 @@ class ViewEntry extends Component {
                 className: 'toggle',
                 type: Checkbox,
                 checked: entry.completed,
-                onclick: _ -> Model.from(context).check(entry.id, !entry.completed)
+                onclick: _ -> model.check(entry.id, !entry.completed)
               }
             }),
             Html.label({
               attrs: {
-                ondblclick: _ -> Model.from(context).editingEntry(entry.id, true)
+                ondblclick: _ -> model.editingEntry(entry.id, true)
               },
               children: [ Html.text(entry.description) ]
             }),
             Html.button({
               attrs: {
                 className: 'destroy',
-                onclick: _ ->  Model.from(context).deleteEntry(entry.id)
+                onclick: _ ->  model.deleteEntry(entry.id)
               }
             })
           ]
@@ -348,12 +349,12 @@ class ViewEntry extends Component {
             value: entry.description,
             name: 'title',
             id: 'todo-${entry.id}',
-            oninput: _ -> Model.from(context).updateEntry(entry.id, ref.value),
-            onblur: _ -> Model.from(context).editingEntry(entry.id, false),
+            oninput: _ -> model.updateEntry(entry.id, ref.value),
+            onblur: _ -> model.editingEntry(entry.id, false),
             onkeydown: e -> {
               var ev:js.html.KeyboardEvent = cast e;
               if (ev.key == 'Enter') {
-                Model.from(context).editingEntry(entry.id, false);
+                model.editingEntry(entry.id, false);
               }
             }
           }

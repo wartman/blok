@@ -3,21 +3,19 @@ package blok.ui;
 class Portal extends Component {
   static var id:Int = 0;
 
-  @prop var child:VNode;
   final key:String = 'portal_${id++}';
+  
+  @prop var child:VNode;
+  @use var state:PortalState;
 
   @init
   function registerPortal() {
-    PortalState
-      .from(getCurrentContext())
-      .addPortal(key, child);
+    state.addPortal(key, child);
   }
 
   @dispose
   function removePortal() {
-    PortalState
-      .from(getCurrentContext())
-      .removePortal(key);
+    state.removePortal(key);
   }
 
   override function render(context:Context):VNode {

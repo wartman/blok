@@ -21,7 +21,7 @@ class ComponentBuilder {
     var disposeHooks:Array<Expr> = [];
     var effectHooks:Array<Expr> = [];
 
-    function addProp(name:String, type:ComplexType, isOptional:Bool) {
+    function addProp(name:String, type:ComplexType, isOptional:Bool, isUpdateable:Bool = true) {
       props.push({
         name: name,
         kind: FVar(type, null),
@@ -29,7 +29,7 @@ class ComponentBuilder {
         meta: isOptional ? [ OPTIONAL_META ] : [],
         pos: (macro null).pos
       });
-      updateProps.push({
+      if (isUpdateable) updateProps.push({
         name: name,
         kind: FVar(type, null),
         access: [ APublic ],
@@ -113,27 +113,102 @@ class ComponentBuilder {
       }
     });
 
-    // builder.addFieldMetaHandler({
-    //   name: 'use',
-    //   hook: Normal,
-    //   options: [],
-    //   build: function (options:{}, builder, filed) switch field.kind {
-    //     case FVar(t, e):
-    //       if (t == null) {
-    //         Context.error('Types cannot be inferred for @prop vars', field.pos);
-    //       }
+    builder.addFieldMetaHandler({
+      name: 'use',
+      hook: Normal,
+      options: [],
+      build: function (options:{}, builder, field) switch field.kind {
+        case FVar(t, e):
+          if (t == null) {
+            Context.error('Types cannot be inferred for @use vars', field.pos);
+          }
 
-    //       if (!Context.unify(t.toType(), Context.getType('blok.core.Providable'))) {
-    //         Context.error('@use must be a blok.core.Providable', field.pos);
-    //       }
+          if (e != null) {
+            Context.error('@use vars cannot be initilized', field.pos);
+          }
 
-    //       // Todo: this will become a way to consume State/etc without needing
-    //       // to use `State.from(context)` all the time.
+          if (Context.unify(t.toType(), Context.getType('blok.State'))) {
+            var path = t.toType().toString().split('.'); // is there a better way
+            var name = field.name;
+            var getter = 'get_$name';
+            var backingName = '__computedValue_$name';
 
-    //     default:
-    //       Context.error('@prop can only be used on vars', field.pos);
-    //   }
-    // });
+            field.kind = FProp('get', 'never', t, null);
+
+            builder.add((macro class {
+              var $backingName:$t = null;
+
+              function $getter() {
+                if (this.$backingName == null) 
+                  this.$backingName = $p{path}.from(__context);
+                return this.$backingName;
+              } 
+            }).fields);
+
+            updates.push(macro this.$backingName = null);
+
+            return;
+          }
+
+          // todo: allow other Providables?
+
+          Context.error('@use must be a blok.State', field.pos);
+
+        default:
+          Context.error('@prop can only be used on vars', field.pos);
+      }
+    });
+
+    builder.addFieldMetaHandler({
+      name: 'observable',
+      hook: Normal,
+      options: [
+        { name: 'watch', optional: true },
+        { name: 'internal', optional: true }
+      ],
+      build: function (options:{
+        ?watch:Bool,
+        ?internal:Bool
+      }, builder, field) switch field.kind {
+        case FVar(t, e):
+          if (t == null) {
+            Context.error('Types cannot be inferred for @observable vars', field.pos);
+          }
+
+          if (e == null && options.internal == true) {
+            Context.error('An initializer is required for internal @observables', field.pos);
+          }
+
+          var name = field.name;
+          var obsType = macro:blok.core.Observable<$t>;
+          var init = if (options.internal) e else (e == null
+            ? macro $i{INCOMING_PROPS}.$name
+            : macro $i{INCOMING_PROPS}.$name == null ? ${e} : $i{INCOMING_PROPS}.$name);
+
+          if (!field.access.contains(AFinal)) {
+            field.access.push(AFinal);
+          }
+
+          field.kind = FVar(obsType, null);
+          addProp(name, t, e != null, false);
+          initHooks.push(macro this.$name = new blok.core.Observable($init));
+          disposeHooks.push(macro this.$name.dispose());
+
+          if (options.watch == true) {
+            var observerName = '__observer_$name';
+            builder.add((macro class {
+              var $observerName:blok.core.Observable.Observer<$t>;
+            }).fields);
+            initHooks.push(macro this.$observerName = this.$name.observe(_ -> __requestUpdate()));
+            disposeHooks.push(macro {
+              this.$observerName.cancel();
+              this.$observerName = null;
+            });
+          }
+        default: 
+          Context.error('@observable can only be used on vars', field.pos);
+      }
+    });
 
     builder.addFieldMetaHandler({
       name: 'update',
@@ -159,13 +234,6 @@ class ComponentBuilder {
               case UpdateStateSilent(data):
                 __updateProps(data);
             }
-            // var incoming = closure();
-            // if (incoming != null) {
-            //   if (__shouldUpdate(incoming)) {
-            //     __updateProps(incoming);
-            //     __requestUpdate();
-            //   }
-            // }
           }
         default:
           Context.error('@update must be used on a method', field.pos);

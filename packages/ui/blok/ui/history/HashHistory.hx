@@ -9,7 +9,7 @@ class HashHistory implements History {
   final location:Observable<String>;
 
   public function new() {
-    location = new Observable(getLocation(), Type.getClassName(HashHistory));
+    location = new Observable(getLocation());
     Browser.window.addEventListener('popstate', (e) -> location.notify(getLocation()));
   }
 

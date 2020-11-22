@@ -77,7 +77,7 @@ abstract Value(ValueDef) to ValueDef from ValueDef {
   }
 
   public inline function withKey(?key:String) {
-    return if (key == null) this else  Value.keyed(key, this);
+    return if (key == null) this else Value.keyed(key, this);
   }
 
   public function getKey():String {
