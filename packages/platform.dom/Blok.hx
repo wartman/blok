@@ -2,7 +2,7 @@
 @:noUsing @:noDoc typedef Platform = blok.dom.Platform;
 @:noUsing @:noDoc typedef Component = blok.Component;
 @:noUsing @:noDoc typedef Provider<T> = blok.core.Provider<T, js.html.Node>;
-@:noUsing @:noDoc typedef PureObject = blok.core.PureObject; 
+@:noUsing @:noDoc typedef Record = blok.core.Record; 
 
 @:noUsing @:noDoc typedef State = blok.State;
 @:noUsing @:noDoc typedef Observable<T> = blok.core.Observable<T>;

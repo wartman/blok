@@ -1,7 +1,9 @@
 package noted.data;
 
-typedef Tag = {
-  public final id:Id<Tag>;
-  public final name:String;
-  public var notes:Array<Id<Note>>;
+import blok.core.Record;
+
+class Tag implements Record {
+  @prop var id:Id<Tag>;
+  @prop var name:String;
+  @prop var notes:Array<Id<Note>>;
 }

@@ -14,6 +14,7 @@ enum NoteFilter {
   FilterByStatus(status:NoteStatus);
 }
 
+// @todo: make the `tags` and `notes` properties immutable.
 class Store implements State {
   @prop var uid:Int;
   @prop var notes:ReadOnlyArray<Note>;
@@ -62,13 +63,13 @@ class Store implements State {
   public function addNote(name:String, content:String, noteTags:Array<Id<Tag>>, status:NoteStatus = Draft) {
     return UpdateState({
       uid: uid + 1,
-      notes: notes.concat([ {
+      notes: notes.concat([ new Note({
         id: uid,
         name: name,
         content: content,
         status: status,
         tags: noteTags
-      } ]),
+      }) ]),
       tags: tags.map(tag -> {
         if (noteTags.contains(tag.id)) tag.notes.push(uid);
         tag;
@@ -81,13 +82,14 @@ class Store implements State {
     if (id.isInvalid()) return None;
     return switch getNote(id) {
       case None: None;
-      case Some(note): 
-        note.name = name;
-        note.content = content;
-        note.tags = noteTags;
-        note.status = status;
-
+      case Some(note):
         UpdateState({
+          notes: notes.map(n -> if (n.id == id) n.with({
+            name: name,
+            content: content,
+            tags: noteTags,
+            status: status
+          }) else n ),
           tags: tags.map(tag -> {
             if (tag.notes.contains(note.id)) {
               if (!note.tags.contains(tag.id)) 
@@ -143,11 +145,11 @@ class Store implements State {
   public function addTagSilent(name:String, tagNotes:Array<Id<Note>>) {
     return UpdateStateSilent({
       uid: uid + 1,
-      tags: tags.concat([ {
+      tags: tags.concat([ new Tag({
         id: uid,
         name: name,
         notes: tagNotes
-      } ]),
+      }) ]),
       notes: notes.map(note -> {
         if (tagNotes.contains(note.id)) note.tags.push(uid);
         note;
@@ -159,11 +161,11 @@ class Store implements State {
   public function addTag(name:String, tagNotes:Array<Id<Note>>) {
     return UpdateState({
       uid: uid + 1,
-      tags: tags.concat([ {
+      tags: tags.concat([ new Tag({
         id: uid,
         name: name,
         notes: tagNotes
-      } ]),
+      }) ]),
       notes: notes.map(note -> {
         if (tagNotes.contains(note.id)) note.tags.push(uid);
         note;
@@ -185,11 +187,11 @@ class Store implements State {
   public function addTagToFilter(name:String) {
     return UpdateState({
       uid: uid + 1,
-      tags: tags.concat([ {
+      tags: tags.concat([ new Tag({
         id: uid,
         name: name,
         notes: []
-      } ]),
+      }) ]),
       filter: switch filter {
         case FilterByTags(tags): FilterByTags(tags.concat([ uid ]));
         default: filter;

@@ -29,6 +29,11 @@ class NoteEditor extends Component {
     isValid = new Observable(note.name.length > 0 && note.content.length > 0);
   }
 
+  @dispose
+  function cleanup() {
+    isValid.dispose();
+  }
+
   // @todo: this is pretty hacky
   @update
   function addTag(context:Context, name:String) {
@@ -41,7 +46,7 @@ class NoteEditor extends Component {
             tag;
           case None: 
             note.tags.push(store.uid);
-            var ret:Tag = { id: store.uid, name: name, notes: [] };
+            var ret = new Tag({ id: store.uid, name: name, notes: [] });
             store.addTagSilent(name, []); // this seems dicy.
             ret;
         }
@@ -52,9 +57,23 @@ class NoteEditor extends Component {
   // @todo: this is pretty hacky
   @update
   function removeTag(id:Id<Tag>) {
-    note.tags = note.tags.filter(i -> i != id);
     return UpdateState({
+      note: note.with({ tags: note.tags.filter(i -> i != id) }),
       tags: tags.filter(tag -> tag.id != id)
+    });
+  }
+
+  @update
+  function updateNoteName(name:String) {
+    return UpdateStateSilent({
+      note: note.with({ name: name })
+    });
+  }
+
+  @update
+  function updateNoteContent(content:String) {
+    return UpdateStateSilent({
+      note: note.with({ content: content })
     });
   }
 
@@ -75,7 +94,7 @@ class NoteEditor extends Component {
                 isValid.notify(v);
                 return v;
               },
-              onInput: value -> note.name = value
+              onInput: updateNoteName
             })
           ]
         }),
@@ -93,7 +112,7 @@ class NoteEditor extends Component {
                 isValid.notify(v);
                 return v;
               },
-              onInput: value -> note.content = value
+              onInput: updateNoteContent
             })
           ]
         }),
@@ -113,8 +132,7 @@ class NoteEditor extends Component {
             isValid.mapToVNode(valid -> Button.node({
               disabled: !valid,
               onClick: _ -> {
-                note.status = Published;
-                onSave(note);
+                onSave(note.with({ status: Published }));
                 requestClose();
               },
               type: Important,
@@ -123,8 +141,7 @@ class NoteEditor extends Component {
             isValid.mapToVNode(valid -> Button.node({
               disabled: !valid,
               onClick: _ -> {
-                note.status = Draft;
-                onSave(note);
+                onSave(note.with({ status: Draft }));
                 requestClose();
               },
               type: Important,

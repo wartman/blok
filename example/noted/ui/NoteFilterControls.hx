@@ -70,11 +70,11 @@ class NoteFilterControls extends Component {
                     case FilterByTags(tags):
                       tags.map(id -> switch store.getTag(id) {
                         case Some(v): v;
-                        case None: ({
+                        case None: new Tag({
                           id: Id.invalid(),
                           name: 'Not Found',
                           notes: []
-                        }:Tag);
+                        });
                       });
                     default: [];
                   },

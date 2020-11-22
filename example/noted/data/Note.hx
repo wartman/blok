@@ -1,37 +1,28 @@
 package noted.data;
 
+using Blok;
+
 enum NoteStatus {
   Draft;
   Published;
   Trashed;
 }
 
-@:structInit
-class Note {
+class Note implements Record {
   public static function empty():Note {
-    return {
+    return new Note({
       id: Id.invalid(),
       name: '',
       content: '',
       tags: [],
       status: Draft
-    };
+    });
   }
 
-  public final id:Id<Note>;
-  public var name:String;
-  public var content:String;
-  public var tags:Array<Id<Tag>>;
-  public var status:NoteStatus = Draft;
-  public var editing:Bool = false;
-
-  public function copy():Note {
-    return {
-      id: Id.invalid(),
-      name: name,
-      content: content,
-      tags: tags.copy(),
-      status: status
-    };
-  }
+  @constant var id:Id<Note>;
+  @prop var name:String;
+  @prop var content:String;
+  @prop var tags:Array<Id<Tag>>;
+  @prop var status:NoteStatus = Draft;
+  @prop var editing:Bool = false;
 }

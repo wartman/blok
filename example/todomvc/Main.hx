@@ -29,14 +29,16 @@ class Main {
   }
 }
 
-// `PureObject` is a simple way to create immutable objects.
+// `Record` is a simple way to create immutable objects.
 //
-// Instead of being able to mutate fields, you use the `with` method
-// to create a copy of the object with the new fields changed.
+// Instead of being able to mutate fields, you use a macro-generated 
+// `record.with({ ... })` method to create a copy of the object 
+// with updated fields.
+//
 // This is useful if you're using `@lazy` Components (more on that
-// later) or trying to be Elmish. 
-class Entry implements PureObject {
-  @constant var id:Int; // @constant props CANNOT be changed via `with`.
+// later) or trying to be Elmish.
+class Entry implements Record {
+  @constant var id:Int; // @constant vars are always copied and never change.
   @prop var description:String;
   @prop var completed:Bool;
   @prop var editing:Bool;
@@ -115,19 +117,17 @@ class Model implements State {
 
   @update
   public function editingEntry(id:Int, isEditing:Bool) {
-    var entry = entries.find(e -> e.id == id);
-    if (entry == null) return None;
+    if (!entries.exists(e -> e.id == id)) return None;
     return UpdateState({
-      entries: entries.map(e -> if (e.id == entry.id) e.with({ editing: isEditing }) else e)
+      entries: entries.map(e -> if (e.id == id) e.with({ editing: isEditing }) else e)
     });
   }
 
   @update
   public function updateEntry(id:Int, description:String) {
-    var entry = entries.find(e -> e.id == id);
-    if (entry == null) return None;
+    if (!entries.exists(e -> e.id == id)) return None;
     return UpdateState({
-      entries: entries.map(e -> if (e.id == entry.id) e.with({ description: description }) else e)
+      entries: entries.map(e -> if (e.id == id) e.with({ description: description }) else e)
     });
   }
 
@@ -148,10 +148,9 @@ class Model implements State {
 
   @update
   public function check(id:Int, isCompleted:Bool) {
-    var entry = entries.find(e -> e.id == id);
-    if (entry == null) return None;
+    if (!entries.exists(e -> e.id == id)) return None;
     return UpdateState({
-      entries: entries.map(e -> if (e.id == entry.id) e.with({ completed: isCompleted }) else e)
+      entries: entries.map(e -> if (e.id == id) e.with({ completed: isCompleted }) else e)
     });
   }
 
@@ -285,7 +284,7 @@ class ViewEntries extends Component {
 // An important note here: if we just mutated the fields on
 // our `Entry`, this Component would never update as `@lazy`
 // would never see that `entry` changed. Instead, we
-// use `blok.core.PureObject` to ensure that we're always
+// use `blok.core.Record` to ensure that we're always
 // dealing with a new object.
 //
 // This is an entirely optional way to do things, but it's
