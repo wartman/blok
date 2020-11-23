@@ -1,7 +1,8 @@
 package blok.ui.style;
 
-import blok.style.Style;
-import blok.style.VStyle;
+import blok.core.style.Style;
+import blok.core.style.StyleExpr;
+import blok.core.html.Css;
 
 class GridItem extends Style {
   // todo

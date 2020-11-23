@@ -5,12 +5,12 @@ import blok.ui.style.*;
 using Blok;
 
 class Root extends Style {
-  override function render():Array<VStyleExpr> {
-    return [
+  override function render():StyleExpr {
+    return Css.properties([
       Box.export({ width: Pct(100) }),
 
-      Style.global([
-        Style.child('#root', [
+      Css.global([
+        Css.child('#root', [
           MediaQuery.minWidth(Config.mobileWidth, [
             Box.export({
               width: Config.mobileWidth,
@@ -25,37 +25,61 @@ class Root extends Style {
           ])
         ]),
 
-        Style.child('h1, h2, h3', [
+        Css.child('h1, h2, h3', [
           Font.export({ 
             size: Em(1),
             weight: Bold 
           }),
-          Style.property('padding', None),
-          Style.property('margin', None)
+          Css.property('padding', None),
+          Css.property('margin', None)
         ]),
 
-        Style.child('body', [
+        Css.child('body', [
           Flex.horizontallyCentered(),
           Font.export({
             family: 'sans-serif',
             size: Em(.8),
             color: Config.darkColor
           }),
-          Style.property('background-color', Config.lightColor),
-          Style.property('margin', EdgeInsets.all(None)),
-          Style.property('padding', EdgeInsets.all(None))
+          Css.property('background-color', Config.lightColor),
+          Css.property('margin', EdgeInsets.all(None)),
+          Css.property('padding', EdgeInsets.all(None))
         ]),
 
-        Style.child('textarea, input', [
-          Style.property('font', 'inherit')
+        Css.child('textarea, input', [
+          Css.property('font', 'inherit')
         ]),
 
-        Style.child('textarea, input, button', [
-          Style.modifier(':focus', [
-            Style.property('outline', 'none')
+        Css.child('textarea, input, button', [
+          Css.modifier(':focus', [
+            Css.property('outline', 'none')
           ])
-        ])
+        ]),
+
+        Css.raw('
+          body, html {
+            padding: 0;
+            margin: 0;
+          }
+          
+          html {
+            box-sizing: border-box;
+          }
+          
+          *, *:before, *:after {
+            box-sizing: inherit;
+          }
+          
+          ul, ol, li {
+            margin: 0;
+            padding: 0;
+          }
+          
+          ul, ol {
+            list-style: none;
+          }
+        ')
       ])
-    ];
+    ]);
   }
 }

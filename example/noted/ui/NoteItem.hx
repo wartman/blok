@@ -13,7 +13,7 @@ using Blok;
 class NoteItem extends Component {
   static final sectionStyle:StyleList = Box.style({
     spacing: EdgeInsets.bottom(Config.mediumGap)
-  }, 'note-item-section');
+  });
 
   @prop var note:Note;
   @prop var editing:Bool = false;

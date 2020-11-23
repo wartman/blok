@@ -6,14 +6,15 @@ using Blok;
 
 class Card extends Style {
   @prop var color:Color = Config.whiteColor;
-  @prop var height:Unit = null;
+  @prop var height:CssUnit = null;
   @prop var padding:EdgeInsets = EdgeInsets.all(Config.mediumGap);
   @prop var outlined:Bool = false;
 
-  override function render():Array<VStyleExpr> {
-    return [
-      if (outlined) Style.properties([
-        Style.property('color', color),
+  override function render():StyleExpr {
+    return Css.properties([
+      
+      if (outlined) Css.properties([
+        Css.property('color', color),
         Background.export({
           color: Color.name('transparent')
         }),
@@ -23,7 +24,7 @@ class Card extends Style {
           type: Solid,
           color: color
         }),
-      ]) else Style.properties([
+      ]) else Css.properties([
         AutoColor.export({ color: color }),
         Border.export({ 
           type: None,
@@ -37,10 +38,11 @@ class Card extends Style {
           color: Color.rgba(0, 0, 0, 0.1)
         })
       ]),
+
       Box.export({
         padding: padding,
         height: height
       })
-    ];
+    ]);
   }
 }

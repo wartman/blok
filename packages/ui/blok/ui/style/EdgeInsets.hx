@@ -1,27 +1,27 @@
 package blok.ui.style;
 
-import blok.style.VStyle.Unit;
-import blok.style.VStyle.Value;
+import blok.core.html.CssUnit;
+import blok.core.html.CssValue;
 
 @:forward
-abstract EdgeInsets(Value) to Value {
-  public inline static function top(top:Unit) {
+abstract EdgeInsets(CssValue) to CssValue {
+  public inline static function top(top:CssUnit) {
     return define({ top: top });
   }
 
-  public inline static function bottom(bottom:Unit) {
+  public inline static function bottom(bottom:CssUnit) {
     return define({ bottom: bottom });
   }
 
-  public inline static function left(left:Unit) {
+  public inline static function left(left:CssUnit) {
     return define({ left: left });
   }
 
-  public inline static function right(right:Unit) {
+  public inline static function right(right:CssUnit) {
     return define({ right: right });
   }
 
-  public inline static function symmetric(vertical:Unit, horizontal:Unit) {
+  public inline static function symmetric(vertical:CssUnit, horizontal:CssUnit) {
     return define({
       top: vertical,
       bottom: vertical,
@@ -30,7 +30,7 @@ abstract EdgeInsets(Value) to Value {
     });
   }
 
-  public inline static function all(size:Unit) {
+  public inline static function all(size:CssUnit) {
     return define({
       top: size,
       right: size,
@@ -40,12 +40,12 @@ abstract EdgeInsets(Value) to Value {
   }
 
   public inline static function define(props:{
-    ?top:Unit,
-    ?right:Unit,
-    ?bottom:Unit,
-    ?left:Unit
+    ?top:CssUnit,
+    ?right:CssUnit,
+    ?bottom:CssUnit,
+    ?left:CssUnit
   }) {
-    return new EdgeInsets(Value.compound([
+    return new EdgeInsets(CssValue.compound([
       props.top != null ? props.top : 0,
       props.right != null ? props.right : 0,
       props.bottom != null ? props.bottom : 0,
@@ -53,7 +53,7 @@ abstract EdgeInsets(Value) to Value {
     ]));
   }
 
-  inline public function new(value:Value) {
+  inline public function new(value:CssValue) {
     this = value;
   }
 }

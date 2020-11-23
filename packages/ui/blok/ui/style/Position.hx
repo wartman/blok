@@ -1,7 +1,9 @@
 package blok.ui.style;
 
-import blok.style.Style;
-import blok.style.VStyle;
+import blok.core.style.StyleExpr;
+import blok.core.style.Style;
+import blok.core.html.Css;
+import blok.core.html.CssUnit;
 
 enum abstract PositionType(String) to String {
   var Absolute = 'absolute';
@@ -11,21 +13,21 @@ enum abstract PositionType(String) to String {
 
 class Position extends Style {
   @prop var type:PositionType;
-  @prop var top:Unit = null;
-  @prop var bottom:Unit = null;
-  @prop var left:Unit = null;
-  @prop var right:Unit = null;
+  @prop var top:CssUnit = null;
+  @prop var bottom:CssUnit = null;
+  @prop var left:CssUnit = null;
+  @prop var right:CssUnit = null;
 
-  override function render():Array<VStyleExpr> {
-    var style = [
-      Style.property('position', type)
+  override function render():StyleExpr {
+    var props = [
+      Css.property('position', type)
     ];
 
-    if (top != null) style.push(Style.property('top', top));
-    if (bottom != null) style.push(Style.property('bottom', bottom));
-    if (left != null) style.push(Style.property('left', left));
-    if (right != null) style.push(Style.property('right', right));
+    if (top != null) props.push(Css.property('top', top));
+    if (bottom != null) props.push(Css.property('bottom', bottom));
+    if (left != null) props.push(Css.property('left', left));
+    if (right != null) props.push(Css.property('right', right));
 
-    return style;
+    return Css.properties(props);
   }
 }

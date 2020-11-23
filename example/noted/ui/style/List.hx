@@ -5,9 +5,7 @@ import blok.ui.style.*;
 using Blok;
 
 class List extends Style {
-  override function render():Array<VStyleExpr> {
-    return [
-      Grid.export({ gap: Em(1) })
-    ];
+  override function render():StyleExpr {
+    return Grid.export({ gap: Em(1) });
   }
 }

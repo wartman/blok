@@ -1,41 +1,43 @@
 package blok.ui.style;
 
-import blok.style.Style;
-import blok.style.VStyle;
+import blok.core.style.Style;
+import blok.core.style.StyleExpr;
+import blok.core.html.Css;
+import blok.core.html.CssUnit;
 
 class Box extends Style {
   @prop var padding:EdgeInsets = null;
   @prop var spacing:EdgeInsets = null;
-  @prop var height:Unit = null;
-  @prop var width:Unit = null;
-  @prop var minHeight:Unit = null;
-  @prop var minWidth:Unit = null;
+  @prop var height:CssUnit = null;
+  @prop var width:CssUnit = null;
+  @prop var minHeight:CssUnit = null;
+  @prop var minWidth:CssUnit = null;
 
-  override function render():Array<VStyleExpr> {
-    var props:Array<VStyleExpr> = [];
+  override function render():StyleExpr {
+    var props:Array<StyleExpr> = [];
     
-    if (padding != null) props.push(Style.property('padding', padding));
-    if (height != null) props.push(Style.property('height', height));
-    if (width != null) props.push(Style.property('width', width));
-    if (minHeight != null) props.push(Style.property('minHeight', minHeight));
-    if (minWidth != null) props.push(Style.property('minWidth', minWidth));
+    if (padding != null) props.push(Css.property('padding', padding));
+    if (height != null) props.push(Css.property('height', height));
+    if (width != null) props.push(Css.property('width', width));
+    if (minHeight != null) props.push(Css.property('minHeight', minHeight));
+    if (minWidth != null) props.push(Css.property('minWidth', minWidth));
     
     if (spacing != null) {
       // this is bleh -- we should be checking for vertical or 
       // horizontal spacing, depending on context.
       props = props.concat([
-        Style.property('margin', spacing),
-        Style.modifier(':first-child', [
-          Style.property('margin-left', Unit.None),
-          Style.property('margin-top', Unit.None)
+        Css.property('margin', spacing),
+        Css.modifier(':first-child', [
+          Css.property('margin-left', CssUnit.None),
+          Css.property('margin-top', CssUnit.None)
         ]),
-        Style.modifier(':last-child', [
-          Style.property('margin-right', Unit.None),
-          Style.property('margin-bottom', Unit.None)
+        Css.modifier(':last-child', [
+          Css.property('margin-right', CssUnit.None),
+          Css.property('margin-bottom', CssUnit.None)
         ])
       ]);
     }
 
-    return props;
+    return Css.properties(props);
   }
 }

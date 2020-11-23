@@ -66,9 +66,7 @@ class TagItem extends Component {
           color: Config.whiteColor,
           radius: Em(1.5)
         }),
-        Style.define([
-          Style.property('cursor', 'pointer')
-        ])
+        Css.define({ cursor: 'pointer' }),
       ],
       attrs: {
         onclick: _ -> action(tag.id)

@@ -9,7 +9,7 @@ class ButtonGroup extends Component {
   @prop var style:Null<StyleList> = null;
   @prop var buttons:Array<VNode>;
   @prop var perRow:Int = 5;
-  @prop var gap:Unit = Config.mediumGap;
+  @prop var gap:CssUnit = Config.mediumGap;
 
   override function render(context:Context):VNode {
     return Html.nav({

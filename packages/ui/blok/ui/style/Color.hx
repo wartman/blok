@@ -1,15 +1,16 @@
 package blok.ui.style;
 
-import blok.style.VStyle;
+import blok.core.html.Css;
+import blok.core.html.CssValue;
 
-@:forward(forIdentifier, toString, getKey)
-abstract Color(Value) to Value {
+@:forward(toString)
+abstract Color(CssValue) to CssValue {
   public static function rgb(r:Float, g:Float, b:Float):Color {
-    return new Color(Value.call('rgb', Value.list([ r, g, b ])));
+    return new Color(CssValue.call('rgb', CssValue.list([ r, g, b ])));
   }
   
   public static function rgba(r:Float, g:Float, b:Float, a:Float):Color {
-    return new Color(Value.call('rgba', Value.list([ r, g, b, a ])));
+    return new Color(CssValue.call('rgba', CssValue.list([ r, g, b, a ])));
   }
 
   @:from public static function hex(value:Int) {
@@ -24,11 +25,7 @@ abstract Color(Value) to Value {
     return new Color('inherit');
   }
 
-  public inline function new(wrapped:Value) {
+  public inline function new(wrapped:CssValue) {
     this = wrapped;
-  }
-
-  public function withKey(key:String):Color {
-    return cast Value.keyed(key, this);
   }
 }

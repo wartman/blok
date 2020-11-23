@@ -1,17 +1,17 @@
 package noted.ui.style;
 
-import blok.style.Style;
-import blok.style.VStyle;
 import blok.ui.style.*;
 import blok.ui.style.Grid;
+
+using Blok;
 
 class BaseGrid extends Style {
   @prop var perRow:Int = Config.defaultItemsPerRow;
   @prop var perRowMobile:Int = Config.defaultItemsPerRowMobile;
-  @prop var gap:Unit = Config.mediumGap;
+  @prop var gap:CssUnit = Config.mediumGap;
 
-  override function render():Array<VStyleExpr> {
-    return [
+  override function render():StyleExpr {
+    return Css.properties([
       Grid.export({ gap: gap }),
       MediaQuery.minWidth(Config.mobileWidth, [
         Grid.export({
@@ -23,6 +23,6 @@ class BaseGrid extends Style {
           columns: GridDefinition.repeat(perRowMobile, Fr(1))
         })
       ])
-    ];
+    ]);
   }
 }

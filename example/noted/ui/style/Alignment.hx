@@ -18,12 +18,12 @@ class Alignment extends Style {
 
   @prop var position:AlignmentPosition;
 
-  override function render():Array<VStyleExpr> {
-    return [
-      Style.property('margin-left', switch position {
+  override function render():StyleExpr {
+    return Css.export({
+      marginLeft: switch position {
         case End: 'auto';
         case Start: '0';
-      })
-    ];
+      }
+    });
   }
 }

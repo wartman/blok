@@ -1,17 +1,20 @@
 package blok.ui.style;
 
-import blok.style.Style;
-import blok.style.VStyle;
+import blok.core.html.CssUnit;
+import blok.core.style.Style;
+import blok.core.style.StyleExpr;
+import blok.core.html.Css;
+import blok.core.html.CssValue;
 
 @:forward
-abstract GridDefinition(Value) to Value {
+abstract GridDefinition(CssValue) to CssValue {
   // todo: `times` can be `auto-fit`, maybe other keywords too?
-  public static function repeat(times:Int, size:Value) {
-    return new GridDefinition(Value.call('repeat', Value.list([ times, size ])));
+  public static function repeat(times:Int, size:CssValue) {
+    return new GridDefinition(CssValue.call('repeat', CssValue.list([ times, size ])));
   }
 
-  public static function define(segments:Array<Value>) {
-    return new GridDefinition(Value.compound(segments));
+  public static function define(segments:Array<CssValue>) {
+    return new GridDefinition(CssValue.compound(segments));
   }
   
   public inline function new(value) {
@@ -27,20 +30,20 @@ abstract GridDefinition(Value) to Value {
 class Grid extends Style {
   @prop var columns:GridDefinition = null;
   @prop var rows:GridDefinition = null;
-  @prop var gap:Unit = null;
+  @prop var gap:CssUnit = null;
 
-  override function render():Array<VStyleExpr> {
-    var styles:Array<VStyleExpr> = [
-      Style.property('display', 'grid')
+  override function render():StyleExpr {
+    var styles:Array<StyleExpr> = [
+      Css.property('display', 'grid')
     ];
 
     if (gap != null)
-      styles.push(Style.property('grid-gap', gap));
+      styles.push(Css.property('grid-gap', gap));
     if (columns != null) 
-      styles.push(Style.property('grid-template-columns', columns));
+      styles.push(Css.property('grid-template-columns', columns));
     if (rows != null)
-      styles.push(Style.property('grid-template-rows', rows));
+      styles.push(Css.property('grid-template-rows', rows));
 
-    return styles;
+    return Css.properties(styles);
   }
 }

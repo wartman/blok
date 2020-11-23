@@ -1,7 +1,8 @@
 package blok.ui.style;
 
-import blok.style.Style;
-import blok.style.VStyle;
+import blok.core.style.Style;
+import blok.core.style.StyleExpr;
+import blok.core.html.Css;
 
 enum abstract DisplayKind(String) to String {
   var Block = 'block';
@@ -20,9 +21,9 @@ enum abstract DisplayKind(String) to String {
 class Display extends Style {
   @prop var kind:DisplayKind;
 
-  override function render():Array<VStyleExpr> {
-    return [
-      Style.property('display', kind)
-    ];
+  override function render():StyleExpr {
+    return Css.export({
+      display: kind
+    });
   }
 }

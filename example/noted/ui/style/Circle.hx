@@ -7,11 +7,11 @@ using Blok;
 class Circle extends Style {
   @prop var color:Color = Config.lightColor;
   @prop var outlined:Bool = false;
-  @prop var radius:Unit = Em(2);
+  @prop var radius:CssUnit = Em(2);
 
-  override function render():Array<VStyleExpr> {
-    return [
-      if (outlined) Style.properties([
+  override function render():StyleExpr {
+    return Css.properties([
+      if (outlined) Css.properties([
         Background.export({
           color: Color.name('transparent')
         }),
@@ -21,8 +21,8 @@ class Circle extends Style {
           type: Solid,
           color: color
         }),
-        Style.property('color', color)
-      ]) else Style.properties([
+        Css.property('color', color)
+      ]) else Css.properties([
         AutoColor.export({ color: color }),
         Border.export({
           type: None,
@@ -39,6 +39,6 @@ class Circle extends Style {
         lineHeight: radius,
         align: Center
       })
-    ];
+    ]);
   }
 }

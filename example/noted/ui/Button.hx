@@ -34,9 +34,7 @@ class Button extends Component {
             case Custom(color): color;
           }
         }),
-        Style.define([
-          Style.property('cursor', 'pointer')
-        ]),
+        Css.define({ cursor: 'pointer' }),
         style
       ],
       attrs: {

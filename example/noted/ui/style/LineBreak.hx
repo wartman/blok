@@ -6,11 +6,11 @@ using Blok;
 
 class LineBreak extends Style {
   @prop var color:Color = Config.lightColor;
-  @prop var gap:Unit = Config.mediumGap;
-  @prop var spacing:Unit = Config.mediumGap;
+  @prop var gap:CssUnit = Config.mediumGap;
+  @prop var spacing:CssUnit = Config.mediumGap;
 
-  override function render():Array<VStyleExpr> {
-    return [
+  override function render():StyleExpr {
+    return Css.properties([
       Box.export({
         padding: EdgeInsets.bottom(gap),
         spacing: EdgeInsets.bottom(spacing)
@@ -21,6 +21,6 @@ class LineBreak extends Style {
         width: Px(1),
         type: Solid
       })
-    ];
+    ]);
   }
 }

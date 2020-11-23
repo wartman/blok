@@ -1,4 +1,4 @@
-package blok.style;
+package blok.core.style;
 
 import blok.core.PluginPayload;
 

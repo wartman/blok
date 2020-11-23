@@ -1,4 +1,4 @@
-package blok.html;
+package blok.core.html;
 
 import haxe.macro.Type;
 import haxe.macro.Context;
@@ -29,10 +29,10 @@ class HtmlBuilder {
         fields = fields.concat((macro class {
           
           public static inline function $name(
-            props:blok.html.Html.HtmlChildrenProps<$type & blok.html.HtmlEvents>
+            props:blok.core.html.Html.HtmlChildrenProps<$type & blok.core.html.HtmlEvents>
           ):VNode<Node> {
             return VNative(
-              NodeType.get($v{name}),
+              blok.NodeType.get($v{name}),
               if (props.attrs != null) props.attrs else {},
               #if blok.core.style
                 if (props.style != null) [ props.style.toPluginPayload() ] else null,
@@ -52,10 +52,10 @@ class HtmlBuilder {
         fields = fields.concat((macro class {
           
           public static inline function $name(
-            props:blok.html.Html.HtmlBaseProps<$type & blok.html.HtmlEvents>
+            props:blok.core.html.Html.HtmlBaseProps<$type & blok.core.html.HtmlEvents>
           ):VNode<Node> {
             return VNative(
-              NodeType.get($v{name}),
+              blok.NodeType.get($v{name}),
               if (props.attrs != null) props.attrs else {},
               #if blok.core.style
                 if (props.style != null) [ props.style.toPluginPayload() ] else null,
@@ -76,7 +76,7 @@ class HtmlBuilder {
 
   static function getTags():Array<TagInfo> {
     var tags:Array<TagInfo> = [];
-    var t = Context.getType('blok.html.HtmlTags');
+    var t = Context.getType('blok.core.html.HtmlTags');
     var groups = switch t {
       case TType(t, params): switch (t.get().type) {
         case TAnonymous(a): a.get().fields;

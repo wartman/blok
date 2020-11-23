@@ -1,4 +1,4 @@
-package blok.html;
+package blok.core.html;
 
 // @todo: @:html(...) and @:jsOnly currently have no effect.
 

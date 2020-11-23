@@ -1,7 +1,10 @@
 package blok.ui.style;
 
-import blok.style.Style;
-import blok.style.VStyle;
+import blok.core.style.Style;
+import blok.core.style.StyleExpr;
+import blok.core.html.Css;
+import blok.core.html.CssValue;
+import blok.core.html.CssUnit;
 
 enum abstract BackgroundAttachment(String) to String {
   var Scroll = 'scroll';
@@ -13,7 +16,7 @@ enum abstract BackgroundAttachment(String) to String {
 }
 
 @:forward
-abstract BackgroundSize(Value) to Value {
+abstract BackgroundSize(CssValue) to CssValue {
   public static function auto() {
     return new BackgroundSize('auto');
   }
@@ -26,16 +29,16 @@ abstract BackgroundSize(Value) to Value {
     return new BackgroundSize('contain');
   }
 
-  public static function custom(width:Unit, height:Unit, ?key:String) {
-    var value = Value.compound([ width, height ]);
-    return new BackgroundSize(key != null ? Value.keyed(key, value) : value);
+  public static function custom(width:CssUnit, height:CssUnit) {
+    var value = CssValue.compound([ width, height ]);
+    return new BackgroundSize(value);
   }
 
-  public static function multiple(sizes:Array<BackgroundSize>, key:String) {
-    return new BackgroundSize(Value.list(sizes).withKey(key));
+  public static function multiple(sizes:Array<BackgroundSize>) {
+    return new BackgroundSize(CssValue.list(sizes));
   }
 
-  inline public function new(value:Value) {
+  inline public function new(value:CssValue) {
     this = value;
   }
 }
@@ -47,15 +50,15 @@ class Background extends Style {
   @prop var attachment:BackgroundAttachment = null;
   @prop var position:EdgeOffsets = null;
 
-  override function render():Array<VStyleExpr> {
-    var style:Array<VStyleExpr> = [];
+  override function render():StyleExpr {
+    var style:Array<StyleExpr> = [];
 
-    if (color != null) style.push(Style.property('background-color', color));
-    if (image != null) style.push(Style.property('background-image', image));
-    if (size != null) style.push(Style.property('background-size', size));
-    if (position != null) style.push(Style.property('background-position', position));
-    if (attachment != null) style.push(Style.property('background-attachment', attachment));
+    if (color != null) style.push(Css.property('background-color', color));
+    if (image != null) style.push(Css.property('background-image', image));
+    if (size != null) style.push(Css.property('background-size', size));
+    if (position != null) style.push(Css.property('background-position', position));
+    if (attachment != null) style.push(Css.property('background-attachment', attachment));
 
-    return style;
+    return Css.properties(style);
   }
 }

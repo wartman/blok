@@ -3,7 +3,7 @@ package blok;
 import js.html.Node;
 import js.html.Event;
 import blok.core.Rendered;
-import blok.html.Html;
+import blok.core.html.Html;
 
 using StringTools;
 

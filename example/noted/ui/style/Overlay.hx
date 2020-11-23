@@ -5,10 +5,10 @@ import blok.ui.style.*;
 using Blok;
 
 class Overlay extends Style {
-  override function render():Array<VStyleExpr> {
-    return [
-      Style.property('z-index', 99999),
-      Style.property('overflow-y', 'scroll'),
+  override function render():StyleExpr {
+    return Css.properties([
+      Css.property('z-index', 99999),
+      Css.property('overflow-y', 'scroll'),
       Background.export({
         color: Config.scrimColor
       }),
@@ -30,6 +30,6 @@ class Overlay extends Style {
           padding: EdgeInsets.all(Config.smallGap)
         })
       ])
-    ];
+    ]);
   }
 }

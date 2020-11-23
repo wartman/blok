@@ -46,13 +46,13 @@ class Modal extends Component {
               Box.style({
                 width: Config.mobileWidth
               }),
-              Style.define([
+              Style.define(
                 MediaQuery.maxWidth(Config.mobileWidth, [
                   Box.export({
                     width: Pct(100)
                   })
                 ])
-              ])
+              )
             ],
             attrs: {
               onclick: e -> e.stopPropagation() 

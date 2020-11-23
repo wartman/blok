@@ -57,9 +57,7 @@ class TagList extends Component {
                   padding: Em(.5),
                   outlined: true
                 }),
-                Style.define([
-                  Style.property('cursor', 'pointer')
-                ])
+                Css.define({ cursor: 'pointer' }),
               ],
               attrs: {
                 onclick: _ -> startAdding()

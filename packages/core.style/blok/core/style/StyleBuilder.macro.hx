@@ -1,4 +1,4 @@
-package blok.style;
+package blok.core.style;
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -14,7 +14,7 @@ class StyleBuilder {
   public static function build() {
     var fields = Context.getBuildFields();
     var cls = Context.getLocalClass().get();
-    var clsName = cls.pack.concat([ cls.name ]).join('-');
+    var clsName = cls.pack.concat([ cls.name ]).join('.');
     var clsTp:TypePath = { pack: cls.pack, name: cls.name };
     var props:Array<Field> = [];
     var nameBuilder:Array<Expr> = [];
@@ -29,16 +29,9 @@ class StyleBuilder {
         meta: isOptional ? [ { name: ':optional', pos: (macro null).pos } ] : [],
         pos: (macro null).pos
       });
-      if (skip != true) nameBuilder.push(
-        macro $i{PROPS}.$name != null 
-          ? ${ Context.unify(type.toType(), Context.getType('blok.style.VStyle.Unit')) 
-              ? macro $i{PROPS}.$name.toString()
-              : Context.unify(type.toType(), Context.getType('blok.style.VStyle.ValueDef'))
-                ? macro $i{PROPS}.$name.forIdentifier()
-                : macro Std.string($i{PROPS}.$name)
-            }
-          : '_'
-      );
+      if (skip != true) {
+        nameBuilder.push(macro $v{name} + ': ' + Std.string($i{PROPS}.$name));
+      }
     }
 
     builder.addFieldMetaHandler({
@@ -52,8 +45,6 @@ class StyleBuilder {
           if (t == null) {
             Context.error('Types cannot be inferred for @prop vars', f.pos);
           }
-
-          // todo: ensure that all props can be stringified?
 
           var name = f.name;
           var getName = 'get_${name}';
@@ -79,10 +70,7 @@ class StyleBuilder {
 
     builder.addFields(() -> {
       var propType = TAnonymous(props);
-      var name = macro $v{clsName} + ($i{SUFFIX} != null ? '--' + $i{SUFFIX} : ${if (nameBuilder.length == 0) 
-        macro ''
-      else
-        macro  '--' + [ $a{nameBuilder} ].join('-')});
+      var name = macro $v{clsName} + ' { ' + [ $a{nameBuilder} ].join(', ') + ' }';
 
       if (props.length == 0) {
         builder.add((macro class {
@@ -97,22 +85,17 @@ class StyleBuilder {
           pos: cls.pos,
           meta: [],
           kind: FFun({
-            ret: macro:blok.style.VStyle,
+            ret: macro:blok.core.style.VStyle,
             params: cls.params.length > 0
               ? [ for (p in cls.params) { name: p.name, constraints: [] } ]
               : [],
             args: switch props.length {
-              case 0: [
-                { name: 'suffix', type: macro:Null<String>, opt: true }
-              ];
-              default: [
-                { name: 'props', type: macro:$propType },
-                { name: 'suffix', type: macro:Null<String>, opt: true }
-              ];
+              case 0: [];
+              default: [ { name: 'props', type: macro:$propType } ];
             },
             expr: switch props.length {
-              case 0: macro return VStyleDef($p{cls.pack.concat([ cls.name ])}, {}, suffix);
-              default: macro return VStyleDef($p{cls.pack.concat([ cls.name ])}, props, suffix);
+              case 0: macro return VStyleDef($p{cls.pack.concat([ cls.name ])}, {});
+              default: macro return VStyleDef($p{cls.pack.concat([ cls.name ])}, props);
             }
           })
         },
@@ -123,7 +106,7 @@ class StyleBuilder {
           pos: cls.pos,
           meta: [],
           kind: FFun({
-            ret: macro:blok.style.VStyle.VStyleExpr,
+            ret: macro:blok.core.style.StyleExpr,
             params: cls.params.length > 0
               ? [ for (p in cls.params) { name: p.name, constraints: [] } ]
               : [],
@@ -136,7 +119,7 @@ class StyleBuilder {
                 case 0: macro new $clsTp({});
                 default: macro new $clsTp(props);
               } }
-              return EChildren(style.render());
+              return style.render();
             }
           })
         },
@@ -147,7 +130,7 @@ class StyleBuilder {
           pos: cls.pos,
           meta: [],
           kind: FFun({
-            ret: macro:Array<blok.style.VStyle.VStyleExpr>,
+            ret: macro:blok.core.style.StyleExpr,
             params: cls.params.length > 0
               ? [ for (p in cls.params) { name: p.name, constraints: [] } ]
               : [],
@@ -161,12 +144,12 @@ class StyleBuilder {
       ].concat((macro class {
         var $PROPS:$propType;
 
-        public static function getStyleName($PROPS:$propType, ?$SUFFIX:Null<String>):String {
+        public static function getStyleId($PROPS:$propType):String {
           return ${name};
         }
 
-        override function getName(?$SUFFIX:Null<String>):String {
-          return getStyleName(this.$PROPS, $i{SUFFIX});
+        override function getId():String {
+          return getStyleId(this.$PROPS);
         }
 
         public function new($INCOMING_PROPS:$propType) {

@@ -1,4 +1,4 @@
-package blok.html;
+package blok.core.html;
 
 import blok.Node;
 import blok.core.Key;
@@ -10,7 +10,7 @@ typedef HtmlBaseProps<Attrs:{}> = {
   // like we have with Component and State.
   ?ref:(node:Node)->Void,
   #if blok.core.style
-    ?style:blok.style.StyleList,
+    ?style:blok.core.style.StyleList,
   #end
   ?key:Key,
   ?attrs:Attrs
@@ -20,7 +20,7 @@ typedef HtmlChildrenProps<Attrs:{}> = HtmlBaseProps<Attrs> & {
   ?children:Children
 }
 
-@:build(blok.html.HtmlBuilder.build())
+@:build(blok.core.html.HtmlBuilder.build())
 class Html {
   public static inline function fragment(children:Children) {
     return VFragment(children);

@@ -1,6 +1,7 @@
 package blok.ui.style;
 
-import blok.style.VStyle;
+import blok.core.html.CssUnit;
+import blok.core.html.CssValue;
 
 enum abstract RelativePosition(String) to String {
   var Top = 'top';
@@ -11,7 +12,7 @@ enum abstract RelativePosition(String) to String {
 }
 
 @:forward
-abstract EdgeOffsets(Value) to Value {
+abstract EdgeOffsets(CssValue) to CssValue {
   public inline static function top() {
     return new EdgeOffsets(RelativePosition.Top);
   }
@@ -29,18 +30,18 @@ abstract EdgeOffsets(Value) to Value {
   }
 
   // @todo: allow RelativePosition as a value here:
-  public inline static function symmetric(vertical:Unit, horizontal:Unit) {
-    return new EdgeOffsets(Value.compound([ vertical, horizontal ]));
+  public inline static function symmetric(vertical:CssUnit, horizontal:CssUnit) {
+    return new EdgeOffsets(CssValue.compound([ vertical, horizontal ]));
   }
 
   // @todo: allow RelativePosition as a value here:
   public static function define(props:{
-    ?top:Unit,
-    ?right:Unit,
-    ?bottom:Unit,
-    ?left:Unit
+    ?top:CssUnit,
+    ?right:CssUnit,
+    ?bottom:CssUnit,
+    ?left:CssUnit
   }) {
-    return new EdgeOffsets(Value.compound([
+    return new EdgeOffsets(CssValue.compound([
       props.top != null ? props.top : 0,
       props.right != null ? props.right : 0,
       props.bottom != null ? props.bottom : 0,
@@ -48,7 +49,7 @@ abstract EdgeOffsets(Value) to Value {
     ]));
   }
 
-  inline public function new(value:Value) {
+  inline public function new(value:CssValue) {
     this = value;
   }
 }

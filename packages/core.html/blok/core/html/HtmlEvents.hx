@@ -1,4 +1,4 @@
-package blok.html;
+package blok.core.html;
 
 import js.html.Event;
 

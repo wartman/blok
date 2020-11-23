@@ -1,7 +1,8 @@
 package blok.ui.style;
 
-import blok.style.Style;
-import blok.style.VStyle;
+import blok.core.style.Style;
+import blok.core.style.StyleExpr;
+import blok.core.html.Css;
 
 enum abstract FlexDirection(String) to String {
   var Column = 'column';
@@ -100,14 +101,14 @@ class Flex extends Style {
   @prop var justifyContent:FlexJustifyContent = null;
   @prop var alignItems:FlexAlignItems = null;
 
-  override function render():Array<VStyleExpr> {
-    var styles:Array<VStyleExpr> = [
-      Style.property('display', 'flex'),
-      Style.property('flex-direction', direction)
+  override function render():StyleExpr {
+    var styles:Array<StyleExpr> = [
+      Css.property('display', 'flex'),
+      Css.property('flex-direction', direction)
     ];
 
-    if (wrap != null) styles.push(Style.property('flex-wrap', wrap));
-    if (justifyContent != null) styles.push(Style.property('justify-content', switch justifyContent {
+    if (wrap != null) styles.push(Css.property('flex-wrap', wrap));
+    if (justifyContent != null) styles.push(Css.property('justify-content', switch justifyContent {
       case Normal: 'normal';
       case Inherit: 'inherit';
       case Initial: 'initial';
@@ -120,7 +121,7 @@ class Flex extends Style {
       case Left(content): 'left ${content}';
       case Right(content): 'right ${content}';
     }));
-    if (alignItems != null) styles.push(Style.property('align-items', switch alignItems {
+    if (alignItems != null) styles.push(Css.property('align-items', switch alignItems {
       case Normal: 'normal';
       case Stretch: 'stretch';
       case Baseline(pos) if (pos == null): 'baseline';
@@ -129,6 +130,6 @@ class Flex extends Style {
       case Position(pos, overflow): '$overflow $pos'; 
     }));
 
-    return styles;
+    return Css.properties(styles);
   }
 }

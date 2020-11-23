@@ -8,15 +8,15 @@ class Pill extends Style {
   @prop var color:Color = Config.lightColor;
   @prop var outlined:Bool = false;
   @prop var centered:Bool = true;
-  @prop var padding:Unit = Em(.5);
+  @prop var padding:CssUnit = Em(.5);
 
-  override function render():Array<VStyleExpr> {
+  override function render():StyleExpr {
     var radius = switch padding {
       case Em(value): Em(1 + value);
       default: Em(1); 
     }
-    return [
-      if (outlined) Style.properties([
+    return Css.properties([
+      if (outlined) Css.properties([
         Background.export({
           color: Color.name('transparent')
         }),
@@ -26,8 +26,8 @@ class Pill extends Style {
           type: Solid,
           color: color
         }),
-        Style.property('color', color)
-      ]) else Style.properties([
+        Css.property('color', color)
+      ]) else Css.properties([
         AutoColor.export({ color: color }),
         Border.export({ 
           type: None,
@@ -53,6 +53,6 @@ class Pill extends Style {
           });
         }
       })
-    ];
+    ]);
   }
 }

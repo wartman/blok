@@ -1,4 +1,4 @@
-package blok.style;
+package blok.core.style;
 
 @:forward(contains, iterator, length)
 abstract StyleList(Array<VStyle>) from Array<VStyle> to Array<VStyle> {
@@ -42,8 +42,8 @@ abstract StyleList(Array<VStyle>) from Array<VStyle> to Array<VStyle> {
 
   public function getNames() {
     return this.map(style -> switch style {
-      case VStyleDef(type, props, suffix): 
-        type.getStyleName(props, suffix);
+      case VStyleDef(type, props): 
+        type.getStyleId(props);
       case VStyleInline(name, def):
         name;
       case VStyleList(styles): 

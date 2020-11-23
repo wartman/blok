@@ -10,16 +10,15 @@
 
 @:noUsing @:noDoc typedef VNode = blok.VNode;
 
-@:noUsing @:noDoc typedef Html = blok.html.Html;
+@:noUsing @:noDoc typedef Html = blok.core.html.Html;
 
 #if blok.core.style
-  @:noUsing @:noDoc typedef StyleList = blok.style.StyleList;
-  @:noUsing @:noDoc typedef Style = blok.style.Style;
-  @:noUsing @:noDoc typedef VStyle = blok.style.VStyle;
-  @:noUsing @:noDoc typedef VStyleExpr = blok.style.VStyle.VStyleExpr;
-  @:noUsing @:noDoc typedef Unit = blok.style.VStyle.Unit;
-  @:noUsing @:noDoc typedef Value = blok.style.VStyle.Value;
+  @:noUsing @:noDoc typedef StyleList = blok.core.style.StyleList;
+  @:noUsing @:noDoc typedef Style = blok.core.style.Style;
+  @:noUsing @:noDoc typedef VStyle = blok.core.style.VStyle;
+  @:noUsing @:noDoc typedef StyleExpr = blok.core.style.StyleExpr;
 
-  @:noUsing @:noDoc typedef Css = blok.html.Css;
+  @:noUsing @:noDoc typedef CssUnit = blok.core.html.CssUnit;
+  @:noUsing @:noDoc typedef CssValue = blok.core.html.CssValue;
+  @:noUsing @:noDoc typedef Css = blok.core.html.Css;
 #end
-
