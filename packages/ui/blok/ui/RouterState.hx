@@ -13,7 +13,6 @@ class RouterState<Route:EnumValue> implements State {
 
   @init
   function setup() {
-    // @todo: add a first-class way to watch Observables?
     link = history.getObservable().observe(setUrl);
   }
 

@@ -83,7 +83,7 @@ class NoteEditor extends Component {
               placeholder: 'Title',
               validate: text -> {
                 var v = text.trim().length > 0;
-                isValid.notify(v);
+                isValid.notify(v && note.content.length > 0);
                 return v;
               },
               onInput: updateNoteName
@@ -101,7 +101,7 @@ class NoteEditor extends Component {
               message: 'Content is required',
               validate: text -> {
                 var v = text.trim().length > 0;
-                isValid.notify(v);
+                isValid.notify(v && note.name.length > 0);
                 return v;
               },
               onInput: updateNoteContent
