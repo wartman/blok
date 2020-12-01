@@ -120,6 +120,8 @@ class NoteEditor extends Component {
           ]
         }),
         ButtonGroup.node({
+          perRow: 5,
+          perRowMobile: 3,
           buttons: [
             isValid.mapToVNode(valid -> Button.node({
               disabled: !valid,

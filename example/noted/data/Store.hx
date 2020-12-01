@@ -20,6 +20,7 @@ class Store implements State {
   @prop var notes:ReadOnlyArray<Note>;
   @prop var tags:ReadOnlyArray<Tag>;
   @prop var filter:NoteFilter = None;
+  @prop var showEditor:Bool = false;
   @computed var filteredNotes:ReadOnlyArray<Note> = switch filter {
     case None: [];
     case FilterAll: notes;
@@ -53,6 +54,14 @@ class Store implements State {
   }
 
   @update
+  public function toggleEditor(show:Bool) {
+    if (showEditor == show) return None;
+    return UpdateState({
+      showEditor: show
+    });
+  }
+
+  @update
   public function setFilter(filter:NoteFilter) {
     return UpdateState({
       filter: filter
@@ -63,6 +72,7 @@ class Store implements State {
   public function addNote(name:String, content:String, noteTags:Array<Id<Tag>>, status:NoteStatus = Draft) {
     return UpdateState({
       uid: uid + 1,
+      showEditor: false,
       notes: notes.concat([ new Note({
         id: uid,
         name: name,
@@ -84,6 +94,7 @@ class Store implements State {
       case None: None;
       case Some(note):
         UpdateState({
+          showEditor: false,
           notes: notes.map(n -> if (n.id == id) n.with({
             name: name,
             content: content,

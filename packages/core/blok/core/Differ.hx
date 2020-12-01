@@ -13,7 +13,7 @@ typedef DifferHandler<Node> = (
   Handles high-level diffing for VNodes.
   
   Like most of the diffing related code, the stuff in here is bascially
-  coppied from the Coconut project:
+  copied from the Coconut project:
   
   https://github.com/MVCoconut/coconut.diffing
 **/

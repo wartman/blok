@@ -3,9 +3,7 @@ package noted.ui;
 import noted.ui.tag.TagList;
 import blok.ui.style.*;
 import noted.ui.style.*;
-import noted.data.Store;
-import noted.data.Id;
-import noted.data.Tag;
+import noted.data.*;
 
 using Blok;
 
@@ -26,12 +24,18 @@ class NoteFilterControls extends Component {
           ]
         }), 
         ButtonGroup.node({
-          perRow: 3,
+          perRow: 4,
+          perRowMobile: 2,
           style: switch Store.from(context).filter {
             case FilterAll: null;
             default: LineBreak.style({ spacing: None });
           },
           buttons: [
+            Button.node({
+              type: Important,
+              onClick: _ -> Store.from(context).toggleEditor(true),
+              child: Html.text('Add Note')
+            }),
             Button.node({
               type: switch Store.from(context).filter {
                 case FilterAll: Selected;
@@ -58,6 +62,24 @@ class NoteFilterControls extends Component {
             })
           ]
         }),
+
+        Store.select(context, store -> store.showEditor, editing -> if (editing)
+          Modal.node({
+            title: 'Create Note',
+            requestClose: () -> Store.from(context).toggleEditor(false),
+            child: NoteEditor.node({
+              note: Note.empty(),
+              tags: [],
+              onSave: note -> {
+                Store
+                  .from(context)
+                  .addNote(note.name, note.content, note.tags, note.status);
+              },
+              requestClose: () -> Store.from(context).toggleEditor(false)
+            }) 
+          }) 
+        else null),
+
         switch Store.from(context).filter {
           case FilterAll | None: null;
           case FilterByTags(_):

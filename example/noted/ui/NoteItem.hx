@@ -87,6 +87,8 @@ class NoteItem extends Component {
         ]
       }),
       ButtonGroup.node({
+        perRow: 5,
+        perRowMobile: 3,
         style: [
           sectionStyle,
           Alignment.end()

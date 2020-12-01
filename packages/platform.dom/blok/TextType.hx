@@ -9,7 +9,7 @@ class TextType {
     return Browser.document.createTextNode(props.content);
   }
 
-  public static function update(node:Node, previousProps:{ content:String },  props:{ content:String }, context:Context):Node {
+  public static function update(node:Node, previousProps:{ content:String }, props:{ content:String }, context:Context):Node {
     if (previousProps.content != props.content) switch Std.downcast(node, Text) {
       case null:
       case text: 

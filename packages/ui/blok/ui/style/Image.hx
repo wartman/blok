@@ -2,7 +2,6 @@ package blok.ui.style;
 
 import blok.core.html.CssValue;
 
-// Todo: this is perhaps too focused on CSS?
 @:forward
 abstract Image(CssValue) to CssValue {
   public static function url(src:String, key:String) {

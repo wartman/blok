@@ -38,7 +38,7 @@ class Main {
 // This is useful if you're using `@lazy` Components (more on that
 // later) or trying to be Elmish.
 class Entry implements Record {
-  @constant var id:Int; // @constant vars are always coppied and never change.
+  @constant var id:Int; // @constant vars are always copied and never change.
   @prop var description:String;
   @prop var completed:Bool;
   @prop var editing:Bool;
@@ -90,6 +90,15 @@ class Model implements State {
   @prop var field:String = '';
   @prop var uid:Int;
   @prop var visibility:Visibility;
+  @computed var visibleEntries:ReadOnlyArray<Entry> = {
+    var out = entries.filter(entry -> switch visibility {
+      case Completed: entry.completed;
+      case Active: !entry.completed;
+      case All: true;
+    });
+    out.reverse();
+    out;
+  }
 
   @update
   public function add() {
@@ -176,8 +185,7 @@ class Root extends Component {
   override function render(context:Context):VNode {
     return Html.div({
       attrs: {
-        className: 'todomvc-wrapper',
-        // style: 'visibility: hidden'
+        className: 'todomvc-wrapper'
       },
       children: [
         Html.section({
@@ -239,11 +247,6 @@ class ViewEntries extends Component {
   override function render(context:Context):VNode {
     return Model.observe(context, model -> {
       var allCompleted = model.entries.filter(e -> !e.completed).length == 0;
-      var isVisible = (entry:Entry) -> switch model.visibility {
-        case Completed: entry.completed;
-        case Active: !entry.completed;
-        case All: true;
-      };
 
       Html.section({
         attrs: {
@@ -271,7 +274,7 @@ class ViewEntries extends Component {
             attrs: {
               className: 'todo-list'
             },
-            children: [ for (entry in model.entries.filter(isVisible)) 
+            children: [ for (entry in model.visibleEntries) 
               ViewEntry.node({ entry: entry })
             ]
           })

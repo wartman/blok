@@ -9,6 +9,7 @@ enum CssValueDef {
   CssValueCompound(values:Array<CssValue>);
   CssValueList(values:Array<CssValue>);
   CssValueCall(name:String, value:CssValue);
+  CssValueOp(a:CssValue, op:String, b:CssValue);
 }
 
 abstract CssValue(CssValueDef) to CssValueDef from CssValueDef {
@@ -22,6 +23,10 @@ abstract CssValue(CssValueDef) to CssValueDef from CssValueDef {
 
   public inline static function call(name:String, value:CssValue) {
     return new CssValue(CssValueCall(name, value));
+  }
+
+  public inline static function op(a, op, b) {
+    return new CssValue(CssValueOp(a, op, b));
   }
   
   @:from public inline static function ofString(value:String) {
@@ -65,8 +70,10 @@ abstract CssValue(CssValueDef) to CssValueDef from CssValueDef {
         values.map(v -> v.toString())
           .filter(v -> v != null)
           .join(',');
+      case CssValueOp(a, op, b):
+        a.toString() + op + b.toString();
       case CssValueCall(name, value):
-        return '${name}(${value.toString()})';
+        '${name}(${value.toString()})';
     }
   }
 }
