@@ -2,34 +2,28 @@ package blok.core;
 
 using Reflect;
 
-class Provider<T, Node> extends Component<Node> {
-  public static function __create<T, Node>(props:{
-    key:String,
-    value:T,
+class Provider<Node> extends Component<Node> {
+  public static function __create<Node>(props:{
+    register:(context:Context<Node>)->Void,
     build:(context:Context<Node>)->VNode<Node>
   }, context:Context<Node>, parent:Component<Node>) {
-    var provider = new Provider(props.key, props.value, props.build, context, parent);
+    var provider = new Provider(props.register, props.build, context, parent);
     provider.__inserted = true;
     return provider;
   }
 
-  public static function provide<Node, T>(data:Array<Providable<T>>, build):VNode<Node> {
-    var node:VNode<Node> = null;
-    for (item in data) {
-      var prev = node;
-      node = provideValue(item.__id, item.__provide(), prev != null ? _ -> prev : build);
-    }
-    return node;
+  public inline static function provide<Node>(data:Array<Provisioner<Node>>, build):VNode<Node> {
+    return provideValue(context -> {
+      for (provisioner in data) provisioner.__register(context);
+    }, build);
   }
 
   public inline static function provideValue<T, Node>(
-    key:String, 
-    value:T,
+    register:(context:Context<Node>)->Void,
     build:(context:Context<Node>)->VNode<Node> 
   ):VNode<Node> {
     return VComponent(Provider, {
-      key: key,
-      value: value,
+      register: register,
       build: build
     });
   }
@@ -38,21 +32,16 @@ class Provider<T, Node> extends Component<Node> {
     data:Map<String, Dynamic>,
     build:(context:Context<Node>)->VNode<Node> 
   ):VNode<Node> {
-    var node:VNode<Node> = null;
-    for (key => value in data) {
-      var prev = node;
-      node = provideValue(key, value, prev != null ? _ -> prev : build);
-    }
-    return node;
+    return provideValue(context -> {
+      for (key => value in data) context.set(key, value);
+    }, build);
   }
 
-  var key:String;
-  var value:T;
+  var register:(context:Context<Node>)->Void;
   var build:(context:Context<Node>)->VNode<Node>;
 
-  public function new(key:String, value:T, build, context, parent) {
-    this.key = key;
-    this.value = value;
+  public function new(register, build, context, parent) {
+    this.register = register;
     this.build = build;
     this.__parent = parent;
     __registerContext(context);
@@ -62,15 +51,13 @@ class Provider<T, Node> extends Component<Node> {
   override function __registerContext(context:Context<Node>) {
     if (context == __context) return;
     __context = context.getChild();
-    __context.set(key, value);
+    register(__context);
   }
 
   override function __updateProps(props:Dynamic) {
-    if (props.hasField('key')) {
-      this.key = props.field('key');
-    }
-    if (props.hasField('value')) {
-      this.value = props.field('value');
+    if (props.hasField('register')) {
+      register = props.field('register');
+      register(__context); // replace previous context? May need a dispose system.
     }
   }
 

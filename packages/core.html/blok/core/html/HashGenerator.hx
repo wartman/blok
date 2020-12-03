@@ -1,7 +1,5 @@
 package blok.core.html;
 
-import haxe.crypto.Md5;
-import haxe.Json;
 import haxe.ds.Map;
 
 // @todo: replace this with a real, non-cryptographic hashing solution

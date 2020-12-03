@@ -1,7 +1,7 @@
 @:noUsing @:noDoc typedef Context = blok.Context;
 @:noUsing @:noDoc typedef Platform = blok.dom.Platform;
 @:noUsing @:noDoc typedef Component = blok.Component;
-@:noUsing @:noDoc typedef Provider<T> = blok.core.Provider<T, js.html.Node>;
+@:noUsing @:noDoc typedef Provider = blok.core.Provider<js.html.Node>;
 @:noUsing @:noDoc typedef Record = blok.core.Record; 
 
 @:noUsing @:noDoc typedef State = blok.State;

@@ -20,6 +20,7 @@ class StateBuilder {
     var initializers:Array<ObjectField> = [];
     var subStates:Array<Expr> = [];
     var initHooks:Array<Expr> = [];
+    var registerHooks:Array<Expr> = [];
     var id = cls.pack.concat([ cls.name ]).join('_').toLowerCase();
   
     function addProp(name:String, type:ComplexType, isOptional:Bool) {
@@ -39,6 +40,7 @@ class StateBuilder {
       });
     }
     
+    // Note to self: hey neat, States support Observables.
     builder.addFieldMetaHandler({
       name: 'prop',
       hook: Normal,
@@ -68,6 +70,10 @@ class StateBuilder {
 
           addProp(name, t, e != null);
 
+          if (Context.unify(t.toType(), Context.getType('blok.State'))) {
+            registerHooks.push(macro this.$name.__regsister(context));
+          }
+
           if (Context.unify(t.toType(), Context.getType('blok.core.Observable.ObservableTarget'))) {
             var linkName = '__link_${name}';
             builder.add((macro class {
@@ -75,7 +81,7 @@ class StateBuilder {
             }).fields);
             init = macro {
               var value = ${init};
-              this.$linkName = (value:ObservableTarget<Dynamic>).observe(_ -> __notify());
+              this.$linkName = (value:blok.core.Observable.ObservableTarget<Dynamic>).observe(_ -> __notify());
               value;
             }
             initializers.push({
@@ -92,8 +98,9 @@ class StateBuilder {
                     // noop
                   case [ current, value ]:
                     this.$linkName.cancel();
+                    this.__dirty = true;
                     this.$PROPS.$name = value;
-                    this.$linkName = (this.$PROPS.$name:ObservableTarget<Dynamic>).observe(_ -> __notify());
+                    this.$linkName = (this.$PROPS.$name:blok.core.Observable.ObservableTarget<Dynamic>).observe(_ -> __notify());
                 }
               }
             });
@@ -218,6 +225,7 @@ class StateBuilder {
                 }
               case UpdateStateSilent(data):
                 __updateProps(data);
+                __dirty = false;
             }
           }
         default:
@@ -255,9 +263,7 @@ class StateBuilder {
             expr: macro {
               var state = new $clsTp(props);
               return VComponent(blok.core.Provider, {
-                // observable: state,
-                key: $v{id},
-                value: state,
+                register: state.__register,
                 build: build
               });
             }
@@ -353,7 +359,6 @@ If you want to re-render whenever the state changes, use
         var $PROPS:$propType;
         var __dirty:Bool = false;
         final __observable:blok.core.Observable<$ct>;
-        public final __id:String = $v{id};
 
         public function new($INCOMING_PROPS:$propType) {
           __observable = new blok.core.Observable(this);
@@ -365,8 +370,9 @@ If you want to re-render whenever the state changes, use
         }
 
         @:noCompletion
-        public function __provide() {
-          return this;
+        public function __register(context:blok.core.Context<$nodeType>) {
+          context.set($v{id}, this);
+          $b{registerHooks};
         }
 
         public function getObservable():blok.core.Observable<$ct> {
