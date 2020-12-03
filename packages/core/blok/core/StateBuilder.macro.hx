@@ -40,7 +40,12 @@ class StateBuilder {
       });
     }
     
-    // Note to self: hey neat, States support Observables.
+    // Note: I need to document this somewhere, but `@prop`s that are States
+    //       will be provided automatically when the parent state is registered.
+    //       In addition, the parent state will observe any Observables
+    //       given to it (including states).
+    //
+    //       This should maybe *not* be automatic, but we'll see.
     builder.addFieldMetaHandler({
       name: 'prop',
       hook: Normal,
@@ -71,7 +76,7 @@ class StateBuilder {
           addProp(name, t, e != null);
 
           if (Context.unify(t.toType(), Context.getType('blok.State'))) {
-            registerHooks.push(macro this.$name.__regsister(context));
+            registerHooks.push(macro this.$name.__register(context));
           }
 
           if (Context.unify(t.toType(), Context.getType('blok.core.Observable.ObservableTarget'))) {
