@@ -193,7 +193,7 @@ class Root extends Component {
             className: 'todoapp'
           },
           children: [
-            Provider.provide([ model ], ctx -> Html.fragment([
+            Provider.provide(model, ctx -> Html.fragment([
               ViewInput.node({ task: Model.from(ctx).field }),
               ViewEntries.node({}),
               ViewControls.node({})

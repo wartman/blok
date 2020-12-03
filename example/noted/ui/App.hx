@@ -10,7 +10,7 @@ class App extends Component {
   @prop var store:Store;
 
   override function render(context:Context):VNode {
-    return Provider.provide([ store ], ctx -> PortalManager.node({
+    return Provider.provide(store, ctx -> PortalManager.node({
       children: [
         Html.div({
           style: [

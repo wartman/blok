@@ -75,7 +75,7 @@ class StateBuilder {
 
           addProp(name, t, e != null);
 
-          if (Context.unify(t.toType(), Context.getType('blok.State'))) {
+          if (Context.unify(t.toType(), Context.getType('blok.core.State'))) {
             registerHooks.push(macro this.$name.__register(context));
           }
 
@@ -268,7 +268,7 @@ class StateBuilder {
             expr: macro {
               var state = new $clsTp(props);
               return VComponent(blok.core.Provider, {
-                register: state.__register,
+                provisioner: state,
                 build: build
               });
             }
@@ -375,7 +375,7 @@ If you want to re-render whenever the state changes, use
         }
 
         @:noCompletion
-        public function __register(context:blok.core.Context<$nodeType>) {
+        public function __register(context:blok.core.Context<$nodeType>):Void {
           context.set($v{id}, this);
           $b{registerHooks};
         }
