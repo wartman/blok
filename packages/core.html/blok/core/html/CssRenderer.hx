@@ -9,7 +9,7 @@ import blok.core.style.StyleExpr;
 
 using Lambda;
 using StringTools;
-using blok.core.html.HashGenerator;
+using blok.core.html.ClassNameGenerator;
 
 enum CssRendererResult {
   None;
@@ -45,7 +45,7 @@ class CssRenderer {
   }
 
   public function renderClassName(id:String) {
-    return id.generateHash(options.prefix);
+    return id.generateClassName(options.prefix);
   }
 
   function renderExpr(selector:String, expr:StyleExpr):String {

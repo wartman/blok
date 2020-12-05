@@ -113,11 +113,11 @@ class RecordBuilder {
       var withPropType = TAnonymous(withProps);
       var clsType = Context.getLocalType().toComplexType();
       return (macro class {
-        final __hash:String;
+        final __stringRepresentation:String;
 
         public function new($INCOMING_PROPS:$propType) {
           $b{initializers};
-          __hash = $v{cls.pack.concat([ cls.name ]).join('.')} + ' { ' + [ $a{nameBuilder} ].join(', ') + ' }';
+          __stringRepresentation = $v{cls.pack.concat([ cls.name ]).join('.')} + ' { ' + [ $a{nameBuilder} ].join(', ') + ' }';
         }
 
         /**
@@ -142,11 +142,11 @@ class RecordBuilder {
           Check if all the fields of this Record match the other Record.
         **/
         public function equals(other:$clsType):Bool {
-          return __hash == other.__hash;
+          return __stringRepresentation == other.__stringRepresentation;
         }
 
         public function toString():String {
-          return __hash;
+          return __stringRepresentation;
         }
       }).fields;
     });

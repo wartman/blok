@@ -268,7 +268,7 @@ class StateBuilder {
             expr: macro {
               var state = new $clsTp(props);
               return VComponent(blok.core.Provider, {
-                provisioner: state,
+                value: state,
                 build: build
               });
             }
