@@ -2,6 +2,7 @@
 
 -lib blok.core.style
 -lib blok.platform.dom
+-lib blok.core.foundation
 -lib blok.ui
 
 -dce full

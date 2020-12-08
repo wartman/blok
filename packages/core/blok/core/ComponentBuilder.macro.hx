@@ -21,7 +21,7 @@ class ComponentBuilder {
     var disposeHooks:Array<Expr> = [];
     var effectHooks:Array<Expr> = [];
 
-    function addProp(name:String, type:ComplexType, isOptional:Bool, isUpdateable:Bool = true) {
+    function addProp(name:String, type:ComplexType, isOptional:Bool) {
       props.push({
         name: name,
         kind: FVar(type, null),
@@ -29,7 +29,7 @@ class ComponentBuilder {
         meta: isOptional ? [ OPTIONAL_META ] : [],
         pos: (macro null).pos
       });
-      if (isUpdateable) updateProps.push({
+      updateProps.push({
         name: name,
         kind: FVar(type, null),
         access: [ APublic ],
@@ -124,75 +124,70 @@ class ComponentBuilder {
           }
 
           if (e != null) {
-            Context.error('@use vars cannot be initilized', field.pos);
+            Context.error('@use vars cannot be initialized', field.pos);
           }
 
-          if (Context.unify(t.toType(), Context.getType('blok.State'))) {
-            var path = t.toType().toString().split('.'); // is there a better way
-            var name = field.name;
-            var getter = 'get_$name';
-            var backingName = '__computedValue_$name';
-
-            field.kind = FProp('get', 'never', t, null);
-
-            builder.add((macro class {
-              var $backingName:$t = null;
-
-              function $getter() {
-                if (this.$backingName == null) 
-                  this.$backingName = $p{path}.from(__context);
-                return this.$backingName;
-              } 
-            }).fields);
-
-            updates.push(macro this.$backingName = null);
-
-            return;
+          if (!Context.unify(t.toType(), Context.getType('blok.State'))) {
+            Context.error('@use must be a blok.State', field.pos);
           }
 
-          // todo: allow other Providables?
+          var path = t.toType().toString().split('.'); // is there a better way
+          var name = field.name;
+          var getter = 'get_$name';
+          var backingName = '__computedValue_$name';
 
-          Context.error('@use must be a blok.State', field.pos);
+          field.kind = FProp('get', 'never', t, null);
 
+          builder.add((macro class {
+            var $backingName:$t = null;
+
+            function $getter() {
+              if (this.$backingName == null) 
+                this.$backingName = $p{path}.from(__context);
+              return this.$backingName;
+            } 
+          }).fields);
+
+          updates.push(macro this.$backingName = null);
         default:
-          Context.error('@prop can only be used on vars', field.pos);
+          Context.error('@use can only be used on vars', field.pos);
       }
     });
 
     builder.addFieldMetaHandler({
       name: 'observable',
       hook: Normal,
-      options: [
-        { name: 'watch', optional: true },
-        { name: 'internal', optional: true }
-      ],
-      build: function (options:{
-        ?watch:Bool,
-        ?internal:Bool
-      }, builder, field) switch field.kind {
+      options: [ { name: 'watch', optional: true } ],
+      build: function (options:{ ?watch:Bool }, builder, field) switch field.kind {
         case FVar(t, e):
           if (t == null) {
             Context.error('Types cannot be inferred for @observable vars', field.pos);
           }
 
-          if (e == null && options.internal == true) {
-            Context.error('An initializer is required for internal @observables', field.pos);
+          if (e == null ) {
+            Context.error('An initializer is required for @observables', field.pos);
           }
 
           var name = field.name;
           var obsType = macro:blok.core.Observable<$t>;
-          var init = if (options.internal) e else (e == null
+          var init = e == null
             ? macro $i{INCOMING_PROPS}.$name
-            : macro $i{INCOMING_PROPS}.$name == null ? ${e} : $i{INCOMING_PROPS}.$name);
+            : macro $i{INCOMING_PROPS}.$name == null ? ${e} : $i{INCOMING_PROPS}.$name;
 
           if (!field.access.contains(AFinal)) {
             field.access.push(AFinal);
           }
 
+          addProp(name, t, e != null);
           field.kind = FVar(obsType, null);
-          addProp(name, t, e != null, false);
           initHooks.push(macro this.$name = new blok.core.Observable($init));
           disposeHooks.push(macro this.$name.dispose());
+          
+          // @todo: I'm unsure if we SHOULD notify the observable
+          //        here or not. Requires testing.
+          updates.push(macro if (Reflect.hasField($i{INCOMING_PROPS}, $v{name})) {
+            @:privateAccess this.$name.value = Reflect.field($i{INCOMING_PROPS}, $v{name});
+          });
 
           if (options.watch == true) {
             var observerName = '__observer_$name';

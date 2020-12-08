@@ -1,0 +1,3 @@
+-cp packages/core.foundation
+
+-D blok.core.foundation=0.0.1

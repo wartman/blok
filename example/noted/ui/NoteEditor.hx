@@ -17,7 +17,7 @@ class NoteEditor extends Component {
     spacing: EdgeInsets.bottom(Config.mediumGap)
   });
   
-  @observable(internal) var isValid:Bool = note.name.length > 0 && note.content.length > 0;
+  @observable var isValid:Bool = note.name.length > 0 && note.content.length > 0;
   @prop var note:Note;
   @prop var requestClose:()->Void;
   @prop var requestRemove:()->Void = null;
