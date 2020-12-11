@@ -1,9 +1,9 @@
-package blok.ui.style;
+package blok.core.foundation.style;
 
 import blok.core.html.CssUnit;
 import blok.core.html.CssValue;
 
-@:forward
+@:forward(toString)
 abstract EdgeInsets(CssValue) to CssValue {
   public inline static function top(top:CssUnit) {
     return define({ top: top });

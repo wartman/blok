@@ -1,11 +1,8 @@
 package noted.ui;
 
-import blok.ui.style.Color;
-import blok.ui.style.Shadow;
+import blok.core.foundation.style.Box;
 import noted.ui.style.Card;
-import blok.ui.style.Box;
 import noted.ui.style.Config;
-import noted.data.Note;
 import noted.data.Store;
 import noted.ui.style.List;
 

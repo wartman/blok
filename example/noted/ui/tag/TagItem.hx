@@ -1,6 +1,6 @@
 package noted.ui.tag;
 
-import blok.ui.style.*;
+import blok.core.foundation.style.*;
 import noted.data.Tag;
 import noted.data.Id;
 import noted.ui.style.*;
@@ -14,27 +14,26 @@ class TagItem extends Component {
   @prop var showError:Bool = false;
 
   override function render(context:Context):VNode {
+    var color = if (showError && (tag.id.isInvalid() || tag.notes.length == 0))
+      Config.errorColor;
+    else
+      Config.lightColor;
     return Html.li({
       key: tag,
       style: [
         Position.style({ type: Relative }),
-        if (showError && (tag.id.isInvalid() || tag.notes.length == 0))
-          Pill.style({
-            color: Config.errorColor,
-            centered: false
-          })
-        else 
-          Pill.style({
-            color: Config.lightColor,
-            centered: false
-          })
+        Selectable.style({ color: color }),
+        Pill.style({
+          color: color,
+          centered: false
+        })
       ],
       children: [
         Html.span({
           style: [
-            Display.style({ kind: Block }),
             Box.style({
               height: Em(2),
+              display: Block,
               padding: EdgeInsets.right(Em(1)) 
             })
           ],

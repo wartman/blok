@@ -1,6 +1,6 @@
 package noted.ui.style;
 
-import blok.ui.style.*;
+import blok.core.foundation.style.*;
 
 using Blok;
 
@@ -11,18 +11,24 @@ class Root extends Style {
 
       Css.global([
         Css.child('#root', [
-          MediaQuery.minWidth(Config.mobileWidth, [
-            Box.export({
-              width: Config.mobileWidth,
-              padding: EdgeInsets.symmetric(Config.smallGap, None)
-            }),
-          ]),
-          MediaQuery.maxWidth(Config.mobileWidth, [
-            Box.export({
-              width: Pct(100),
-              padding: EdgeInsets.all(Config.smallGap)
-            })
-          ])
+          MediaQuery.export({
+            minWidth: Config.mobileWidth,
+            rules: [
+              Box.export({
+                width: Config.mobileWidth,
+                padding: EdgeInsets.symmetric(Config.smallGap, None)
+              }),
+            ]
+          }),
+          MediaQuery.export({
+            maxWidth: Config.mobileWidth,
+            rules: [
+              Box.export({
+                width: Pct(100),
+                padding: EdgeInsets.all(Config.smallGap)
+              })
+            ]
+          })
         ]),
 
         Css.child('h1, h2, h3', [
@@ -37,7 +43,7 @@ class Root extends Style {
         Css.child('body', [
           Flex.horizontallyCentered(),
           Font.export({
-            family: 'sans-serif',
+            family: [ 'sans-serif' ],
             size: Em(.8),
             color: Config.darkColor
           }),

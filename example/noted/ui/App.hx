@@ -1,6 +1,6 @@
 package noted.ui;
 
-import blok.ui.PortalManager;
+import blok.core.foundation.portal.PortalManager;
 import noted.data.Store;
 import noted.ui.style.Root;
 

@@ -1,7 +1,7 @@
 package noted.ui;
 
 import blok.Children;
-import blok.ui.style.*;
+import blok.core.foundation.style.*;
 import noted.ui.tag.TagList;
 import noted.ui.style.Layout;
 import noted.ui.style.*;
@@ -12,7 +12,7 @@ using Blok;
 
 class NoteItem extends Component {
   static final sectionStyle:StyleList = Box.style({
-    spacing: EdgeInsets.bottom(Config.mediumGap)
+    margin: EdgeInsets.bottom(Config.mediumGap)
   });
 
   @prop var note:Note;

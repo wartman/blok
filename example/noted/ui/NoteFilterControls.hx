@@ -1,7 +1,7 @@
 package noted.ui;
 
+import blok.core.foundation.style.*;
 import noted.ui.tag.TagList;
-import blok.ui.style.*;
 import noted.ui.style.*;
 import noted.data.*;
 

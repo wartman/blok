@@ -1,6 +1,6 @@
 package noted.ui.style;
 
-import blok.ui.style.*;
+import blok.core.foundation.style.*;
 
 using Blok;
 

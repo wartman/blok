@@ -1,10 +1,10 @@
 package noted.ui;
 
 import js.Browser;
-import blok.ui.Portal;
+import blok.core.foundation.portal.Portal;
+import blok.core.foundation.style.*;
 import blok.core.Delay;
 import blok.util.Body;
-import blok.ui.style.*;
 import noted.ui.style.*;
 
 using Blok;
@@ -46,13 +46,13 @@ class Modal extends Component {
               Box.style({
                 width: Config.mobileWidth
               }),
-              Style.define(
-                MediaQuery.maxWidth(Config.mobileWidth, [
-                  Box.export({
-                    width: Pct(100)
-                  })
-                ])
-              )
+              MediaQuery.define({
+                type: Screen,
+                maxWidth: Config.mobileWidth,
+                rules: [
+                  Box.export({ width: Pct(100) })
+                ]
+              })
             ],
             attrs: {
               onclick: e -> e.stopPropagation() 
@@ -62,7 +62,7 @@ class Modal extends Component {
                 style: [
                   Position.style({ type: Relative }),
                   Box.style({
-                    spacing: EdgeInsets.bottom(Config.mediumGap)
+                    margin: EdgeInsets.bottom(Config.mediumGap)
                   })
                 ],
                 children: [

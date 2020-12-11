@@ -1,7 +1,8 @@
 package noted.ui.style;
 
-import blok.ui.style.Color;
-import blok.ui.style.Background;
+import blok.core.foundation.style.Color;
+import blok.core.foundation.style.Box;
+import blok.core.foundation.style.Pseudo;
 
 using Blok;
 
@@ -16,18 +17,19 @@ class AutoColor extends Style {
         else if (color == Config.errorColor) Config.whiteColor
         else Config.darkColor
       ),
-      Background.export({ color: color }),
-      Css.modifier(':disabled', [
+      Box.export({ backgroundColor: color }),
+      Pseudo.wrap(Disabled, [
         Css.property('color',
           if (color == Config.whiteColor || color == Config.lightColor) Config.midColor
           else if (color == Config.midColor || color == Config.darkColor) Config.lightColor
           else Config.midColor
         ),
-        Background.export({ color:
-          if (color == Config.whiteColor || color == Config.lightColor) color
-          else if (color == Config.darkColor) Config.midColor
-          else color
-        }),
+        Box.export({
+          backgroundColor: 
+            if (color == Config.whiteColor || color == Config.lightColor) color
+            else if (color == Config.darkColor) Config.midColor
+            else color
+        })
       ])
     ]);
   }

@@ -1,9 +1,7 @@
 package noted.ui;
 
-import noted.ui.style.Config;
-import blok.ui.style.Color;
-import blok.ui.style.Display;
-import noted.ui.style.Pill;
+import blok.core.foundation.style.*;
+import noted.ui.style.*;
 
 using Blok;
 
@@ -22,19 +20,21 @@ class Button extends Component {
   @prop var style:StyleList = [];
 
   override function render(context:Context):VNode {
+    var color = switch type {
+      case Normal: Config.lightColor;
+      case Important: Config.accentColor;
+      case Selected: Config.midColor;
+      case Custom(color): color;
+    };
     return Html.button({
       style: [
-        Display.style({ kind: Block }),
+        Box.style({ display: Block }),
+        Selectable.style({ color: color }),
         Pill.style({
           outlined: type.equals(Selected),
-          color: switch type {
-            case Normal: Config.lightColor;
-            case Important: Config.accentColor;
-            case Selected: Config.midColor;
-            case Custom(color): color;
-          }
+          color: color
         }),
-        Css.define({ cursor: 'pointer' }),
+        Interactive.style({ cursor: Pointer }),
         style
       ],
       attrs: {

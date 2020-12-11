@@ -1,6 +1,6 @@
 package noted.ui.tag;
 
-import blok.ui.style.*;
+import blok.core.foundation.style.*;
 import noted.ui.style.*;
 import noted.data.Id;
 import noted.data.Tag;
@@ -50,8 +50,13 @@ class TagList extends Component {
               onCancel: stopAdding
             }) else Html.button({
               style: [
-                Display.style({ kind: Block }),
-                Box.style({ width: Pct(100) }),
+                Box.style({ 
+                  display: Block,
+                  width: Pct(100) 
+                }),
+                Selectable.style({
+                  color: Config.midColor
+                }),
                 Pill.style({
                   color: Config.midColor,
                   padding: Em(.5),

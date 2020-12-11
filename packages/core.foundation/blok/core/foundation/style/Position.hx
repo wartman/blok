@@ -1,4 +1,4 @@
-package blok.ui.style;
+package blok.core.foundation.style;
 
 import blok.core.style.StyleExpr;
 import blok.core.style.Style;

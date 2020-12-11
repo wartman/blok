@@ -1,7 +1,7 @@
 package noted.ui.style;
 
-import blok.ui.style.*;
-import blok.ui.style.Grid;
+import blok.core.foundation.style.*;
+import blok.core.foundation.style.Grid;
 
 using Blok;
 
@@ -13,16 +13,22 @@ class BaseGrid extends Style {
   override function render():StyleExpr {
     return Css.properties([
       Grid.export({ gap: gap }),
-      MediaQuery.minWidth(Config.mobileWidth, [
-        Grid.export({
-          columns: GridDefinition.repeat(perRow, Fr(1))
-        })
-      ]),
-      MediaQuery.maxWidth(Config.mobileWidth, [
-        Grid.export({
-          columns: GridDefinition.repeat(perRowMobile, Fr(1))
-        })
-      ])
+      MediaQuery.export({
+        minWidth: Config.mobileWidth,
+        rules: [
+          Grid.export({
+            columns: GridDefinition.repeat(perRow, Fr(1))
+          })
+        ]
+      }),
+      MediaQuery.export({
+        maxWidth: Config.mobileWidth,
+        rules: [
+          Grid.export({
+            columns: GridDefinition.repeat(perRowMobile, Fr(1))
+          })
+        ]
+      })
     ]);
   }
 }

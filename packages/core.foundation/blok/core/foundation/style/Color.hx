@@ -1,6 +1,5 @@
-package blok.ui.style;
+package blok.core.foundation.style;
 
-import blok.core.html.Css;
 import blok.core.html.CssValue;
 
 @:forward(toString)

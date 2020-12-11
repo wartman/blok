@@ -1,7 +1,7 @@
 package noted.ui;
 
 import js.html.InputElement;
-import blok.ui.style.Box;
+import blok.core.foundation.style.Box;
 import noted.ui.style.*;
 
 using StringTools;
@@ -11,10 +11,11 @@ class Input extends Component {
   static final baseStyle:StyleList = [
     Pill.style({
       outlined: true,
-      color: Config.darkColor,
+      color: Config.midColor,
       centered: false,
       padding: Em(.5)
     }),
+    Selectable.style({ color: Config.midColor }),
     Box.style({ width: Pct(100) })
   ];
 

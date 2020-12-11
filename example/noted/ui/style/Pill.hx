@@ -1,6 +1,6 @@
 package noted.ui.style;
 
-import blok.ui.style.*;
+import blok.core.foundation.style.*;
 
 using Blok;
 
@@ -16,23 +16,19 @@ class Pill extends Style {
       default: Em(1); 
     }
     return Css.properties([
-      if (outlined) Css.properties([
-        Background.export({
-          color: Color.name('transparent')
-        }),
-        Border.export({
-          radius: radius,
-          width: Px(1),
-          type: Solid,
-          color: color
-        }),
-        Css.property('color', color)
-      ]) else Css.properties([
+      if (outlined) Box.export({
+        backgroundColor: Color.name('transparent'),
+        borderRadius: radius,
+        borderWidth: Px(1),
+        borderStyle: Solid,
+        borderColor: color,
+        contentColor: color
+      }) else Css.properties([
         AutoColor.export({ color: color }),
-        Border.export({ 
-          type: None,
-          width: Px(0),
-          radius: radius 
+        Box.export({ 
+          borderStyle: None,
+          borderWidth: Px(0),
+          borderRadius: radius 
         })
       ]),
       Font.export({

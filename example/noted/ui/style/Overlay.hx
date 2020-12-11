@@ -1,6 +1,6 @@
 package noted.ui.style;
 
-import blok.ui.style.*;
+import blok.core.foundation.style.*;
 
 using Blok;
 
@@ -9,8 +9,8 @@ class Overlay extends Style {
     return Css.properties([
       Css.property('z-index', 99999),
       Css.property('overflow-y', 'scroll'),
-      Background.export({
-        color: Config.scrimColor
+      Box.export({
+        backgroundColor: Config.scrimColor
       }),
       Position.export({
         type: Fixed,
@@ -25,11 +25,14 @@ class Overlay extends Style {
         justifyContent: Content(Center),
         alignItems: Position(Center)
       }),
-      MediaQuery.maxWidth(Config.mobileWidth, [
-        Box.export({
-          padding: EdgeInsets.all(Config.smallGap)
-        })
-      ])
+      MediaQuery.export({
+        maxWidth: Config.mobileWidth, 
+        rules: [
+          Box.export({
+            padding: EdgeInsets.all(Config.smallGap)
+          })
+        ]
+      })
     ]);
   }
 }

@@ -1,6 +1,6 @@
 package noted.ui;
 
-import blok.ui.style.*;
+import blok.core.foundation.style.*;
 import noted.data.Id;
 import noted.data.Store;
 import noted.data.Note;
@@ -14,7 +14,7 @@ using Blok;
 // @todo: rethink the way this editor works
 class NoteEditor extends Component {
   static final noteEditorSection = Box.style({
-    spacing: EdgeInsets.bottom(Config.mediumGap)
+    margin: EdgeInsets.bottom(Config.mediumGap)
   });
   
   @observable var isValid:Bool = note.name.length > 0 && note.content.length > 0;

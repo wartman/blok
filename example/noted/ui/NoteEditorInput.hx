@@ -1,6 +1,6 @@
 package noted.ui;
 
-import blok.ui.style.*;
+import blok.core.foundation.style.*;
 import noted.ui.style.*;
 
 using Blok;
@@ -14,12 +14,13 @@ class NoteEditorInput extends Component {
   final style:StyleList = [
     Card.style({
       outlined: true,
-      color: Config.darkColor,
+      color: Config.midColor,
       padding: EdgeInsets.all(Config.smallGap)
     }),
-    Display.style({ kind: Block }),
+    Selectable.style({ color: Config.midColor }),
     Box.style({
-      width: Pct(100)
+      width: Pct(100),
+      display: Block
     })
   ];
 
@@ -38,6 +39,13 @@ class NoteEditorInput extends Component {
   function doValidation() {
     return UpdateState({
       showMessage: !validate(ref.value)
+    });
+  }
+
+  @update
+  function hideMessage() {
+    return UpdateState({
+      showMessage: false
     });
   }
 
@@ -78,22 +86,16 @@ class NoteEditorInput extends Component {
     }
 
     return Html.div({
+      style: [
+        Position.style({
+          type: Relative
+        })
+      ],
       children: [
         input,
-        if (showMessage) Html.span({
-          style: [
-            Display.style({ kind: Block }),
-            Box.style({
-              spacing: EdgeInsets.top(Em(1))
-            }),
-            Pill.style({ 
-              color: Config.errorColor, 
-              padding: Em(.5),
-              // outlined: true,
-              centered: false
-            })
-          ],
-          children: [ Html.text(message) ]
+        if (showMessage) Popover.node({
+          onClick: hideMessage,
+          content: message
         }) else null
       ]
     });

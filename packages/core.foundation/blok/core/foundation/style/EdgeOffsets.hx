@@ -1,4 +1,4 @@
-package blok.ui.style;
+package blok.core.foundation.style;
 
 import blok.core.html.CssUnit;
 import blok.core.html.CssValue;
@@ -11,7 +11,7 @@ enum abstract RelativePosition(String) to String {
   var Center = 'center';
 }
 
-@:forward
+@:forward(toString)
 abstract EdgeOffsets(CssValue) to CssValue {
   public inline static function top() {
     return new EdgeOffsets(RelativePosition.Top);

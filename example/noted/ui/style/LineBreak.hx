@@ -1,6 +1,6 @@
 package noted.ui.style;
 
-import blok.ui.style.*;
+import blok.core.foundation.style.*;
 
 using Blok;
 
@@ -13,13 +13,11 @@ class LineBreak extends Style {
     return Css.properties([
       Box.export({
         padding: EdgeInsets.bottom(gap),
-        spacing: EdgeInsets.bottom(spacing)
-      }),
-      Border.export({
-        side: Bottom,
-        color: color,
-        width: Px(1),
-        type: Solid
+        margin: EdgeInsets.bottom(spacing),
+        borderSide: Bottom,
+        borderColor: color,
+        borderWidth: Px(1),
+        borderStyle: Solid
       })
     ]);
   }

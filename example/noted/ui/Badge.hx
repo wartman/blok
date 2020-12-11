@@ -1,6 +1,6 @@
 package noted.ui;
 
-import blok.ui.style.*;
+import blok.core.foundation.style.*;
 import noted.ui.style.*;
 
 using Blok;
@@ -16,7 +16,7 @@ class Badge extends Component {
           color: Config.lightColor,
           padding: None
         }),
-        Display.style({ kind: Block }),
+        Box.style({ display: Block }),
         style
       ],
       children: [ Html.text(label) ]

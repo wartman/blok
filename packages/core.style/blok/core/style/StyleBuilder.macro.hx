@@ -152,6 +152,10 @@ class StyleBuilder {
           return getStyleId(this.$PROPS);
         }
 
+        public function toString() {
+          return getId();
+        }
+
         public function new($INCOMING_PROPS:$propType) {
           this.$PROPS = ${ {
             expr: EObjectDecl(initializers),

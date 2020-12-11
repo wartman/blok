@@ -1,4 +1,4 @@
-package blok.ui.style;
+package blok.core.foundation.style;
 
 import blok.core.html.CssUnit;
 import blok.core.style.Style;
@@ -23,9 +23,7 @@ abstract GridDefinition(CssValue) to CssValue {
 }
 
 /**
-  Generates rules for the CSS Grid layout. This class should
-  be used for the grid wrapper, not for grid items (use GridItem
-  for that).
+  Generates rules for the CSS Grid layout.
 **/
 class Grid extends Style {
   @prop var columns:GridDefinition = null;

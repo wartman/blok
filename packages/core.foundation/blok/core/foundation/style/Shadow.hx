@@ -1,4 +1,4 @@
-package blok.ui.style;
+package blok.core.foundation.style;
 
 import blok.core.style.Style;
 import blok.core.style.StyleExpr;
@@ -9,6 +9,7 @@ class Shadow extends Style {
   @prop var radius:CssUnit = null;
   @prop var offsetX:CssUnit;
   @prop var offsetY:CssUnit;
+  @prop var blurRadius:CssUnit = null;
   @prop var color:Color = null;
 
   override function render():StyleExpr {
@@ -16,7 +17,8 @@ class Shadow extends Style {
       Css.property(
         'box-shadow', 
         '${offsetX.toString()} ${offsetY.toString()}'
-        + (if (radius != null) ' ' + radius.toString() else '')
+        + (if (blurRadius != null) ' ' + blurRadius.toString() else '')
+        + (if (radius != null) ' ' + radius.toString() else if (blurRadius != null) '0' else '')
         + (if (color != null) ' ' + color.toString() else '')
       )
     ]);
