@@ -80,6 +80,19 @@ class Pseudo {
     return Css.modifier(stringifyType(type), exprs);
   }
 
+  /**
+    Define an inline pseudo wrapper.
+
+    Note: Just as with `Style.define`, this style will NOT update
+    if values change. Only the initial configuration will
+    have an effect. Use with caution.
+  **/
+  public macro static function define(type, exprs) {
+    return macro blok.core.style.Style.define(
+      @:pos(type.pos) blok.core.foundation.style.Pseudo.wrap(type, exprs)
+    );
+  }
+
   static function stringifyType(type:PseudoType):String {
     return switch type {
       case Vendored(s): s;

@@ -34,7 +34,7 @@ class Button extends Component {
           outlined: type.equals(Selected),
           color: color
         }),
-        Interactive.style({ cursor: Pointer }),
+        Interaction.style({ cursor: Pointer }),
         style
       ],
       attrs: {

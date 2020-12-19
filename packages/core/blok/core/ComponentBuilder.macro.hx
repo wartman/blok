@@ -131,7 +131,10 @@ class ComponentBuilder {
             Context.error('@use must be a blok.State', field.pos);
           }
 
-          var path = t.toType().toString().split('.'); // is there a better way
+          var clsName = t.toType().toString();
+          if (clsName.indexOf('<') >= 0) clsName = clsName.substring(0, clsName.indexOf('<'));
+          
+          var path = clsName.split('.'); // is there a better way
           var name = field.name;
           var getter = 'get_$name';
           var backingName = '__computedValue_$name';

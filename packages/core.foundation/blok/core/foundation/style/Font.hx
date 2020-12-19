@@ -36,7 +36,6 @@ class Font extends Style {
   @prop var color:Color = null;
   @prop var lineHeight:CssUnit = null;
   @prop var align:TextAlign = null;
-  // @todo: This class should handle @font-face as well?
 
   override function render():StyleExpr {
     var props:Array<StyleExpr> = [];

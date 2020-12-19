@@ -23,7 +23,7 @@ class CssBuilder {
   public static function export(e:Expr):Expr {
     return switch e.expr {
       case EObjectDecl(decls) if (decls.length >= 0):
-        return macro blok.core.html.Css.properties([ $a{parse(decls)} ]);
+        return macro @:pos(e.pos) blok.core.html.Css.properties([ $a{parse(decls)} ]);
       case EBlock(_) | EObjectDecl(_):
         macro null;
       default:

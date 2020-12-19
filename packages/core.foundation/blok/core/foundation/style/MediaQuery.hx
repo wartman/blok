@@ -53,8 +53,8 @@ class MediaQuery {
     have an effect. Use with caution.
   **/
   macro public static function define(options) {
-    return macro @:pos(options.pos) blok.core.style.Style.define(
-      blok.core.foundation.style.MediaQuery.export(${options})
+    return macro blok.core.style.Style.define(
+      @:pos(options.pos) blok.core.foundation.style.MediaQuery.export(${options})
     );
   }
 }

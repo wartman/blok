@@ -29,20 +29,16 @@ class Popover extends Component {
       children: [
         Html.text(content),
         Html.div({
-          style: [
-            Style.define(Css.properties([
-              Css.export({
-                top: Em(3),
-                left: Em(2),
-                position: 'absolute',
-                width: Em(.75),
-                height: Em(.75),
-                borderLeft: CssValue.compound([ Em(.75), 'solid', 'transparent' ]),
-                borderRight: CssValue.compound([ Em(.75), 'solid', 'transparent' ]),
-                borderTop: CssValue.compound([ Em(.75), 'solid', Config.errorColor ])
-              })
-            ]))
-          ]
+          style: Css.define({
+            top: Em(3),
+            left: Em(2),
+            position: 'absolute',
+            width: Em(.75),
+            height: Em(.75),
+            borderLeft: CssValue.compound([ Em(.75), 'solid', 'transparent' ]),
+            borderRight: CssValue.compound([ Em(.75), 'solid', 'transparent' ]),
+            borderTop: CssValue.compound([ Em(.75), 'solid', Config.errorColor ])
+          })
         })
       ]
     });

@@ -43,7 +43,7 @@ enum abstract CursorType(String) to String {
   var ZoomOut = 'zoom-out';
 }
 
-class Interactive extends Style {
+class Interaction extends Style {
   @prop var cursor:CursorType;
 
   override function render():StyleExpr {
