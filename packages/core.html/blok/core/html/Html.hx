@@ -9,9 +9,6 @@ typedef HtmlBaseProps<Attrs:{}> = {
   // A bit of a hack, really; might look into creating a build system
   // like we have with Component and State.
   ?ref:(node:Node)->Void,
-  #if blok.core.style
-    ?style:blok.core.style.StyleList,
-  #end
   ?key:Key,
   ?attrs:Attrs
 }
@@ -27,6 +24,6 @@ class Html {
   }
 
   public static inline function text(content:String, ?key:Key) {
-    return VNative(TextType, { content: content }, null, null, key, []);
+    return VNative(TextType, { content: content }, null, key, []);
   }
 }

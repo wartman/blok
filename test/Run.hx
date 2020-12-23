@@ -3,30 +3,12 @@ import hxd.App;
 
 using Blok;
 
-class ExampleStyle extends Style {
-  @prop var height:Unit;
-  @prop var color:Int;
-  @prop var backgroundColor:Int = 0xFFCCCCCC;
-
-  override function render():Array<VStyleExpr> {
-    return [
-      Style.property('padding', 10),
-      Style.property('color', color),
-      Style.property('background-color', backgroundColor),
-      // Style.property('background-color', blok.ui.style.Color.rgba(0, 0, 0, 0.5)),
-      blok.ui.style.Box.export({
-        height: height
-      })
-    ];
-  }
-}
-
 class ExampleTheme implements State {
-  @prop var color:Value;
+  @prop var color:Int;
   @prop var font:Font;
 
   @update
-  public function setColor(color:Value) {
+  public function setColor(color:Int) {
     return UpdateState({ color: color });
   }
 }
@@ -53,18 +35,9 @@ class ExampleComponent extends Component {
         layout: Horizontal,
         padding: 10,
       },
-      // style: ExampleStyle.style({
-      //   height: Num(100),
-      //   color: 0xFF666666
-      // }),
       children: [
         Ui.flow({
           props: {},
-          style: ExampleStyle.style({
-            height: Num(50),
-            color: 0xFF666666,
-            backgroundColor: 0xFF666666
-          }),
           children: [ Ui.text({
             props: {
               font: state.font,
@@ -78,11 +51,6 @@ class ExampleComponent extends Component {
             width: 100,
             onClick: e -> makeTaller(10)
           },
-          style: ExampleStyle.style({
-            height: Num(height),
-            color: 0xFFCCCCCC,
-            backgroundColor: 0xFF666666
-          }),
           children: [
             Ui.flow({
               props: {
@@ -141,7 +109,7 @@ class Run extends App {
     Platform.mount(
       s2d,
       context -> ExampleTheme.provide({
-        color: blok.ui.style.Color.hex(0xCCC),
+        color: 0xCCC,
         font: hxd.res.DefaultFont.get()
       }, ctx -> ExampleComponent.node({
         title: 'Foo',

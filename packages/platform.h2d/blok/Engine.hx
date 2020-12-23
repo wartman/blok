@@ -27,9 +27,7 @@ class Engine implements blok.core.Engine<Object, Dynamic> {
     renderedRegistry.set(node, rendered);
   }
 
-  public function createPlaceholder(props:{
-    component:Component<Object>
-  }):VNode<Object> {
-    return VNative(ObjectType.empty(), props);
+  public function createPlaceholder(component:Component<Object>):VNode<Object> {
+    return VNative(ObjectType.empty(), {});
   }
 }

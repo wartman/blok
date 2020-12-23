@@ -2,9 +2,7 @@ package blok.h2d;
 
 import h2d.Tile;
 
-class Flow extends h2d.Flow implements NativeObject {
-  public final classList:ClassList = new ClassList();
-
+class Flow extends h2d.Flow {
   public var backgroundColor(never, set):Int;
   function set_backgroundColor(value:Int) {
     if (value != null) {

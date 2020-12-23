@@ -34,11 +34,6 @@ class HtmlBuilder {
             return VNative(
               blok.NodeType.get($v{name}),
               if (props.attrs != null) props.attrs else {},
-              #if blok.core.style
-                if (props.style != null) [ props.style.toPluginPayload() ] else null,
-              #else
-                null,
-              #end
               props.ref,
               props.key,
               props.children
@@ -57,11 +52,6 @@ class HtmlBuilder {
             return VNative(
               blok.NodeType.get($v{name}),
               if (props.attrs != null) props.attrs else {},
-              #if blok.core.style
-                if (props.style != null) [ props.style.toPluginPayload() ] else null,
-              #else
-                null,
-              #end
               props.ref,
               props.key,
               []

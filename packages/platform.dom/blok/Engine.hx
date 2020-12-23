@@ -28,9 +28,7 @@ class Engine implements blok.core.Engine<Node, Event> {
     Reflect.setField(node, RENDERED_PROP, rendered);
   }
 
-  public function createPlaceholder(props:{
-    component:blok.core.Component<Node>
-  }):VNode {
+  public function createPlaceholder(component:blok.core.Component<Node>):VNode {
     return Html.text('');
   }
 }

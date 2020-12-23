@@ -22,12 +22,6 @@ class RouterState<Route:EnumValue> implements State {
   function cleanup() {
     link.cancel();
   }
-  
-  public function setRoute(route:Route) {
-    if (!this.route.equals(route)) {
-      history.push(routeToUrl(route));
-    }
-  }
 
   public function previous() {
     history.previous();
@@ -35,6 +29,12 @@ class RouterState<Route:EnumValue> implements State {
 
   public function next() {
     history.next();
+  }
+  
+  public function setRoute(route:Route) {
+    if (!this.route.equals(route)) {
+      history.push(routeToUrl(route));
+    }
   }
 
   @update

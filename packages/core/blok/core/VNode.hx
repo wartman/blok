@@ -4,7 +4,6 @@ enum VNode<Node> {
   VNative<Props:{}>(
     type:NodeType<Props, Node>,
     props:Props,
-    ?plugables:Array<PluginPayload<Dynamic>>,
     ?ref:(node:Node)->Void, 
     ?key:Null<Key>, 
     ?children:Array<VNode<Node>>

@@ -145,16 +145,14 @@ class Differ {
       function process(nodes:Array<VNode<Node>>) {
         if (nodes != null) for (n in nodes) if (n != null) {
           switch n {
-            case VNative(type, props, styles, ref, key, children): switch previous(type, key) {
+            case VNative(type, props, ref, key, children): switch previous(type, key) {
               case None:
-                context.onCreateVNode(n);
                 var node = type.create(props, context);
                 render(node, children, parent, context);
                 if (ref != null) context.addEffect(() -> ref(node));
                 add(key, type, RNative(node, props));
               case Some(r): switch r {
                 case RNative(node, lastProps):
-                  context.onUpdateVNode(n);
                   type.update(node, lastProps, props, context);
                   render(node, children, parent, context);
                   add(key, type, RNative(node, props));
@@ -165,12 +163,10 @@ class Differ {
             
             case VComponent(type, attrs, key): switch previous(type, key) {
               case None:
-                context.onCreateVNode(n);
                 var component = type.__create(attrs, context, parent);
                 add(key, type, RComponent(component));
               case Some(r): switch r {
                 case RComponent(component):
-                  context.onUpdateVNode(n);
                   component.__update(attrs, context, parent);
                   add(key, type, RComponent(component));
                 default:

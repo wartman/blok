@@ -4,14 +4,6 @@ package todomvc;
 // to show how Blok can be similar to the Elm architecture.
 //
 // https://github.com/evancz/elm-todomvc/blob/master/src/Main.elm
-//
-// We're also _not_ using the `blok.core.style` package here -- instead,
-// we're relying on an exterior css file. This is in part to show that
-// Blok's style system is an optional plugin, and in part because it
-// was a lot easier not re-implementing all those styles. 
-//
-// If you want to see how `blok.core.style` works, check the `noted` 
-// example in the `example` directory.
 
 import haxe.Json;
 import haxe.ds.ReadOnlyArray;

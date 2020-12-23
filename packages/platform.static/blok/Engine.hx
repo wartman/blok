@@ -1,7 +1,7 @@
 package blok;
 
 import blok.core.Rendered;
-import blok.html.Html;
+import blok.core.html.Html;
 
 class Engine implements blok.core.Engine<Node, Dynamic> {
   public function new() {}
@@ -22,9 +22,7 @@ class Engine implements blok.core.Engine<Node, Dynamic> {
     node.rendered = rendered;
   }
 
-  public function createPlaceholder(props:{
-    component:blok.core.Component<Node>
-  }):VNode {
+  public function createPlaceholder(component:blok.core.Component<Node>):VNode {
     return Html.text('');
   }
 }

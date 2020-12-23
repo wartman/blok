@@ -102,7 +102,6 @@ class UiBuilder {
         });
         public static function $fnName(props:{
           props:$props,
-          ?style:blok.style.StyleList,
           ?ref:(obj:h2d.Object)->Void,
           ?key:blok.core.Key,
           ?children:Array<blok.core.VNode<h2d.Object>>
@@ -110,7 +109,6 @@ class UiBuilder {
           return VNative(
             $i{objectTypeName}, 
             props.props,
-            if (props.style != null) [new blok.core.PluginPayload(blok.style.Style.pluginKey, props.style)] else null,
             props.ref,
             props.key,
             props.children
