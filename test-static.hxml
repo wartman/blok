@@ -10,4 +10,4 @@
 
 -main TestStatic
 
--js dist/test.js
+-js dist/static/test.js

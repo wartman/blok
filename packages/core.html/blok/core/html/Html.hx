@@ -14,12 +14,12 @@ typedef HtmlBaseProps<Attrs:{}> = {
 }
 
 typedef HtmlChildrenProps<Attrs:{}> = HtmlBaseProps<Attrs> & {
-  ?children:Children
+  ?children:Array<VNode<Node>>
 }
 
 @:build(blok.core.html.HtmlBuilder.build())
 class Html {
-  public static inline function fragment(children:Children) {
+  public static inline function fragment(children:Array<VNode<Node>>) {
     return VFragment(children);
   }
 

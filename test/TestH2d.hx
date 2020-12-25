@@ -95,9 +95,9 @@ class ExampleComponent extends Component {
   }
 }
 
-class Run extends App {
+class TestH2d extends App {
   public static function main() {
-    var app = new Run();
+    var app = new TestH2d();
   }
 
   public function new() {

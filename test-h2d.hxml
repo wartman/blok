@@ -9,6 +9,6 @@
 -D js-es=6
 -D resourcesPath=dist/res
 
--main Run
+-main TestH2d
 
--js dist/h2d/index.js
+-js dist/h2d/app.js

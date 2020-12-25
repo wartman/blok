@@ -14,7 +14,6 @@ Packages
 Packages will be split out eventually, but they're all in one place for now (for ease of development and because I'm not sure what works best yet).
 
 - [blok.core](packages/core): The base implementation used everywhere.
-- [blok.core.style](packages/core.style): Blok's (optional) style system.
 - [blok.core.html](packages/core.html): Blok's HTML implementation (used by the DOM and Static platforms).
 - [blok.platform.dom](packages/platform.dom): Implementation for browsers.
 - [blok.platform.static](packages/platform.static): Static HTML rendering.

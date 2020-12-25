@@ -1,5 +1,4 @@
-/dist/h2d
-/dist/res/*
-/dist/noted/app.js
+/dist/static
+/dist/h2d/app.js
 /dist/todomvc/app.js
 /dump
