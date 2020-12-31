@@ -78,13 +78,13 @@ class ComponentBuilder {
           var getName = 'get_${name}';
           var init = e == null
             ? macro $i{INCOMING_PROPS}.$name
-            : macro $i{INCOMING_PROPS}.$name == null ? ${e} : $i{INCOMING_PROPS}.$name;
+            : macro $i{INCOMING_PROPS}.$name == null ? @:pos(e.pos) ${e} : $i{INCOMING_PROPS}.$name;
           
           f.kind = FProp('get', 'never', t, null);
 
           builder.add((macro class {
 
-            function $getName() return $i{PROPS}.$name;
+            inline function $getName() return $i{PROPS}.$name;
 
           }).fields);
 
@@ -352,7 +352,7 @@ class ComponentBuilder {
           } };
           __registerContext(__context);
           $b{initHooks}
-          __render(this.__context);
+          __render();
         }
 
         @:noCompletion

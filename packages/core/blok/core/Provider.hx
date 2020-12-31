@@ -27,7 +27,7 @@ class Provider<Node> extends Component<Node> {
     this.build = build;
     this.__parent = parent;
     __registerContext(context);
-    __render(__context);
+    __render();
   }
 
   override function __registerContext(context:Context<Node>) {

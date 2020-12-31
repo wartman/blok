@@ -70,7 +70,7 @@ class StateBuilder {
           f.kind = FProp('get', 'never', t, null);
 
           builder.add((macro class {
-            function $getName() return $i{PROPS}.$name;
+            inline function $getName() return $i{PROPS}.$name;
           }).fields);
 
           addProp(name, t, e != null);
@@ -166,7 +166,7 @@ class StateBuilder {
             var $backingName:$t = null;
   
             function $computeName() {
-              return ${e};
+              return @:pos(e.pos) ${e};
             }
   
             function $getName() {

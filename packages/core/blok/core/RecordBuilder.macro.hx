@@ -122,20 +122,18 @@ class RecordBuilder {
 
         /**
           Create a copy of the current record, changing the given
-          properties.
+          properties. If the incoming props are the same as the
+          current ones the existing Record will be returned instead
+          (this is a bit of a hack to make `a == b` work -- hopefully
+          I'll come up with something better).
         **/
         public function with($INCOMING_PROPS:$withPropType) {
-          return new $clsTp(${ {
+          var r = new $clsTp(${ {
             expr: EObjectDecl(withBuilder),
             pos: (macro null).pos
           } });
-        }
-
-        /**
-          Create a copy of the current Record.
-        **/
-        inline public function copy() {
-          return with({});
+          if (this.equals(r)) return this;
+          return r;
         }
 
         /**

@@ -4,6 +4,9 @@ import haxe.ds.Map;
 
 /**
   Context stores the current state of an app.
+
+  @todo: This is a bit of a mess right now, and we should
+         clean it up and refocus it.
 **/
 class Context<Node> {
   public final engine:Engine<Node, Dynamic>;

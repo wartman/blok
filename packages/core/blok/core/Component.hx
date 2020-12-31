@@ -31,20 +31,18 @@ class Component<Node> {
     __parent = parent;
 
     __updateProps(props);
-    __render(this.__context);
+    __render();
   }
 
-  public function __render(context:Context<Node>) {
-    var engine = context.engine;
-
+  public function __render() {
     __preRender();
 
     switch __rendered {
       case null:
         Differ.renderAll(
-          __processRender(context), 
+          __processRender(), 
           this, 
-          context,
+          __context,
           rendered -> __rendered = rendered
         );
       case before:
@@ -53,9 +51,9 @@ class Component<Node> {
 
         Differ.updateAll(
           before, 
-          __processRender(context), 
+          __processRender(), 
           this, 
-          context,
+          __context,
           rendered -> {
             __rendered = rendered;
             
@@ -64,15 +62,15 @@ class Component<Node> {
               previousCount++;
             }
 
-            Differ.setChildren(previousCount, engine.traverseSiblings(first), __rendered);
+            Differ.setChildren(previousCount, __context.engine.traverseSiblings(first), __rendered);
           }
         );
     }
   }
 
-  inline function __processRender(context:Context<Node>):Array<VNode<Node>> {
-    return switch render(context) {
-      case null | VFragment([], _): [context.engine.createPlaceholder(this)];
+  inline function __processRender():Array<VNode<Node>> {
+    return switch render(__context) {
+      case null | VFragment([], _): [__context.engine.createPlaceholder(this)];
       case VFragment(children, _): children;
       case node: [node];
     }
@@ -119,7 +117,7 @@ class Component<Node> {
     //
     // Probably needs some testing, but that's why all this logic is here.
     if (__parent == null) {
-      Delay.add(() -> __context.scope(__render));
+      Delay.add(() -> __context.scope(_ -> __render()));
     } else {
       __parent.__enqueuePendingChild(this);
     }
@@ -131,25 +129,28 @@ class Component<Node> {
     __pendingChildren.push(child);
 
     if (__parent == null) {
-      Delay.add(() -> __context.scope(__dequeuePendingChildren));
+      Delay.add(() -> __context.scope(_ -> __dequeuePendingChildren()));
     } else {
       __parent.__enqueuePendingChild(this);
     }
   }
 
-  public function __dequeuePendingChildren(parentContext:Context<Node>) {
+  public function __dequeuePendingChildren() {
     if (__pendingChildren.length == 0) return;
     var children = __pendingChildren.copy();
 
-    __registerContext(parentContext); // not sure if this is needed?
     __pendingChildren = [];
 
     for (child in children) {
       if (child.__alive) {
         if (child.__dirty) {
-          child.__render(__context);
+          // @todo: there might be instances where Context gets out
+          //        of sync here? We might look into that.
+          //        HOWEVER: I think we need to rethink our Context
+          //        system a bit anyway.
+          child.__render();
         } else {
-          child.__dequeuePendingChildren(__context);
+          child.__dequeuePendingChildren();
         }
       }
     }

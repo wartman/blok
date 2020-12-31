@@ -33,7 +33,7 @@ final class ObservableSubscriber<T, Node> extends Component<Node> {
     this.link = observable.observe(createSubscriber());
 
     __registerContext(context);
-    __render(__context);
+    __render();
   }
 
   inline function createSubscriber() {
