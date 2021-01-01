@@ -12,8 +12,9 @@ class NodeType<Props:{}> {
   static var types:Map<String, NodeType<Dynamic>> = [];
 
   public static function get<Props:{}>(tag:String):NodeType<Props> {
-    if (!types.exists(tag)) {
-      types.set(tag, new NodeType(tag));
+    if (!types.exists(tag)) switch tag.split(':') {
+      case ['svg', name]: types.set(tag, new NodeType(name, true));
+      default: types.set(tag, new NodeType(tag));
     }
     return cast types.get(tag);
   }
@@ -51,18 +52,25 @@ class NodeType<Props:{}> {
   }
 
   final tag:String;
+  final isSvg:Bool;
 
-  public function new(tag) {
+  public function new(tag, isSvg = false) {
     this.tag = tag;
+    this.isSvg = isSvg;
   }
   
   public function create(props:Props, context:Context):Node {
-    var node = Browser.document.createElement(tag);
+    var node = if (isSvg) 
+      Browser.document.createElementNS(SVG_NS, tag);
+    else
+      Browser.document.createElement(tag);
+
     Differ.diffObject(
       {}, 
       props, 
       updateNodeAttribute.bind(node)
     );
+
     return node;
   }
 

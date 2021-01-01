@@ -1,4 +1,5 @@
 /dist/static
 /dist/h2d/app.js
 /dist/todomvc/app.js
+/dist/features/app.js
 /dump

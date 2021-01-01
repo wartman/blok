@@ -17,7 +17,7 @@ typedef HtmlChildrenProps<Attrs:{}> = HtmlBaseProps<Attrs> & {
   ?children:Array<VNode<Node>>
 }
 
-@:build(blok.core.html.HtmlBuilder.build())
+@:build(blok.core.html.HtmlBuilder.build('blok.core.html.HtmlTags'))
 class Html {
   public static inline function fragment(children:Array<VNode<Node>>) {
     return VFragment(children);

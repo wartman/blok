@@ -8,3 +8,4 @@
 @:noUsing @:noDoc typedef ObservableSubscriber<T> = blok.ObservableSubscriber<T>;
 @:noUsing @:noDoc typedef VNode = blok.VNode;
 @:noUsing @:noDoc typedef Html = blok.core.html.Html;
+@:noUsing @:noDoc typedef Svg = blok.core.html.Svg;

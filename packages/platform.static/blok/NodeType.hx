@@ -7,8 +7,9 @@ class NodeType<Props:{}> {
   static var types:Map<String, NodeType<Dynamic>> = [];
 
   public static function get<Props:{}>(tag:String):NodeType<Props> {
-    if (!types.exists(tag)) {
-      types.set(tag, new NodeType(tag));
+    if (!types.exists(tag)) switch tag.split(':') {
+      case ['svg', name]: types.set(tag, new NodeType(name));
+      default: types.set(tag, new NodeType(tag));
     }
     return cast types.get(tag);
   }

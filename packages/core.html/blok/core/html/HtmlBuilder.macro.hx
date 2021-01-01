@@ -18,9 +18,9 @@ typedef TagInfo = {
 }
 
 class HtmlBuilder {
-  public static function build() {
+  public static function build(tagPath:String, ?prefix:String) {
     var fields = Context.getBuildFields();
-    var tags = getTags();
+    var tags = getTags(tagPath);
 
     for (tag in tags) switch tag.kind {
       case TagNormal:
@@ -32,7 +32,7 @@ class HtmlBuilder {
             props:blok.core.html.Html.HtmlChildrenProps<$type & blok.core.html.HtmlEvents>
           ):VNode<Node> {
             return VNative(
-              blok.NodeType.get($v{name}),
+              blok.NodeType.get($v{prefix != null ? '$prefix:${tag.name}' : name}),
               if (props.attrs != null) props.attrs else {},
               props.ref,
               props.key,
@@ -50,7 +50,7 @@ class HtmlBuilder {
             props:blok.core.html.Html.HtmlBaseProps<$type & blok.core.html.HtmlEvents>
           ):VNode<Node> {
             return VNative(
-              blok.NodeType.get($v{name}),
+              blok.NodeType.get($v{prefix != null ? '$prefix:${tag.name}' : name}),
               if (props.attrs != null) props.attrs else {},
               props.ref,
               props.key,
@@ -64,9 +64,9 @@ class HtmlBuilder {
     return fields;
   }
 
-  static function getTags():Array<TagInfo> {
+  static function getTags(tagPath:String):Array<TagInfo> {
     var tags:Array<TagInfo> = [];
-    var t = Context.getType('blok.core.html.HtmlTags');
+    var t = Context.getType(tagPath);
     var groups = switch t {
       case TType(t, params): switch (t.get().type) {
         case TAnonymous(a): a.get().fields;

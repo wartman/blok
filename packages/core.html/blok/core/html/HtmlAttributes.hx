@@ -311,33 +311,3 @@ typedef EmbedAttr = {
   var src:String;
   var typed:String;
 }
-
-// svg attr reference: https://github.com/dumistoklus/svg-xsd-schema/blob/master/svg.xsd
-typedef SvgAttr = GlobalAttr & {
-  @:optional var width:String;
-  @:optional var height:String;
-  @:optional var viewBox:String;// TODO: consider validating constant strings via typedef with @:fromHxx
-  @:optional var xmlns:String;// has no effect, but since most svgs come with this set, better to support it I guess
-}
-
-// typedef PathAttr = {
-//   > GlobalAttr<SvgStyle>,
-//   > tink.svgspec.Attributes.PathAttr,
-// }
-// typedef PolygonAttr = {
-//   > GlobalAttr<SvgStyle>,
-//   > tink.svgspec.Attributes.PolygonAttr,
-// }
-
-// typedef RectAttr = {
-//   > GlobalAttr<SvgStyle>,
-//   > tink.svgspec.Attributes.RectAttr,
-// }
-// typedef CircleAttr = {
-//   > GlobalAttr<SvgStyle>,
-//   > tink.svgspec.Attributes.CircleAttr,
-// }
-// typedef EllipseAttr = {
-//   > GlobalAttr<SvgStyle>,
-//   > tink.svgspec.Attributes.EllipseAttr,
-// }

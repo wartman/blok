@@ -66,12 +66,6 @@ typedef HtmlTags = {
     var dd:GlobalAttr;
     var details:#if haxe4 DetailsAttr #else GlobalAttr #end;
     var summary:GlobalAttr;
-    // @:element(js.html.svg.SVGElement) var svg:SvgAttr;
-    // @:element(js.html.svg.PathElement) var path:PathAttr;
-    // @:element(js.html.svg.PolygonElement) var polygon:PolygonAttr;
-    // @:element(js.html.svg.CircleElement) var circle:CircleAttr;
-    // @:element(js.html.svg.RectElement) var rect:RectAttr;
-    // @:element(js.html.svg.EllipseElement) var ellipse:EllipseAttr;
   }
   var opaque:{
     var textarea:TextAreaAttr;//right?

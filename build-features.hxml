@@ -1,0 +1,13 @@
+-cp example
+
+-lib blok.platform.dom
+
+-dce full
+
+-D analyzer-optimize
+-D debug
+-D js-es=6
+
+-main features.Main
+
+-js dist/features/app.js
