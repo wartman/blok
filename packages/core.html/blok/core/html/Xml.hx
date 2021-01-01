@@ -1,7 +1,6 @@
 package blok.core.html;
 
 class Xml {
-
   /**
     Parse XML into Blok VNodes.
   

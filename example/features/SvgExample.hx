@@ -34,7 +34,7 @@ class SvgExample extends Component {
         ')
         // Do note that this is not a full DSL, and is really only
         // designed for this limited use case. Error handling is very
-        // poor and you cannot use interpolation or arbitratry values.
+        // poor and you cannot use interpolation.
       ]
     });
   }

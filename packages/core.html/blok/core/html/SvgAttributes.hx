@@ -11,7 +11,7 @@ typedef SvgAttributes = GlobalAttr & {
   @:optional var xmlns:String; // Generally unused
 }
 
-typedef BaseAttr = GlobalAttr & {
+typedef BaseAttr = SvgAttributes & {
   @:optional var transform:String;
 } 
 
