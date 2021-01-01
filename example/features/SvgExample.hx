@@ -24,7 +24,10 @@ class SvgExample extends Component {
         }),
 
         // Note: you'll probably want to copy and paste when using SVG,
-        // which can be done with Blok's XML macro: 
+        // which can be done with Blok's XML macro!
+        //
+        // Do note that this is not a full DSL, and is really only
+        // designed for this limited use case.
         blok.core.html.Xml.create('
           <svg:svg>
             <g transform="translate(-562.58 -31.105)">
@@ -32,9 +35,6 @@ class SvgExample extends Component {
             </g>
           </svg:svg>
         ')
-        // Do note that this is not a full DSL, and is really only
-        // designed for this limited use case. Error handling is very
-        // poor and you cannot use interpolation.
       ]
     });
   }

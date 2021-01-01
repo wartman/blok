@@ -19,6 +19,6 @@ class Xml {
     ```
   **/
   public static macro function create(e) {
-    return blok.core.html.XmlBuilder.parseXml(e);
+    return blok.core.html.XmlBuilder.parseXmlExpr(e);
   }
 }
