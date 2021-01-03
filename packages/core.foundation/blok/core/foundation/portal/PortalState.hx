@@ -8,6 +8,10 @@ using Lambda;
 typedef PortalEntry = { key:String, vnode:VNode }; 
 
 class PortalState implements State {
+  public static function target(context:Context) {
+    return observe(context, state -> VFragment(state.portals.map(p -> p.vnode)));
+  }
+
   @prop var portals:ReadOnlyArray<PortalEntry> = [];
 
   @update 

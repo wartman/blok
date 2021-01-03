@@ -17,9 +17,9 @@ class RecordBuilder {
     var initializers:Array<Expr> = [];
     var nameBuilder:Array<Expr> = [];
     var withBuilder:Array<ObjectField> = [];
+    var toJson:Array<ObjectField> = [];
 
     function addProp(name:String, type:ComplexType, isOptional:Bool, isUpdateable:Bool) {
-      nameBuilder.push(macro $v{name} + ': ' + Std.string(this.$name));
       props.push({
         name: name,
         kind: FVar(type, null),
@@ -34,6 +34,34 @@ class RecordBuilder {
         meta: [ OPTIONAL_META ],
         pos: (macro null).pos
       });
+      var recordType = Context.getType('blok.core.Record');
+      
+      if (Context.unify(type.toType(), Context.getType('Iterable'))) switch type.toType() {
+        case TAbstract(_, [ t ]) if (Context.unify(t, recordType)):
+          nameBuilder.push(macro $v{name} + ': [' + [ for (c in this.$name) @:privateAccess c.__stringRepresentation ].join(',') + ']');
+          toJson.push({
+            field: name,
+            expr: macro [ for (c in this.$name) c.toJson() ]
+          });
+        default:
+          nameBuilder.push(macro $v{name} + ': ' + Std.string(this.$name));
+          toJson.push({
+            field: name,
+            expr: macro this.$name
+          });
+      } else if (Context.unify(type.toType(), recordType)) {
+        nameBuilder.push(macro $v{name} + ': ' + @:privateAccess this.$name.__stringRepresentation);
+        toJson.push({
+          field: name,
+          expr: macro this.$name.toJson()
+        });
+      } else {
+        nameBuilder.push(macro $v{name} + ': ' + Std.string(this.$name));
+        toJson.push({
+          field: name,
+          expr: macro this.$name
+        });
+      }
     }
 
     builder.addFieldMetaHandler({
@@ -145,6 +173,13 @@ class RecordBuilder {
 
         public function toString():String {
           return __stringRepresentation;
+        }
+
+        public function toJson():Dynamic {
+          return ${ {
+            expr: EObjectDecl(toJson),
+            pos: (macro null).pos
+          } };
         }
       }).fields;
     });
