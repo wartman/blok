@@ -1,6 +1,7 @@
 -cp test
 
 -lib blok.platform.static
+-lib blok.core.foundation
 
 -dce full
 

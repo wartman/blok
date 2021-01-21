@@ -79,7 +79,7 @@ class Component<Node> {
   function __preRender() {
     if (!__alive) {
       #if debug
-      throw 'Attempted to render a component that was dismounted';
+      throw 'Attempted to render a component that is not mounted or was disposed';
       #end
     }
     __dirty = false;

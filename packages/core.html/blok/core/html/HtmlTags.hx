@@ -66,6 +66,8 @@ typedef HtmlTags = {
     var dd:GlobalAttr;
     var details:#if haxe4 DetailsAttr #else GlobalAttr #end;
     var summary:GlobalAttr;
+    var figure:GlobalAttr;
+    var figcaption:GlobalAttr;
   }
   var opaque:{
     var textarea:TextAreaAttr;//right?

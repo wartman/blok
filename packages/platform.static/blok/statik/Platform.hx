@@ -5,10 +5,14 @@ class Platform {
     return new blok.core.Context(new Engine());
   }
 
-  public static function render(factory:(context:Context)->VNode):String {
+  public static function mount(root:Node, factory:(context:Context)->VNode) {
     var ctx = createContext();
-    var root = new Node('#document'); 
     ctx.render(root, factory);
+  }
+
+  public static function render(factory:(context:Context)->VNode):String {
+    var root = new Node('#document'); 
+    mount(root, factory);
     return root.toString();
   }
 }
